@@ -60,9 +60,9 @@ $_hLangs = ['hy' => 'HY', 'ru' => 'RU', 'en' => 'EN'];
 ?>
 <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-[#eaedf2]">
     <div class="mx-auto max-w-7xl px-4 sm:px-7 h-[60px] sm:h-[68px] flex items-center">
-        <a href="/" class="flex items-center gap-2.5 shrink-0 mr-4 lg:mr-10" aria-label="<?= e(t('site_name')) ?>">
-            <span class="w-9 h-9 bg-blue-600 rounded-[10px] flex items-center justify-center text-white font-extrabold text-[19px] shadow-[0_4px_12px_rgba(37,99,235,.3)]">֏</span>
-            <span class="text-[16px] sm:text-[18px] font-black text-slate-900 tracking-tight leading-tight"><?= e(t('site_name')) ?></span>
+        <a href="/" title="<?= e(t('site_name')) ?>" class="flex min-w-0 shrink items-center gap-2 sm:gap-2.5 mr-3 lg:mr-10">
+            <span class="w-9 h-9 shrink-0 bg-blue-600 rounded-[10px] flex items-center justify-center text-white font-extrabold text-[19px] shadow-[0_4px_12px_rgba(37,99,235,.3)]">֏</span>
+            <span class="truncate text-[14px] min-[400px]:text-[16px] sm:text-[18px] font-black text-slate-900 tracking-tight leading-tight"><?= e(t('site_name')) ?></span>
         </a>
 
         <nav class="hidden md:flex items-center h-full flex-1" aria-label="<?= e(t('nav_menu')) ?>">
@@ -71,7 +71,7 @@ $_hLangs = ['hy' => 'HY', 'ru' => 'RU', 'en' => 'EN'];
             <?php endforeach; ?>
         </nav>
 
-        <div class="ml-auto flex items-center gap-2">
+        <div class="ml-auto flex shrink-0 items-center gap-2">
             <div class="flex items-center bg-slate-100 rounded-[9px] p-[3px]" role="group" aria-label="<?= e(t('lang')) ?>">
                 <?php foreach ($_hLangs as $_hCode => $_hLabel): $_hCur = ($_hCode === $lang); ?>
                 <a href="<?= e(lang_url($_hCode)) ?>" hreflang="<?= e($_hCode) ?>" class="px-2.5 sm:px-3 py-1.5 rounded-[7px] text-[11.5px] font-black tracking-wide no-underline transition  <?= $_hCur ? 'bg-blue-600 text-white shadow-[0_2px_6px_rgba(37,99,235,.35)]' : 'text-slate-700' ?>" <?= $_hCur ? 'aria-current="true"' : '' ?>><?= e($_hLabel) ?></a>
