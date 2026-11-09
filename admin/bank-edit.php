@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $v['website'] = $text('website', 255);
     foreach (['address_hy', 'address_ru', 'address_en'] as $k) $v[$k] = $text($k, 255);
     foreach (['about_hy', 'about_ru', 'about_en'] as $k) $v[$k] = $text($k, 4000);
+    foreach (['hy', 'ru', 'en'] as $l) { $v["seo_title_$l"] = $text("seo_title_$l", 255); $v["seo_description_$l"] = $text("seo_description_$l", 500); }
     $v['is_active'] = isset($_POST['is_active']) ? 1 : 0;
     $v['is_partner'] = isset($_POST['is_partner']) ? 1 : 0;
 
@@ -49,7 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($v['is_partner'] && !$bank['is_partner']) $order = 100000; // новый партнёр встаёт в конец партнёров
         db()->prepare('UPDATE banks SET name_hy=:nh, name_ru=:nr, name_en=:ne, legal=:legal, phone=:phone, phone2=:phone2, email=:email, website=:website, swift=:swift,
             address_hy=:ah, address_ru=:ar, address_en=:ae, about_hy=:abh, about_ru=:abr, about_en=:abe,
+            seo_title_hy=:sth, seo_title_ru=:str, seo_title_en=:ste, seo_description_hy=:sdh, seo_description_ru=:sdr, seo_description_en=:sde,
             logo_path=:logo, is_partner=:p, partner_order=:ord, is_active=:a WHERE id=:id')->execute([
+            'sth' => $v['seo_title_hy'], 'str' => $v['seo_title_ru'], 'ste' => $v['seo_title_en'], 'sdh' => $v['seo_description_hy'], 'sdr' => $v['seo_description_ru'], 'sde' => $v['seo_description_en'],
             'nh' => $v['name_hy'], 'nr' => $v['name_ru'], 'ne' => $v['name_en'], 'legal' => $v['legal'], 'phone' => $v['phone'], 'phone2' => $v['phone2'],
             'email' => $v['email'], 'website' => $v['website'], 'swift' => $v['swift'],
             'ah' => $v['address_hy'], 'ar' => $v['address_ru'], 'ae' => $v['address_en'],
@@ -142,6 +145,19 @@ adm_head(adm_bank_name($bank), 'banks', $user);
             <?= $field('address_hy', 'Հասցե (HY)') ?>
             <?= $field('address_ru', 'Адрес (RU)') ?>
             <?= $field('address_en', 'Address (EN)') ?>
+        </div>
+    </section>
+
+    <section class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-6">
+        <h2 class="text-lg font-black text-slate-900">SEO этой страницы</h2>
+        <p class="mt-1 text-sm">Свой заголовок и описание для поисковиков. Пусто — берётся общий шаблон из «Страницы и тексты → Страницы банков» (с названием банка).</p>
+        <div class="mt-4 grid gap-5 lg:grid-cols-3">
+            <?php foreach (['hy' => 'Հայերեն', 'ru' => 'Русский', 'en' => 'English'] as $l => $ln): ?>
+            <div class="space-y-3">
+                <?= $field("seo_title_$l", 'Заголовок (title) · ' . $ln) ?>
+                <?= $area("seo_description_$l", 'Описание (description) · ' . $ln, 3) ?>
+            </div>
+            <?php endforeach; ?>
         </div>
     </section>
 

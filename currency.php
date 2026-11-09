@@ -111,7 +111,7 @@ require __DIR__ . '/includes/header.php';
             <?php foreach ([[t('best_buy'), $bestBuy, 'text-green-600', $bestBuyBank], [t('best_sell'), $bestSell, 'text-slate-900', $bestSellBank], [t('avg_buy'), $avgBuy, 'text-slate-900', count($rows) . ' ' . t('banks')]] as [$lab, $val, $clr, $sub]): ?>
             <div class="rounded-[18px] border border-slate-100 bg-white p-3 shadow-[0_6px_24px_rgba(15,23,42,.06)] sm:rounded-[22px] sm:p-5">
                 <div class="text-[10px] font-bold uppercase leading-tight tracking-wider sm:text-[11px]"><?= e($lab) ?></div>
-                <div class="mt-1 text-[22px] font-black leading-none tracking-tight tabular-nums sm:mt-2 sm:text-[34px] <?= $clr ?>"><?= $val !== null ? e(fmt_rate((float)$val)) : '—' ?></div>
+                <div class="mt-1 text-[22px] font-black leading-none tracking-tight tabular-nums sm:mt-2 sm:text-[34px] <?= $clr ?>"><?= $val !== null ? e(number_format((float)$val, 2, '.', '')) : '—' ?></div>
                 <div class="mt-1.5 text-[11px] leading-tight sm:text-xs"><?= e($sub) ?></div>
             </div>
             <?php endforeach; ?>

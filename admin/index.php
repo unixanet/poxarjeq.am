@@ -37,6 +37,12 @@ adm_head('Обзор', 'dashboard', $user);
     <?php endforeach; ?>
 </div>
 
+<div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <?php foreach ([['/admin/texts.php', 'Страницы и тексты', 'Любой текст и SEO каждой страницы'], ['/admin/menu.php', 'Меню и подвал', 'Ссылки, подписи, подсказки'], ['/admin/currencies.php', 'Валюты', 'Тексты и SEO каждой валюты'], ['/admin/tools.php', 'SEO и llms.txt', 'Проверка сайта и файл для ИИ']] as [$h, $t, $d]): ?>
+    <a href="<?= e($h) ?>" title="<?= e($t) ?>" class="block rounded-2xl border border-blue-100 bg-blue-50 p-4 no-underline transition hover:border-blue-300"><span class="block font-extrabold text-slate-900"><?= e($t) ?></span><span class="mt-0.5 block text-sm text-black"><?= e($d) ?></span></a>
+    <?php endforeach; ?>
+</div>
+
 <div class="mt-6 grid gap-5 lg:grid-cols-2">
     <section class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-6">
         <div class="flex items-center justify-between gap-3">

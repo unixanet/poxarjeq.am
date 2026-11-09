@@ -26,12 +26,11 @@ function adm_ready(): void
     if ($done) return;
     try {
         $pdo = db();
-        try {
-            $pdo->query('SELECT 1 FROM banks LIMIT 1');
-            $pdo->query('SELECT 1 FROM admin_users LIMIT 1');
-        } catch (PDOException $e) {
-            pxq_migrate($pdo);
-        }
+        $need = ['banks', 'admin_users', 'admin_login_attempts', 'site_texts', 'currency_pages', 'nav_links', 'branches', 'contact_messages'];
+        $in = "'" . implode("','", $need) . "'";
+        $have = (int)$pdo->query("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN ($in)")->fetchColumn();
+        $cols = (int)$pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'banks' AND COLUMN_NAME = 'seo_title_hy'")->fetchColumn();
+        if ($have < count($need) || $cols < 1) pxq_migrate($pdo);   // новые таблицы и колонки создаются сами при обновлении сайта
     } catch (Throwable $e) {
         http_response_code(503);
         adm_plain_page('Нет подключения к базе данных', 'Проверьте параметры в config.db.php и что база запущена. Сайт при этом продолжает работать.');

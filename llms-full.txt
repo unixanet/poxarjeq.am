@@ -1,0 +1,306 @@
+# Լավագույն Փոխարժեք (Poxarjeq.am)
+
+> Independent aggregator of cash exchange rates of banks in Armenia. Compare buy and sell rates of USD, EUR, RUR, GBP, GEL and other currencies across 16 banks, see rate history charts, and find bank branches with addresses and phone numbers. Rates are refreshed about every 15 minutes. The site does not exchange money and does not give financial advice.
+
+Primary language: Armenian (hy). Russian and English versions are available on every page with the parameter `?lang=ru` or `?lang=en`.
+
+Armenian summary: Անկախ ֆինանսական տվյալների ագրեգատոր Հայաստանի բանկերի փոխարժեքների համար։
+
+## Main pages
+- [Home — exchange rates today](https://poxarjeq.am/): live comparison table of all banks, switchable currencies, currency calculator.
+- [About](https://poxarjeq.am/about.php): who runs the site and how the data is collected.
+- [Contact](https://poxarjeq.am/contact.php): email info@leads.am, phone +374 44 140 813.
+
+## Currency pages
+- [ԱՄԷ դիրհամ (AED)](https://poxarjeq.am/currency.php?cur=AED): UAE Dirham buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Ավստրալիական դոլար (AUD)](https://poxarjeq.am/currency.php?cur=AUD): Australian Dollar buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Կանադական դոլար (CAD)](https://poxarjeq.am/currency.php?cur=CAD): Canadian Dollar buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Շվեյցարական ֆրանկ (CHF)](https://poxarjeq.am/currency.php?cur=CHF): Swiss Franc buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Չինական յուան (CNY)](https://poxarjeq.am/currency.php?cur=CNY): Chinese Yuan buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Եվրո (EUR)](https://poxarjeq.am/currency.php?cur=EUR): Euro buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Բրիտանական ֆունտ (GBP)](https://poxarjeq.am/currency.php?cur=GBP): British Pound buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Վրացական լարի (GEL)](https://poxarjeq.am/currency.php?cur=GEL): Georgian Lari buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Ճապոնական իեն (JPY)](https://poxarjeq.am/currency.php?cur=JPY): Japanese Yen buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Ռուսական ռուբլի (RUR)](https://poxarjeq.am/currency.php?cur=RUR): Russian Ruble buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [ԱՄՆ դոլար (USD)](https://poxarjeq.am/currency.php?cur=USD): US Dollar buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+
+## Banks
+- [Ամերիաբանկ](https://poxarjeq.am/ameriabank): Ameriabank — current cash rates, contacts, 14 branches.
+- [ԱԿԲԱ Բանկ](https://poxarjeq.am/acba-bank): ACBA Bank — current cash rates, contacts, 12 branches.
+- [Արդշինբանկ](https://poxarjeq.am/ardshinbank): Ardshinbank — current cash rates, contacts, 14 branches.
+- [ՎՏԲ Հայաստան](https://poxarjeq.am/vtbhayastan-bank): VTB Armenia — current cash rates, contacts, 3 branches.
+- [Ինեկո Գործընկեր](https://poxarjeq.am/inekobank): Inecobank — current cash rates, contacts, 4 branches.
+- [Էվոկաբանկ](https://poxarjeq.am/evocabank): Evocabank — current cash rates, contacts, 3 branches.
+- [Յունիբանկ](https://poxarjeq.am/yunibank): Unibank — current cash rates, contacts, 3 branches.
+- [Ֆաստ Բանկ](https://poxarjeq.am/fast-bank): Fast Bank — current cash rates, contacts, 2 branches.
+- [ԱՄԻՕ Բանկ](https://poxarjeq.am/haybiznesbank): AMIO Bank — current cash rates, contacts, 3 branches.
+- [ԱրարատԲանկ](https://poxarjeq.am/araratbank): AraratBank — current cash rates, contacts, 3 branches.
+- [Արմսվիսբանկ](https://poxarjeq.am/armsvisbank): ArmSwissBank — current cash rates, contacts, 2 branches.
+- [Արմէկոնոմբանկ](https://poxarjeq.am/hayekonombank): Armeconombank — current cash rates, contacts, 3 branches.
+- [Արցախբանկ](https://poxarjeq.am/arcakhbank): Artsakhbank — current cash rates, contacts, 3 branches.
+- [Բիբլոս Բանկ Արմենիա](https://poxarjeq.am/biblos-bank-armenia): Byblos Bank Armenia — current cash rates, contacts, 2 branches.
+- [Կոնվերս Բանկ](https://poxarjeq.am/konvers-bank): Converse Bank — current cash rates, contacts, 4 branches.
+- [Մելլաթ Բանկ](https://poxarjeq.am/mellat-bank): Mellat Bank — current cash rates, contacts, 2 branches.
+
+## Optional
+- [Privacy](https://poxarjeq.am/privacy.php)
+- [Disclaimer](https://poxarjeq.am/disclaimer.php): rates are informational; always confirm the final rate with the bank.
+- [Full text version](https://poxarjeq.am/llms-full.txt)
+
+---
+
+# Details
+
+## How the data is produced
+Rates are collected automatically from official bank sources through the poxarjeq.com API and cached for about 15 minutes. The table highlights the highest buy rate per currency. Banks marked as partners are listed first; this does not change the displayed rates.
+
+## Frequently asked questions (English)
+### Why do bank rates differ from the Central Bank (CBA) rate?
+The Central Bank sets the official reference rate based on interbank market transactions. Commercial banks add a margin (spread) to cover costs and earn a profit, so their rates always differ slightly from the CBA rate.
+
+### What time is best to exchange currency?
+It is usually better to exchange during bank working hours (9:30–17:00). Outside working hours and on weekends banks may widen the spread to hedge against sharp moves, because the interbank market is closed.
+
+### Is the data on this site reliable?
+The site automatically collects data from banks' official websites. Rates can change quickly, so before a large transaction we recommend calling the bank branch to confirm the final price.
+
+### Which bank offers the best rate for the currency (XXX)?
+The best rates right now are in the table above: the highest buy rate is highlighted in green. Banks update rates during the day, so check the rate before you exchange.
+
+## Frequently asked questions (Armenian)
+### Ինչու՞ է փոխարժեքը բանկերում տարբերվում Կենտրոնական բանկի (ԿԲ) կուրսից:
+Կենտրոնական բանկը սահմանում է հաշվարկային պաշտոնական փոխարժեքը, որը հիմնված է միջբանկային շուկայի գործարքների վրա։ Առևտրային բանկերը ավելացնում են որոշակի մարժա (սփրեդ)՝ իրենց ծախսերը ծածկելու և շահույթ ստանալու համար, այդ իսկ պատճառով նրանց առաջարկած գները միշտ փոքր-ինչ տարբերվում են ԿԲ կուրսից։
+
+### Ո՞ր ժամերին է ավելի ձեռնտու արժույթ փոխանակել:
+Սովորաբար ավելի ձեռնտու է փոխանակում կատարել բանկային աշխատանքային ժամերին (9:30 - 17:00)։ Ոչ աշխատանքային ժամերին և հանգստյան օրերին բանկերը կարող են մեծացնել սփրեդը՝ ապահովագրվելու համար հնարավոր կտրուկ տատանումներից, քանի որ միջբանկային շուկան այդ պահին փակ է լինում։
+
+### Արդյո՞ք կայքի տվյալները հավաստի են:
+Այո, կայքը ավտոմատացված ռեժիմով ստանում է տվյալները բանկերի պաշտոնական կայքերից։ Սակայն, քանի որ փոխարժեքը կարող է փոփոխվել շատ արագ, խորհուրդ ենք տալիս խոշոր գործարքներից առաջ միշտ զանգահարել տվյալ բանկի մասնաճյուղ՝ վերջնական գինը ճշտելու համար։
+
+### Ո՞ր բանկում է ամենաձեռնտու փոխանակել արժույթ ():
+Լավագույն կուրսերը այս պահին ներկայացված են վերևի աղյուսակում․ կանաչով նշված է ամենաբարձր գնման կուրսը։ Բանկերը թարմացնում են կուրսերը օրվա ընթացքում, ուստի ստուգեք փոխարժեքը նախքան գործարքը։
+
+## Bank details
+### Ամերիաբանկ / Ameriabank
+Page: https://poxarjeq.am/ameriabank
+Legal name: Ameriabank CJSC
+Head office: 2 Vazgen Sargsyan St., Yerevan 0010
+Phone: +374 10 56 11 11
+Website: https://ameriabank.am
+Ameriabank is one of the largest private banks in Armenia. It offers a full range of services for individuals and businesses, including currency exchange, loans, deposits and digital banking.
+Branches:
+- Head Office, Yerevan, 2 Vazgen Sargsyan St., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-head
+- Mashtots, Yerevan, 20/4 Mashtots Ave., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-mashtots
+- Sayat-Nova, Yerevan, 8 Sayat-Nova Ave., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-sayat-nova
+- Komitas, Yerevan, 12 Komitas Ave., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-komitas
+- Dalma, Yerevan, 3 Tsitsernakaberd Hwy, +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-dalma
+- Erebuni, Yerevan, 17/1 Erebuni St., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-erebuni
+- Zeytun, Yerevan, 1 Hrachya Nersisyan St., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-zeytun
+- Arshakunyats, Yerevan, 34/3 Arshakunyats Ave., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/yerevan-arshakunyats
+- Vanadzor, Vanadzor, 65 Tigran Mets St., +374 322 40 124 — https://poxarjeq.am/ameriabank/vanadzor
+- Gyumri, Gyumri, 248/7 Abovyan St., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/gyumri
+- Kapan, Kapan, 1 Shahumyan St., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/kapan
+- Dilijan, Dilijan, 66 Myasnikyan St., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/dilijan
+- Jermuk, Jermuk, 14/3 Shahumyan St., +374 10 56 11 11 — https://poxarjeq.am/ameriabank/jermuk
+- Qajaran, Qajaran, 16/31 Lernagorceri St., +374 285 32 211 — https://poxarjeq.am/ameriabank/qajaran
+
+### ԱԿԲԱ Բանկ / ACBA Bank
+Page: https://poxarjeq.am/acba-bank
+Legal name: ACBA Bank OJSC
+Head office: 82-84 Aram St., Yerevan
+Phone: +374 10 31 88 88
+Website: https://www.acba.am
+ACBA Bank is a leading Armenian bank with strong positions in agricultural and SME lending. It has a wide branch network and modern digital solutions.
+Branches:
+- Head Office, Yerevan, 82-84 Aram St., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/yerevan-head
+- Arabkir, Yerevan, 64a Sundukyan St., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/yerevan-arabkir
+- Komitas, Yerevan, Yerevan, +374 10 31 88 88 — https://poxarjeq.am/acba-bank/yerevan-komitas
+- Malatia, Yerevan, Yerevan, +374 10 31 88 88 — https://poxarjeq.am/acba-bank/yerevan-malatia
+- Zeytun, Yerevan, Yerevan, +374 10 31 88 88 — https://poxarjeq.am/acba-bank/yerevan-zeytun
+- Vanadzor (Lori), Vanadzor, 22A Tigran Mets Ave., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 31 88 88 — https://poxarjeq.am/acba-bank/gyumri
+- Stepanavan, Stepanavan, Stepanavan, +374 10 31 88 88 — https://poxarjeq.am/acba-bank/stepanavan
+- Alaverdi, Alaverdi, 59 Tumanyan St., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/alaverdi
+- Dilijan, Dilijan, 37/2 Myasnikyan St., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/dilijan
+- Artik, Artik, 28/1 Ankakhutyan St., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/artik
+- Ashtarak, Ashtarak, Ashtarak, +374 10 31 88 88 — https://poxarjeq.am/acba-bank/ashtarak
+
+### Արդշինբանկ / Ardshinbank
+Page: https://poxarjeq.am/ardshinbank
+Legal name: Ardshinbank OJSC
+Head office: 13 Grigor Lusavorich St., Yerevan 0015
+Phone: +374 12 22 22 22
+Website: https://ardshinbank.am
+Ardshinbank is one of the largest banks in Armenia with an extensive branch network and a full package of banking services.
+Branches:
+- Head Office, Yerevan, 13 Grigor Lusavorich St., +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/yerevan-head
+- Abovyan, Yerevan, 27 Abovyan St., +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/yerevan-abovyan
+- Arabkir, Yerevan, 41 Komitas Ave., +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/yerevan-arabkir
+- Komitas, Yerevan, 30 Komitas Ave., +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/yerevan-komitas
+- Cascade, Yerevan, 1/70 Tamanyan St., +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/yerevan-cascade
+- Shengavit, Yerevan, 32 Nzhdeh St., +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/yerevan-shengavit
+- Vanadzor, Vanadzor, 38 Grigor Lusavorich St., +374 322 43 039 — https://poxarjeq.am/ardshinbank/vanadzor
+- Lori, Vanadzor, 54b Grigor Lusavorich St., +374 322 44 461 — https://poxarjeq.am/ardshinbank/vanadzor-lori
+- Gyumri, Gyumri, 7 Gayi St., +374 312 50 557 — https://poxarjeq.am/ardshinbank/gyumri
+- Shirak, Gyumri, 23 Spandaryan St., +374 312 47 265 — https://poxarjeq.am/ardshinbank/gyumri-shirak
+- Kapan, Kapan, Kapan, +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/kapan
+- Goris, Goris, 9 Grigor Tatevatsi St., +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/goris
+- Tashir, Tashir, Yerevanyan district 5, +374 12 22 22 22 — https://poxarjeq.am/ardshinbank/tashir
+- Yeghegnadzor, Yeghegnadzor, 3 Momik St., +374 281 24 110 — https://poxarjeq.am/ardshinbank/yeghegnadzor
+
+### ՎՏԲ Հայաստան / VTB Armenia
+Page: https://poxarjeq.am/vtbhayastan-bank
+Legal name: VTB Bank (Armenia) CJSC
+Head office: 33/3 Manandyan St., Yerevan 0006
+Phone: +374 8000 87 87
+Website: https://www.vtb.am
+VTB Armenia is part of the international VTB Group. It offers banking services to individuals and corporates, including currency exchange.
+Branches:
+- Head Office, Yerevan, 33/3 Manandyan St., +374 8000 87 87 — https://poxarjeq.am/vtbhayastan-bank/yerevan-head
+- Vanadzor, Vanadzor, 38/1 Grigor Lusavorich St., +374 10 51 37 49 — https://poxarjeq.am/vtbhayastan-bank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 8000 87 87 — https://poxarjeq.am/vtbhayastan-bank/gyumri
+
+### Ինեկո Գործընկեր / Inecobank
+Page: https://poxarjeq.am/inekobank
+Legal name: Inecobank CJSC
+Head office: 17 Tumanyan St., Yerevan
+Phone: +374 10 51 05 10
+Website: https://www.inecobank.am
+Inecobank is known for its client-oriented approach and modern banking services for individuals and businesses.
+Branches:
+- Head Office, Yerevan, 17 Tumanyan St., +374 10 51 05 10 — https://poxarjeq.am/inekobank/yerevan-head
+- Vanadzor, Vanadzor, Vanadzor, +374 10 51 05 10 — https://poxarjeq.am/inekobank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 51 05 10 — https://poxarjeq.am/inekobank/gyumri
+- Sargsyan, Yerevan, 26/1 V. Sargsyan St., +374 10 51 05 10 — https://poxarjeq.am/inekobank/yerevan-sargsyan
+
+### Էվոկաբանկ / Evocabank
+Page: https://poxarjeq.am/evocabank
+Legal name: Evocabank OJSC
+Head office: 44/2 Hanrapetutyan St., Yerevan 0010
+Phone: +374 10 60 55 55
+Website: https://www.evoca.am
+Evocabank (formerly Prometey Bank) actively develops digital services and is open to non-residents.
+Branches:
+- Head Office, Yerevan, 44/2 Hanrapetutyan St., +374 10 60 55 55 — https://poxarjeq.am/evocabank/yerevan-head
+- Vanadzor, Vanadzor, 34 Grigor Lusavorich St., +374 98 20 55 55 — https://poxarjeq.am/evocabank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 60 55 55 — https://poxarjeq.am/evocabank/gyumri
+
+### Յունիբանկ / Unibank
+Page: https://poxarjeq.am/yunibank
+Legal name: Unibank OJSC
+Head office: 12 Charents St., Yerevan
+Phone: +374 10 59 55 55
+Website: https://www.unibank.am
+Unibank provides a full range of banking services and is known for card products and money transfers.
+Branches:
+- Head Office, Yerevan, 12 Charents St., +374 10 59 55 55 — https://poxarjeq.am/yunibank/yerevan-head
+- Vanadzor, Vanadzor, Vanadzor, +374 10 59 55 55 — https://poxarjeq.am/yunibank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 59 55 55 — https://poxarjeq.am/yunibank/gyumri
+
+### Ֆաստ Բանկ / Fast Bank
+Page: https://poxarjeq.am/fast-bank
+Legal name: Fast Bank CJSC
+Head office: 32/6 G. Hovsepyan St., Nork-Marash, Yerevan
+Phone: +374 10 51 00 00
+Website: https://www.fastbank.am
+Fast Bank is a relatively new bank in Armenia focused on fast and convenient banking services.
+Branches:
+- Head Office, Yerevan, 32/6 G. Hovsepyan St., Nork-Marash, +374 10 51 00 00 — https://poxarjeq.am/fast-bank/yerevan-head
+- Nork-Marash, Yerevan, 32/6 G. Hovsepyan St., +374 10 51 00 00 — https://poxarjeq.am/fast-bank/yerevan-nork
+
+### ԱՄԻՕ Բանկ / AMIO Bank
+Page: https://poxarjeq.am/haybiznesbank
+Legal name: AMIO BANK CJSC
+Head office: 48 Nalbandyan St., Yerevan
+Phone: +374 10 59 20 20
+Website: https://www.amiobank.am
+AMIO Bank (formerly Armbusinessbank) offers banking services to individuals and legal entities.
+Branches:
+- Head Office, Yerevan, 48 Nalbandyan St., +374 10 59 20 20 — https://poxarjeq.am/haybiznesbank/yerevan-head
+- Vanadzor, Vanadzor, Vanadzor, +374 10 59 20 20 — https://poxarjeq.am/haybiznesbank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 59 20 20 — https://poxarjeq.am/haybiznesbank/gyumri
+
+### ԱրարատԲանկ / AraratBank
+Page: https://poxarjeq.am/araratbank
+Legal name: AraratBank
+Head office: 87 Buzand St., Yerevan
+Phone: +374 10 59 23 23
+Website: https://www.araratbank.am
+AraratBank is an Armenian bank with traditional banking services and a branch network.
+Branches:
+- Head Office, Yerevan, 87 Buzand St., +374 10 59 23 23 — https://poxarjeq.am/araratbank/yerevan-head
+- Vanadzor, Vanadzor, 79 Tigran Mets Ave., +374 10 59 23 23 — https://poxarjeq.am/araratbank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 59 23 23 — https://poxarjeq.am/araratbank/gyumri
+
+### Արմսվիսբանկ / ArmSwissBank
+Page: https://poxarjeq.am/armsvisbank
+Legal name: ArmSwissBank
+Head office: 10 Vazgen Sargsyan St., Yerevan
+Phone: +374 60 75 70 00
+Website: https://www.armswissbank.am
+ArmSwissBank specializes in private banking and investment services.
+Branches:
+- Head Office, Yerevan, 10 Vazgen Sargsyan St., +374 60 75 70 00 — https://poxarjeq.am/armsvisbank/yerevan-head
+- Kentron, Yerevan, 10 Vazgen Sargsyan St., +374 60 75 70 00 — https://poxarjeq.am/armsvisbank/yerevan-kentron
+
+### Արմէկոնոմբանկ / Armeconombank
+Page: https://poxarjeq.am/hayekonombank
+Legal name: Armeconombank OJSC
+Head office: 23/1 Amiryan St., Yerevan
+Phone: +374 10 51 09 10
+Website: https://www.aeb.am
+Armeconombank is an Armenian bank with a long history and a wide range of services.
+Branches:
+- Head Office, Yerevan, 23/1 Amiryan St., +374 10 51 09 10 — https://poxarjeq.am/hayekonombank/yerevan-head
+- Vanadzor, Vanadzor, 55-59 Tigran Mets Ave., +374 10 51 09 10 — https://poxarjeq.am/hayekonombank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 51 09 10 — https://poxarjeq.am/hayekonombank/gyumri
+
+### Արցախբանկ / Artsakhbank
+Page: https://poxarjeq.am/arcakhbank
+Legal name: Artsakhbank
+Head office: 1b Charents St., Yerevan
+Phone: +374 60 74 77 69
+Website: https://www.artsakhbank.com
+Artsakhbank operates in Armenia and offers standard banking services.
+Branches:
+- Head Office, Yerevan, 1b Charents St., +374 60 74 77 69 — https://poxarjeq.am/arcakhbank/yerevan-head
+- Vanadzor, Vanadzor, Vanadzor, +374 60 74 77 69 — https://poxarjeq.am/arcakhbank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 60 74 77 69 — https://poxarjeq.am/arcakhbank/gyumri
+
+### Բիբլոս Բանկ Արմենիա / Byblos Bank Armenia
+Page: https://poxarjeq.am/biblos-bank-armenia
+Legal name: Byblos Bank Armenia CJSC
+Head office: 18/3 Amiryan St., Yerevan
+Phone: +374 60 61 61 00
+Website: https://www.byblosbankarmenia.am
+Byblos Bank Armenia is a subsidiary of Lebanese Byblos Bank operating in Armenia.
+Branches:
+- Head Office, Yerevan, 18/3 Amiryan St., +374 60 61 61 00 — https://poxarjeq.am/biblos-bank-armenia/yerevan-head
+- Amiryan, Yerevan, 18/3 Amiryan St., +374 60 61 61 00 — https://poxarjeq.am/biblos-bank-armenia/yerevan-amiryan
+
+### Կոնվերս Բանկ / Converse Bank
+Page: https://poxarjeq.am/konvers-bank
+Legal name: Converse Bank CJSC
+Head office: 26/1 V. Sargsyan St., Yerevan
+Phone: +374 10 51 12 11
+Website: https://www.conversebank.am
+Converse Bank is an Armenian bank with a full package of services for individuals and businesses.
+Branches:
+- Head Office, Yerevan, 26/1 V. Sargsyan St., +374 10 51 12 11 — https://poxarjeq.am/konvers-bank/yerevan-head
+- Vanadzor, Vanadzor, Vanadzor, +374 10 51 12 11 — https://poxarjeq.am/konvers-bank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 51 12 11 — https://poxarjeq.am/konvers-bank/gyumri
+- Dilijan, Dilijan, Dilijan, +374 10 51 12 11 — https://poxarjeq.am/konvers-bank/dilijan
+
+### Մելլաթ Բանկ / Mellat Bank
+Page: https://poxarjeq.am/mellat-bank
+Legal name: Mellat Bank CJSC
+Head office: 19 Charents St., Yerevan
+Phone: +374 60 38 88 88
+Website: https://www.mellatbank.am
+Mellat Bank is a subsidiary of Iranian Bank Mellat in Armenia.
+Branches:
+- Head Office, Yerevan, 19 Charents St., +374 60 38 88 88 — https://poxarjeq.am/mellat-bank/yerevan-head
+- Charents, Yerevan, 19 Charents St., +374 60 38 88 88 — https://poxarjeq.am/mellat-bank/yerevan-charents
+
+## Citing
+You may cite rates and bank information with a link to the corresponding page on https://poxarjeq.am. Exchange rates are informational and change during the day.

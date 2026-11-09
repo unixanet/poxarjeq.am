@@ -5,6 +5,8 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/bank_store.php';
 require_once __DIR__ . '/cms.php';
 require_once __DIR__ . '/ui.php';
+require_once __DIR__ . '/llms.php';
+require_once __DIR__ . '/seo_audit.php';
 
 function detect_lang(): string
 {

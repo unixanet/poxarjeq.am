@@ -4,8 +4,14 @@ declare(strict_types=1);
 function adm_head(string $title, string $active = '', ?array $user = null): void
 {
     $nav = [
-        'dashboard' => ['/admin/', 'Обзор', 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
-        'banks'     => ['/admin/banks.php', 'Банки', 'M3 10l9-6 9 6M5 10v8m4-8v8m6-8v8m4-8v8M3 20h18'],
+        'dashboard'  => ['/admin/', 'Обзор', 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+        'texts'      => ['/admin/texts.php', 'Страницы и тексты', 'M4 6h16M4 10h16M4 14h10M4 18h7'],
+        'currencies' => ['/admin/currencies.php', 'Валюты', 'M12 3v18M16 7.5c0-1.4-1.8-2.5-4-2.5s-4 1.1-4 2.5 1.8 2.5 4 2.5 4 1.1 4 2.5-1.8 2.5-4 2.5-4-1.1-4-2.5'],
+        'banks'      => ['/admin/banks.php', 'Банки', 'M3 10l9-6 9 6M5 10v8m4-8v8m6-8v8m4-8v8M3 20h18'],
+        'branches'   => ['/admin/branches.php', 'Филиалы', 'M12 21s-7-6.2-7-11a7 7 0 1114 0c0 4.8-7 11-7 11zM12 12a2 2 0 100-4 2 2 0 000 4z'],
+        'menu'       => ['/admin/menu.php', 'Меню и подвал', 'M4 6h16M4 12h16M4 18h16'],
+        'messages'   => ['/admin/messages.php', 'Сообщения', 'M4 6h16v12H4zM4 7l8 6 8-6'],
+        'tools'      => ['/admin/tools.php', 'SEO и llms.txt', 'M11 4a7 7 0 105.2 11.7L21 20.5M11 8v6M8 11h6'],
     ];
     ?><!DOCTYPE html>
 <html lang="ru">
