@@ -32,38 +32,9 @@ $pageCanonical = rtrim($pageCanonical, '?&');
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= e($pageTitle) ?>">
     <meta name="twitter:description" content="<?= e($pageDescription) ?>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { DEFAULT: '#0078D4', hover: '#106EBE', light: '#E8F4FD', dark: '#005A9E' }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body, p, h1, h2, h3, h4, h5, h6, td, th, li, span, div, label, input, select, textarea {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Armenian', sans-serif;
-        }
-        body { color: #000 !important; background: #fff; }
-        /* NO GRAY TEXT — only black */
-        .text-black, p, td, th, li, span, div, h1, h2, h3, h4, nav, footer li a {
-            color: #000;
-        }
-        a { color: #0078D4; }
-        a:hover { color: #106EBE; }
-        .text-brand, a.text-brand { color: #0078D4 !important; }
-        .text-emerald-700, .text-emerald-600 { color: #047857 !important; }
-        header .text-white, .bg-brand, .bg-brand * { color: #fff !important; }
-        footer, footer * { color: #fff !important; }
-        footer a:hover { color: #E8F4FD !important; }
-        .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .scroll-x table { min-width: 920px; }
-        select.cur-select { color: #000 !important; }
-    </style>
+    <link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/output.css?v=<?= (int)@filemtime(__DIR__ . '/../css/output.css') ?>">
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN397C6CTH"></script>
@@ -76,67 +47,57 @@ $pageCanonical = rtrim($pageCanonical, '?&');
 </script>
 
 </head>
-<body class="bg-white text-black antialiased min-h-screen flex flex-col">
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-black/10">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="flex items-center justify-between h-16">
-            <a href="/" class="flex items-center gap-2.5 group no-underline">
-                <span class="w-9 h-9 rounded-lg bg-brand text-white flex items-center justify-center font-bold text-lg group-hover:bg-brand-hover transition">֏</span>
-                <span class="font-semibold text-black hidden sm:block"><?= e(t('site_name')) ?></span>
-            </a>
-            <nav class="hidden md:flex items-center gap-1">
-                <a href="/" class="px-3 py-2 rounded-lg text-sm font-medium no-underline <?= $active==='home' ? 'text-brand bg-brand-light' : 'text-black hover:text-brand hover:bg-brand-light' ?>"><?= e(t('home')) ?></a>
-                <a href="/currency.php?cur=USD" class="px-3 py-2 rounded-lg text-sm font-medium no-underline text-black hover:text-brand hover:bg-brand-light">USD</a>
-                <a href="/currency.php?cur=EUR" class="px-3 py-2 rounded-lg text-sm font-medium no-underline text-black hover:text-brand hover:bg-brand-light">EUR</a>
-                <a href="/currency.php?cur=RUR" class="px-3 py-2 rounded-lg text-sm font-medium no-underline text-black hover:text-brand hover:bg-brand-light">RUR</a>
-                <a href="/about.php" class="px-3 py-2 rounded-lg text-sm font-medium no-underline <?= $active==='about' ? 'text-brand bg-brand-light' : 'text-black hover:text-brand hover:bg-brand-light' ?>"><?= e(t('about')) ?></a>
-                <a href="/contact.php" class="px-3 py-2 rounded-lg text-sm font-medium no-underline <?= $active==='contact' ? 'text-brand bg-brand-light' : 'text-black hover:text-brand hover:bg-brand-light' ?>"><?= e(t('contact')) ?></a>
-            </nav>
-            <div class="flex items-center gap-2">
-                <div class="relative" id="lang-wrap">
-                    <button type="button" id="lang-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-black/15 text-sm font-medium text-black hover:border-brand hover:text-brand transition">
-                        <img src="<?= e(lang_flag($lang)) ?>" alt="" width="18" height="12" class="object-contain" onerror="this.style.display='none'"><span class="uppercase"><?= e($lang) ?></span>
-                        <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div id="lang-menu" class="hidden absolute right-0 mt-1.5 w-40 bg-white border border-black/10 rounded-xl shadow-lg py-1 z-50">
-                        <a href="<?= e(lang_url('hy')) ?>" class="flex items-center gap-2 px-3 py-2 text-sm no-underline text-black hover:bg-brand-light <?= $lang==='hy'?'text-brand font-semibold':'' ?>">
-                            <img src="<?= e(lang_flag('hy')) ?>" alt="hy" width="20" height="14" class="object-contain" onerror="this.style.display='none'"> Հայերեն
-                        </a>
-                        <a href="<?= e(lang_url('ru')) ?>" class="flex items-center gap-2 px-3 py-2 text-sm no-underline text-black hover:bg-brand-light <?= $lang==='ru'?'text-brand font-semibold':'' ?>">
-                            <img src="<?= e(lang_flag('ru')) ?>" alt="ru" width="20" height="14" class="object-contain" onerror="this.style.display='none'"> Русский
-                        </a>
-                        <a href="<?= e(lang_url('en')) ?>" class="flex items-center gap-2 px-3 py-2 text-sm no-underline text-black hover:bg-brand-light <?= $lang==='en'?'text-brand font-semibold':'' ?>">
-                            <img src="<?= e(lang_flag('en')) ?>" alt="en" width="20" height="14" class="object-contain" onerror="this.style.display='none'"> English
-                        </a>
-                    </div>
-                </div>
-                <button type="button" id="burger" class="md:hidden p-2 rounded-lg text-black hover:bg-brand-light" aria-label="<?= e(t('menu')) ?>">
-                    <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+<body class="min-h-screen flex flex-col">
+<?php
+$_hNav = [
+    ['key' => 'home',    'href' => '/',                       'label' => t('home')],
+    ['key' => 'usd',     'href' => '/currency.php?cur=USD',   'label' => 'USD'],
+    ['key' => 'eur',     'href' => '/currency.php?cur=EUR',   'label' => 'EUR'],
+    ['key' => 'rur',     'href' => '/currency.php?cur=RUR',   'label' => 'RUR'],
+    ['key' => 'about',   'href' => '/about.php',              'label' => t('about')],
+    ['key' => 'contact', 'href' => '/contact.php',            'label' => t('contact')],
+];
+$_hLangs = ['hy' => 'HY', 'ru' => 'RU', 'en' => 'EN'];
+?>
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-[#eaedf2]">
+    <div class="mx-auto max-w-7xl px-4 sm:px-7 h-[60px] sm:h-[68px] flex items-center">
+        <a href="/" class="flex items-center gap-2.5 shrink-0 mr-4 lg:mr-10" aria-label="<?= e(t('site_name')) ?>">
+            <span class="w-9 h-9 bg-blue-600 rounded-[10px] flex items-center justify-center text-white font-extrabold text-[19px] shadow-[0_4px_12px_rgba(37,99,235,.3)]">֏</span>
+            <span class="text-[16px] sm:text-[18px] font-black text-slate-900 tracking-tight leading-tight"><?= e(t('site_name')) ?></span>
+        </a>
+
+        <nav class="hidden md:flex items-center h-full flex-1" aria-label="<?= e(t('nav_menu')) ?>">
+            <?php foreach ($_hNav as $_hn): $_hOn = ($active === $_hn['key']); ?>
+            <a href="<?= e($_hn['href']) ?>" class="relative flex items-center px-4 h-full text-[14px] font-semibold no-underline transition-colors after:absolute after:bottom-0 after:left-4 after:right-4 after:h-[2.5px] after:bg-blue-600 after:rounded-t after:transition-transform <?= $_hOn ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100' ?>"><?= e($_hn['label']) ?></a>
+            <?php endforeach; ?>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-2">
+            <div class="flex items-center bg-slate-100 rounded-[9px] p-[3px]" role="group" aria-label="<?= e(t('lang')) ?>">
+                <?php foreach ($_hLangs as $_hCode => $_hLabel): $_hCur = ($_hCode === $lang); ?>
+                <a href="<?= e(lang_url($_hCode)) ?>" hreflang="<?= e($_hCode) ?>" class="px-2.5 sm:px-3 py-1.5 rounded-[7px] text-[11.5px] font-black tracking-wide no-underline transition <?= $_hCur ? 'bg-blue-600 shadow-[0_2px_6px_rgba(37,99,235,.35)]' : '' ?>" style="<?= $_hCur ? 'color:#fff' : '' ?>" <?= $_hCur ? 'aria-current="true"' : '' ?>><?= e($_hLabel) ?></a>
+                <?php endforeach; ?>
             </div>
+            <button type="button" id="burger" class="md:hidden w-10 h-10 grid place-items-center rounded-xl border border-[#eaedf2] bg-white text-slate-900" aria-label="<?= e(t('menu')) ?>" aria-expanded="false" aria-controls="mobile-menu">
+                <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 7h16M4 12h16M4 17h16"/></svg>
+                <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
     </div>
-    <div id="mobile-menu" class="hidden md:hidden border-t border-black/10 bg-white">
-        <div class="px-4 py-3 space-y-1">
-            <a href="/" class="block px-3 py-2.5 rounded-lg text-sm font-medium no-underline text-black hover:bg-brand-light"><?= e(t('home')) ?></a>
-            <a href="/currency.php?cur=USD" class="block px-3 py-2.5 rounded-lg text-sm font-medium no-underline text-black hover:bg-brand-light">USD</a>
-            <a href="/currency.php?cur=EUR" class="block px-3 py-2.5 rounded-lg text-sm font-medium no-underline text-black hover:bg-brand-light">EUR</a>
-            <a href="/currency.php?cur=RUR" class="block px-3 py-2.5 rounded-lg text-sm font-medium no-underline text-black hover:bg-brand-light">RUR</a>
-            <a href="/about.php" class="block px-3 py-2.5 rounded-lg text-sm font-medium no-underline text-black hover:bg-brand-light"><?= e(t('about')) ?></a>
-            <a href="/contact.php" class="block px-3 py-2.5 rounded-lg text-sm font-medium no-underline text-black hover:bg-brand-light"><?= e(t('contact')) ?></a>
+    <div id="mobile-menu" class="hidden md:hidden border-t border-[#eaedf2] bg-white shadow-[0_16px_32px_rgba(15,23,42,.08)]">
+        <div class="px-4 py-3 grid gap-1">
+            <?php foreach ($_hNav as $_hn): $_hOn = ($active === $_hn['key']); ?>
+            <a href="<?= e($_hn['href']) ?>" class="flex items-center min-h-[48px] px-4 rounded-xl text-[15px] font-semibold no-underline <?= $_hOn ? 'bg-blue-50' : 'hover:bg-slate-50' ?>"><?= e($_hn['label']) ?></a>
+            <?php endforeach; ?>
         </div>
     </div>
 </header>
 <script>
 (function(){
-    const btn=document.getElementById('lang-btn'), menu=document.getElementById('lang-menu');
-    btn&&btn.addEventListener('click',e=>{e.stopPropagation();menu.classList.toggle('hidden');});
-    document.addEventListener('click',()=>{menu&&menu.classList.add('hidden');});
-    const burger=document.getElementById('burger'), mob=document.getElementById('mobile-menu');
-    const io=document.getElementById('icon-open'), ic=document.getElementById('icon-close');
-    burger&&burger.addEventListener('click',()=>{mob.classList.toggle('hidden');io.classList.toggle('hidden');ic.classList.toggle('hidden');});
+    var b=document.getElementById('burger'),m=document.getElementById('mobile-menu'),o=document.getElementById('icon-open'),c=document.getElementById('icon-close');
+    if(!b)return;
+    b.addEventListener('click',function(){var h=m.classList.toggle('hidden');o.classList.toggle('hidden',!h);c.classList.toggle('hidden',h);b.setAttribute('aria-expanded',h?'false':'true');});
 })();
 </script>
 <main class="flex-1">
-<div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<?php if (empty($fullWidth)): ?><div class="max-w-7xl mx-auto px-4 sm:px-7 py-6 sm:py-10"><?php endif; ?>

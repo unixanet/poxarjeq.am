@@ -157,6 +157,8 @@ function currency_name(string $code, string $lang = 'hy'): string
         'CAD' => ['hy' => 'Կանադական դոլար', 'ru' => 'Канадский доллар', 'en' => 'Canadian Dollar'],
         'CNY' => ['hy' => 'Չինական յուան', 'ru' => 'Китайский юань', 'en' => 'Chinese Yuan'],
         'JPY' => ['hy' => 'Ճապոնական իեն', 'ru' => 'Японская иена', 'en' => 'Japanese Yen'],
+        'KZT' => ['hy' => 'Ղազախական տենգե', 'ru' => 'Казахстанский тенге', 'en' => 'Kazakhstani Tenge'],
+        'XAU' => ['hy' => 'Ոսկի', 'ru' => 'Золото', 'en' => 'Gold'],
     ];
     $code = strtoupper($code);
     return $map[$code][$lang] ?? $code;
@@ -195,8 +197,11 @@ function calc_spread(float $buy, float $sell): float
 /** Currency flag PNG path — upload files to /assets/flags/{CODE}.png */
 function currency_flag(string $code): string
 {
-    $code = strtoupper($code);
-    return '/assets/flags/' . $code . '.png';
+    $code = strtoupper(preg_replace('/[^A-Za-z]/', '', $code));
+    if ($code !== '' && is_file(__DIR__ . '/../assets/flags/' . $code . '.png')) {
+        return '/assets/flags/' . $code . '.png';
+    }
+    return '/assets/flags/GLOBE.png';
 }
 
 /** Language flag PNG — upload to /assets/lang/{hy|ru|en}.png */
@@ -211,7 +216,7 @@ function lang_flag(string $lang): string
 function currency_flags_map(): array
 {
     $map = [];
-    foreach (all_currency_codes() as $c) {
+    foreach (array_unique(array_merge(all_currency_codes(), table_currency_codes())) as $c) {
         $map[$c] = currency_flag($c);
     }
     return $map;
@@ -257,4 +262,153 @@ function bank_display_name(string $code, string $lang, ?string $apiName = null):
 function all_currency_codes(): array
 {
     return ['AED','AUD','CAD','CHF','CNY','EUR','GBP','GEL','JPY','RUR','USD'];
+}
+
+
+/**
+ * Валюты для переключателей в таблице на главной.
+ * Берём живой список из API (то, что реально торгуется у банков), а при его
+ * недоступности — статический список. URL-ы страниц валют (currency.php) и
+ * sitemap по-прежнему строятся от all_currency_codes(), здесь только таблица.
+ */
+function table_currency_codes(): array
+{
+    static $codes = null;
+    if ($codes !== null) return $codes;
+    $priority = ['USD','EUR','RUR','GBP','GEL','CHF','CNY','AED','KZT','CAD','AUD','JPY','XAU'];
+    $found = [];
+    $data = api_get('currencies.php', [], 3600);
+    if ($data && !empty($data['currencies']) && is_array($data['currencies'])) {
+        foreach ($data['currencies'] as $c) {
+            $c = strtoupper(trim((string)$c));
+            if (preg_match('/^[A-Z]{3}$/', $c) && $c !== 'AMD') $found[] = $c;
+        }
+    }
+    if (!$found) $found = all_currency_codes();
+    usort($found, function ($a, $b) use ($priority) {
+        $ia = array_search($a, $priority, true); $ib = array_search($b, $priority, true);
+        $ia = $ia === false ? 999 : $ia; $ib = $ib === false ? 999 : $ib;
+        return $ia <=> $ib ?: strcmp($a, $b);
+    });
+    return $codes = array_values(array_unique($found));
+}
+
+/**
+ * Параллельная загрузка нескольких эндпоинтов API с тем же файловым кэшем,
+ * что и api_get(). Холодный кэш = один круг запросов, а не N последовательных.
+ * $reqs: ключ => [эндпоинт, параметры]. Возвращает ключ => массив|null.
+ */
+function api_get_many(array $reqs, int $ttl = CACHE_TTL): array
+{
+    $out = [];
+    $pending = [];
+    foreach ($reqs as $key => $r) {
+        [$endpoint, $params] = $r;
+        $url = API_BASE . '/' . ltrim($endpoint, '/') . ($params ? '?' . http_build_query($params) : '');
+        $cacheFile = CACHE_DIR . '/' . md5($url) . '.json';
+        if (is_file($cacheFile) && (time() - filemtime($cacheFile)) < $ttl) {
+            $d = json_decode((string)file_get_contents($cacheFile), true);
+            if (is_array($d)) { $out[$key] = $d; continue; }
+        }
+        $pending[$key] = [$url, $cacheFile, $endpoint, $params];
+    }
+    if (!$pending) return $out;
+
+    if (!function_exists('curl_multi_init')) {
+        foreach ($pending as $key => [$url, $cacheFile, $endpoint, $params]) {
+            $out[$key] = api_get($endpoint, $params, $ttl);
+        }
+        return $out;
+    }
+
+    $mh = curl_multi_init();
+    $handles = [];
+    foreach ($pending as $key => [$url]) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_CONNECTTIMEOUT => 4,
+            CURLOPT_TIMEOUT => 8,
+            CURLOPT_USERAGENT => 'Poxarjeq.am/2.0',
+            CURLOPT_HTTPHEADER => ['Accept: application/json'],
+        ]);
+        curl_multi_add_handle($mh, $ch);
+        $handles[$key] = $ch;
+    }
+    do {
+        $status = curl_multi_exec($mh, $running);
+        if ($running) curl_multi_select($mh, 1.0);
+    } while ($running && $status === CURLM_OK);
+
+    foreach ($handles as $key => $ch) {
+        [$url, $cacheFile] = $pending[$key];
+        $raw = curl_multi_getcontent($ch);
+        $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $data = ($http === 200 && is_string($raw)) ? json_decode($raw, true) : null;
+        if (is_array($data)) {
+            @file_put_contents($cacheFile, $raw, LOCK_EX);
+        } elseif (is_file($cacheFile)) {
+            $data = json_decode((string)file_get_contents($cacheFile), true); // устаревший кэш лучше, чем пустота
+        }
+        $out[$key] = is_array($data) ? $data : null;
+        curl_multi_remove_handle($mh, $ch);
+        curl_close($ch);
+    }
+    curl_multi_close($mh);
+    return $out;
+}
+
+/**
+ * Матрица «банк × валюта» для главной: курсы по ВСЕМ валютам из API.
+ * @return array{banks: array<string,array>, updated_at: ?string, currencies: string[]}
+ */
+function get_rates_matrix(array $currencies): array
+{
+    $reqs = [];
+    foreach ($currencies as $c) $reqs[$c] = ['banks.php', ['cur' => $c]];
+    $res = api_get_many($reqs);
+
+    $banks = [];
+    $updated = null;
+    $have = [];
+    foreach ($currencies as $cur) {
+        $d = $res[$cur] ?? null;
+        if (!$d || empty($d['banks'])) continue;
+        $have[] = $cur;
+        if (!$updated && !empty($d['updated_at'])) $updated = $d['updated_at'];
+        foreach ($d['banks'] as $b) {
+            $code = (string)($b['code'] ?? '');
+            if ($code === '') continue;
+            if (!isset($banks[$code])) {
+                $banks[$code] = ['code' => $code, 'name' => $b['name'] ?? $code, 'logo' => $b['logo'] ?? '', 'rates' => []];
+            }
+            $buy = isset($b['buy']) ? (float)$b['buy'] : 0.0;
+            $sell = isset($b['sell']) ? (float)$b['sell'] : 0.0;
+            if ($buy > 0 && $sell > 0) $banks[$code]['rates'][$cur] = ['buy' => $buy, 'sell' => $sell];
+        }
+    }
+    return ['banks' => $banks, 'updated_at' => $updated, 'currencies' => $have];
+}
+
+/** Лучший курс покупки (max) и продажи (min) по валюте среди банков матрицы */
+function matrix_best(array $banks, string $cur): array
+{
+    $bb = null; $bs = null;
+    foreach ($banks as $code => $b) {
+        $r = $b['rates'][$cur] ?? null;
+        if (!$r) continue;
+        if ($bb === null || $r['buy'] > $bb['rate']) $bb = ['rate' => $r['buy'], 'code' => $code];
+        if ($bs === null || $r['sell'] < $bs['rate']) $bs = ['rate' => $r['sell'], 'code' => $code];
+    }
+    return ['buy' => $bb, 'sell' => $bs];
+}
+
+/** Курс без хвостовых нулей, но не меньше 2 знаков: 388.5 → 388.50, 4.2813 → 4.2813 */
+function fmt_rate(?float $n): string
+{
+    if ($n === null || $n <= 0) return '—';
+    $s = rtrim(rtrim(number_format($n, 4, '.', ''), '0'), '.');
+    $dec = strpos($s, '.') === false ? 0 : strlen($s) - strpos($s, '.') - 1;
+    return $dec < 2 ? number_format($n, 2, '.', '') : $s;
 }

@@ -26,3 +26,10 @@ Click bank name → `/ameriabank.php?lang=hy` (and other codes)
 - Background: white
 - Text: black / gray-900
 - Links & accents: #0078D4 (Microsoft blue)
+
+## Редизайн 2026 (стиль poxarjeq.com)
+- Стили: **локальная сборка Tailwind v4** (без cdn.tailwindcss.com). Исходник `css/input.css`, результат `css/output.css` (закоммичен, заливается по FTP).
+  Пересборка после правок вёрстки: `npm install && npm run build:css`.
+- Шрифт Inter (латиница + кириллица) лежит в `fonts/`, флаги валют в `assets/flags/{CODE}.png`.
+- Главная: курсы по **всем** валютам из API (`currencies.php` + `banks.php?cur=…`, параллельная загрузка, кэш 15 мин). У каждой колонки таблицы свой переключатель валюты, на телефоне — чипы валют и карточки банков, калькулятор работает для любой пары.
+- Подключение к MySQL — `config.db.php` (функция `db()`).
