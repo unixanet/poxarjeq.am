@@ -1,6 +1,6 @@
 # Լավագույն Փոխարժեք (Poxarjeq.am)
 
-> Independent aggregator of cash exchange rates of banks in Armenia. Compare buy and sell rates of USD, EUR, RUR, GBP, GEL and other currencies across 16 banks, see rate history charts, and find bank branches with addresses and phone numbers. Rates are refreshed about every 15 minutes. The site does not exchange money and does not give financial advice.
+> Independent aggregator of cash exchange rates of banks in Armenia. Compare buy and sell rates of USD, EUR, RUR, GBP, GEL and other currencies across 17 banks, see rate history charts, and find bank branches with addresses and phone numbers. Rates are refreshed about every 15 minutes. The site does not exchange money and does not give financial advice.
 
 Primary language: Armenian (hy). Russian and English versions are available on every page with the parameter `?lang=ru` or `?lang=en`.
 
@@ -23,10 +23,13 @@ Armenian summary: Անկախ ֆինանսական տվյալների ագրեգ�
 - [Ճապոնական իեն (JPY)](https://poxarjeq.am/currency.php?cur=JPY): Japanese Yen buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
 - [Ռուսական ռուբլի (RUR)](https://poxarjeq.am/currency.php?cur=RUR): Russian Ruble buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
 - [ԱՄՆ դոլար (USD)](https://poxarjeq.am/currency.php?cur=USD): US Dollar buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Ղազախական տենգե (KZT)](https://poxarjeq.am/currency.php?cur=KZT): Kazakhstani Tenge buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [Ոսկի (XAU)](https://poxarjeq.am/currency.php?cur=XAU): Gold buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
 
 ## Banks
 - [Ամերիաբանկ](https://poxarjeq.am/ameriabank): Ameriabank — current cash rates, contacts, 14 branches.
 - [ԱԿԲԱ Բանկ](https://poxarjeq.am/acba-bank): ACBA Bank — current cash rates, contacts, 12 branches.
+- [ԱյԴի Բանկ](https://poxarjeq.am/aydi-bank): IDBank — current cash rates, contacts, 5 branches.
 - [Արդշինբանկ](https://poxarjeq.am/ardshinbank): Ardshinbank — current cash rates, contacts, 14 branches.
 - [ՎՏԲ Հայաստան](https://poxarjeq.am/vtbhayastan-bank): VTB Armenia — current cash rates, contacts, 3 branches.
 - [Ինեկո Գործընկեր](https://poxarjeq.am/inekobank): Inecobank — current cash rates, contacts, 4 branches.
@@ -124,6 +127,20 @@ Branches:
 - Dilijan, Dilijan, 37/2 Myasnikyan St., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/dilijan
 - Artik, Artik, 28/1 Ankakhutyan St., +374 10 31 88 88 — https://poxarjeq.am/acba-bank/artik
 - Ashtarak, Ashtarak, Ashtarak, +374 10 31 88 88 — https://poxarjeq.am/acba-bank/ashtarak
+
+### ԱյԴի Բանկ / IDBank
+Page: https://poxarjeq.am/aydi-bank
+Legal name: ID Bank CJSC
+Head office: 13 Vardanants St., Yerevan
+Phone: +374 10 59 33 33
+Website: https://idbank.am
+IDBank is an innovative bank focused on digital services and fintech solutions. It is part of ID Group together with the Idram payment system.
+Branches:
+- Head Office, Yerevan, 13 Vardanants St., +374 10 59 33 33 — https://poxarjeq.am/aydi-bank/yerevan-head
+- Vanadzor, Vanadzor, 73 Tigran Mets Ave., +374 10 59 33 33 — https://poxarjeq.am/aydi-bank/vanadzor
+- Gyumri, Gyumri, Gyumri, +374 10 59 33 33 — https://poxarjeq.am/aydi-bank/gyumri
+- Arabkir, Yerevan, 56/162 Komitas Ave., +374 10 59 33 33 — https://poxarjeq.am/aydi-bank/yerevan-arabkir
+- Centre, Yerevan, 6 Northern Ave., +374 10 59 33 33 — https://poxarjeq.am/aydi-bank/yerevan-centre
 
 ### Արդշինբանկ / Ardshinbank
 Page: https://poxarjeq.am/ardshinbank

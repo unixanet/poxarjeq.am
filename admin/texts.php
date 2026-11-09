@@ -104,7 +104,14 @@ if ($g === ''):
                     <div class="min-w-0">
                         <?= adm_field($idb . '_' . $l, "t[$k][$l]", '<span class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider"><span>' . e($ln) . '</span>' . ($isCustom ? '<span class="rounded-full bg-blue-100 px-2 py-0.5 text-blue-800">изменено</span>' : '') . '</span>', $val, $m['long'], $m['long'] ? 4 : 2,
                             ($isTitle || $isDesc) ? 'data-seo="' . ($isTitle ? 'title' : 'desc') . '"' : '', $dflt) ?>
-                        <?php if ($isTitle || $isDesc): ?><p class="mt-1 text-xs text-slate-600" data-counter-for="<?= e($idb . '_' . $l) ?>"></p><?php endif; ?>
+                        <?php if ($isTitle || $isDesc):
+                            $keepLang = $lang; $lang = $l;    // подставляем плейсхолдеры на языке поля
+                            $sample = cms_fill($val, ['name' => currency_name('USD', $l), 'code' => 'USD', 'bank' => cms_default('site_name', $l) ? ($l === 'hy' ? 'Ամերիաբանկ' : ($l === 'ru' ? 'Америабанк' : 'Ameriabank')) : '', 'branch' => '…', 'city' => '…', 'address' => '…', 'phone' => '…']);
+                            $lang = $keepLang;
+                        ?>
+                        <p class="mt-1 text-xs text-slate-600" data-counter-for="<?= e($idb . '_' . $l) ?>"></p>
+                        <p class="mt-1 break-words rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-black"><span class="font-bold">Пример в поиске:</span> <?= e(trim(preg_replace('/\s+/u', ' ', $sample))) ?></p>
+                        <?php endif; ?>
                     </div>
                     <?php endforeach; ?>
                 </div>
