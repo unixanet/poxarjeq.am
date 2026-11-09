@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/bank_store.php';
+require_once __DIR__ . '/cms.php';
+require_once __DIR__ . '/ui.php';
 
 function detect_lang(): string
 {
@@ -81,13 +83,6 @@ function load_lang(string $lang): array
     return require __DIR__ . '/../lang/hy.php';
 }
 
-function t(string $key, ?array $dict = null): string
-{
-    global $L;
-    $dict = $dict ?? $L;
-    return $dict[$key] ?? $key;
-}
-
 function lang_url(string $lang): string
 {
     return lang_switch_url($lang);
@@ -141,7 +136,7 @@ function get_rates_summary(): ?array { return api_get('rates.php'); }
 function get_banks_for_currency(string $cur = 'USD'): ?array { return api_get('banks.php', ['cur' => strtoupper($cur)]); }
 function get_bank(string $code): ?array { return api_get('bank.php', ['code' => $code]); }
 function get_banks_list(): ?array { return api_get('list.php'); }
-function get_history(string $cur = 'USD', int $days = 30): ?array { return api_get('history.php', ['currency' => strtoupper($cur), 'days' => $days]); }
+function get_history(string $cur = 'USD', int $days = 30): ?array { return api_get('history.php', ['cur' => strtoupper($cur), 'days' => $days]); }
 function get_currencies(): ?array { return api_get('currencies.php'); }
 
 function currency_name(string $code, string $lang = 'hy'): string
@@ -241,7 +236,12 @@ function get_bank_meta(string $code): ?array
     }
     if (!isset($data[$code]) && !bank_override($code)) return null;
     $meta = bank_apply_overrides($code, $data[$code] ?? null);
-    static $branches = null;
+    $db = bank_branches_from_db();
+    if ($db !== null) {                       // филиалы ведутся в админке
+        if (!empty($db[$code])) $meta['branches'] = $db[$code];
+        return $meta;
+    }
+    static $branches = null;                  // запасной вариант: статичный файл
     if ($branches === null) {
         $bf = __DIR__ . "/branches_data.php";
         $branches = file_exists($bf) ? require $bf : [];

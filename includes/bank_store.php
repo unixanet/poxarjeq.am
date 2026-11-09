@@ -44,6 +44,7 @@ function bank_overrides(): array
 function bank_store_clear_cache(): void
 {
     @unlink(bank_store_cache_file());
+    if (function_exists('pxq_cache_clear')) pxq_cache_clear();
 }
 
 function bank_override(string $code): ?array
@@ -95,4 +96,37 @@ function bank_apply_overrides(string $code, ?array $meta): ?array
         if (($o[$k] ?? '') !== '') $meta[$k] = $o[$k];
     }
     return $meta;
+}
+
+
+/**
+ * Филиалы из админки в том же виде, что и в branches_data.php:
+ * [bank_code => [ ['slug','city'=>[hy,ru,en],'name'=>[...],'address'=>[...],'phone'], ... ]].
+ * null — таблица недоступна или ещё пуста (тогда используется статичный файл).
+ */
+function bank_branches_from_db(): ?array
+{
+    $r = pxq_cache('branches', function (PDO $pdo) {
+        $rows = $pdo->query('SELECT * FROM branches WHERE is_active = 1 ORDER BY bank_code, sort, id')->fetchAll();
+        $total = (int)$pdo->query('SELECT COUNT(*) FROM branches')->fetchColumn();
+        if ($total === 0) return ['seeded' => false, 'data' => []];
+        $out = [];
+        foreach ($rows as $b) {
+            $out[$b['bank_code']][] = [
+                'slug' => $b['slug'], 'phone' => $b['phone'],
+                'city' => ['hy' => $b['city_hy'], 'ru' => $b['city_ru'] ?: $b['city_hy'], 'en' => $b['city_en'] ?: $b['city_hy']],
+                'name' => ['hy' => $b['name_hy'], 'ru' => $b['name_ru'] ?: $b['name_hy'], 'en' => $b['name_en'] ?: $b['name_hy']],
+                'address' => ['hy' => $b['address_hy'], 'ru' => $b['address_ru'] ?: $b['address_hy'], 'en' => $b['address_en'] ?: $b['address_hy']],
+            ];
+        }
+        return ['seeded' => true, 'data' => $out];
+    });
+    return (is_array($r) && !empty($r['seeded'])) ? $r['data'] : null;
+}
+
+/** Свой заголовок/описание страницы банка из админки (пусто — шаблон seo.bank.*) */
+function bank_seo_override(string $code, string $lang): array
+{
+    $o = bank_override($code);
+    return [trim((string)($o['seo_title_' . $lang] ?? '')), trim((string)($o['seo_description_' . $lang] ?? ''))];
 }

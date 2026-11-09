@@ -2,53 +2,65 @@
 require_once __DIR__ . '/includes/functions.php';
 $lang = detect_lang();
 $L = load_lang($lang);
-$pageTitle = t('contact') . ' | ' . t('site_name');
-$pageDescription = t('contact') . ' — ' . t('site_name');
+[$pageTitle, $pageDescription] = seo_meta('contact');
 $pageCanonical = SITE_URL . '/contact.php?lang=' . $lang;
 $active = 'contact';
-$msg = '';
+$crumbs = [[t('home'), '/'], [t('contact'), null]];
+
+$msg = ''; $msgOk = false;
+$f = ['name' => '', 'email' => '', 'message' => ''];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $body = trim($_POST['message'] ?? '');
-    if (empty($_POST['website']) && $name && filter_var($email, FILTER_VALIDATE_EMAIL) && strlen($body) > 5) {
-        $msg = $lang === 'en' ? 'Thank you. Message received (demo mode).' : ($lang === 'ru' ? 'Спасибо. Сообщение принято (демо).' : 'Շնորհակալություն։ Հաղորդագրությունն ընդունված է (դեմո)։');
+    $f['name'] = mb_substr(trim((string)($_POST['name'] ?? '')), 0, 190);
+    $f['email'] = mb_substr(trim((string)($_POST['email'] ?? '')), 0, 190);
+    $f['message'] = mb_substr(trim((string)($_POST['message'] ?? '')), 0, 4000);
+    if (!empty($_POST['website'])) {                       // ловушка для ботов
+        $msg = t('contact.ok'); $msgOk = true;
+    } elseif ($f['name'] !== '' && filter_var($f['email'], FILTER_VALIDATE_EMAIL) && mb_strlen($f['message']) > 5) {
+        try {
+            require_once __DIR__ . '/config.db.php';
+            $pdo = db();
+            $ip = substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45);
+            $st = $pdo->prepare('SELECT COUNT(*) FROM contact_messages WHERE ip = ? AND created_at > (NOW() - INTERVAL 1 HOUR)');
+            $st->execute([$ip]);
+            if ((int)$st->fetchColumn() >= 5) {
+                $msg = t('contact.err');
+            } else {
+                $pdo->prepare('INSERT INTO contact_messages (name, email, message, lang, ip) VALUES (?,?,?,?,?)')->execute([$f['name'], $f['email'], $f['message'], $lang, $ip]);
+                $msg = t('contact.ok'); $msgOk = true; $f = ['name' => '', 'email' => '', 'message' => ''];
+            }
+        } catch (Throwable $e) {
+            $msg = t('contact.err');
+        }
     } else {
-        $msg = $lang === 'en' ? 'Please fill all fields correctly.' : ($lang === 'ru' ? 'Заполните все поля корректно.' : 'Լրացրեք բոլոր դաշտերը ճիշտ։');
+        $msg = t('contact.err');
     }
 }
+$inp = 'mt-1.5 block min-h-[48px] w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-black outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
 require __DIR__ . '/includes/header.php';
 ?>
-<nav class="text-sm text-black mb-6">
-    <a href="/?lang=<?= e($lang) ?>" class="hover:text-brand"><?= e(t('home')) ?></a>
-    <span class="mx-2">/</span>
-    <span class="text-black"><?= e(t('contact')) ?></span>
-</nav>
-<h1 class="text-2xl sm:text-3xl font-bold text-black mb-6"><?= e(t('contact')) ?></h1>
-<div class="grid md:grid-cols-2 gap-8">
-    <div class="bg-white border border-black/10 rounded-2xl p-6">
-        <h2 class="font-bold text-black mb-4"><?= e(t('contacts')) ?></h2>
-        <p class="text-sm text-black mb-2"><strong><?= e(t('email')) ?>:</strong> <a href="mailto:<?= e(CONTACT_EMAIL) ?>" class="text-brand"><?= e(CONTACT_EMAIL) ?></a></p>
-        <p class="text-sm text-black"><strong><?= e(t('phone')) ?>:</strong> <?= e(CONTACT_PHONE) ?></p>
-    </div>
-    <div class="bg-white border border-black/10 rounded-2xl p-6">
-        <?php if ($msg): ?><p class="mb-4 text-sm bg-brand-light text-brand px-3 py-2 rounded-lg"><?= e($msg) ?></p><?php endif; ?>
+<?= ui_breadcrumbs($crumbs) ?>
+<h1 class="mb-6 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl"><?= e(t('contact')) ?></h1>
+<div class="grid items-start gap-6 md:grid-cols-2">
+    <section class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-8" aria-labelledby="ct-h">
+        <h2 id="ct-h" class="mb-4 text-xl font-black text-slate-900"><?= e(t('contacts')) ?></h2>
+        <dl class="space-y-4">
+            <div><dt class="text-[11px] font-bold uppercase tracking-wider"><?= e(t('email')) ?></dt><dd class="mt-0.5 font-semibold"><?= ui_link('mailto:' . CONTACT_EMAIL, CONTACT_EMAIL, t('email') . ': ' . CONTACT_EMAIL, 'no-underline hover:underline') ?></dd></div>
+            <div><dt class="text-[11px] font-bold uppercase tracking-wider"><?= e(t('phone')) ?></dt><dd class="mt-0.5 font-semibold"><?= ui_link('tel:' . preg_replace('/\s+/', '', CONTACT_PHONE), CONTACT_PHONE, t('phone') . ': ' . CONTACT_PHONE, 'no-underline hover:underline') ?></dd></div>
+        </dl>
+    </section>
+    <section class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-8" aria-labelledby="fm-h">
+        <h2 id="fm-h" class="sr-only"><?= e(t('contact.send')) ?></h2>
+        <?php if ($msg): ?><p role="status" class="mb-4 rounded-xl px-4 py-3 text-sm font-semibold <?= $msgOk ? 'bg-green-50 text-green-900' : 'bg-red-50 text-red-900' ?>"><?= e($msg) ?></p><?php endif; ?>
         <form method="post" class="space-y-4">
-            <div>
-                <label class="block text-xs font-medium text-black mb-1">Name</label>
-                <input type="text" name="name" required class="w-full border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-black mb-1">Email</label>
-                <input type="email" name="email" required class="w-full border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-black mb-1">Message</label>
-                <textarea name="message" rows="4" required class="w-full border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"></textarea>
-            </div>
-            <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
-            <button type="submit" class="bg-brand hover:bg-brand-hover text-white font-medium px-5 py-2.5 rounded-lg text-sm transition"><?= e(t('contact')) ?></button>
+            <label class="block text-sm font-bold" for="f-name"><?= e(t('contact.name')) ?><input id="f-name" type="text" name="name" required autocomplete="name" value="<?= e($f['name']) ?>" class="<?= $inp ?>"></label>
+            <label class="block text-sm font-bold" for="f-email"><?= e(t('email')) ?><input id="f-email" type="email" name="email" required autocomplete="email" value="<?= e($f['email']) ?>" class="<?= $inp ?>"></label>
+            <label class="block text-sm font-bold" for="f-msg"><?= e(t('contact.message')) ?><textarea id="f-msg" name="message" rows="5" required class="mt-1.5 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-black outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"><?= e($f['message']) ?></textarea></label>
+            <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button type="submit" class="min-h-[50px] w-full rounded-[14px] bg-blue-600 px-8 text-base font-bold text-white shadow-[0_6px_16px_rgba(37,99,235,.28)] hover:bg-blue-700 sm:w-auto"><?= e(t('contact.send')) ?></button>
         </form>
-    </div>
+    </section>
 </div>
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php
+echo ld_script([['@type' => 'ContactPage', '@id' => $pageCanonical . '#webpage', 'url' => $pageCanonical, 'name' => $pageTitle, 'description' => $pageDescription, 'inLanguage' => $lang,
+    'isPartOf' => ['@id' => rtrim(SITE_URL, '/') . '/#website'], 'breadcrumb' => ['@id' => $pageCanonical . '#breadcrumb']], array_merge(ld_breadcrumbs($crumbs), ['@id' => $pageCanonical . '#breadcrumb'])]);
+require __DIR__ . '/includes/footer.php';

@@ -20,6 +20,8 @@ foreach ($matrix['banks'] as $code => $b) {
         'name'    => bank_display_name($code, $lang, $b['name'] ?? null),
         'logo'    => bank_logo_url($code, $b['logo'] ?? ''),
         'url'     => bank_page_url($code),
+        'title'   => tv('common.link_bank', ['bank' => bank_display_name($code, $lang, $b['name'] ?? null)]),
+        'alt'     => tv('common.logo_alt', ['bank' => bank_display_name($code, $lang, $b['name'] ?? null)]),
         'partner' => bank_is_partner($code),
         'order'   => bank_partner_order($code),
         'rates'   => $b['rates'],
@@ -44,7 +46,8 @@ foreach ($have as $c) {
 
 $flags = [];
 $names = [];
-foreach (array_merge($have, ['AMD']) as $c) { $flags[$c] = currency_flag($c); $names[$c] = currency_name($c, $lang); }
+$flagAlt = [];
+foreach (array_merge($have, ['AMD']) as $c) { $flags[$c] = currency_flag($c); $names[$c] = currency_name($c, $lang); $flagAlt[$c] = tv('common.flag_alt', ['code' => $c]); }
 
 $jsData = [
     'banks'   => array_values($banks),
@@ -52,13 +55,13 @@ $jsData = [
     'cols'    => $cols,
     'best'    => $best,
     'flags'   => $flags,
+    'flagAlt' => $flagAlt,
     'names'   => $names,
     'noData'  => t('no_data'),
     'i18n'    => ['partner' => t('partner'), 'buy' => t('buy'), 'sell' => t('sell'), 'best' => t('best_buy'), 'chooseCurrency' => t('choose_currency'), 'bestRate' => t('calc_best')],
 ];
 
-$pageTitle = t('today_rates') . ' | ' . t('site_name');
-$pageDescription = t('hero_sub');
+[$pageTitle, $pageDescription] = seo_meta('home');
 $pageCanonical = rtrim(SITE_URL, '/') . '/';
 $active = 'home';
 $fullWidth = true;
@@ -72,8 +75,8 @@ function idx_chevron(string $cls = 'right-0'): string
 function idx_row(array $bank, array $cols, array $best, bool $first): string
 {
     $h = '<tr class="border-t border-slate-100 hover:bg-blue-50/40 transition-colors">';
-    $h .= '<td class="sticky left-0 z-10 bg-white px-4 sm:px-5 py-3 text-left"><a href="' . e($bank['url']) . '" class="flex items-center gap-3 no-underline group">';
-    if ($bank['logo']) $h .= '<img src="' . e($bank['logo']) . '" alt="" width="44" height="44" loading="lazy" class="w-11 h-11 rounded-[10px] object-contain shrink-0">';
+    $h .= '<td class="sticky left-0 z-10 bg-white px-4 sm:px-5 py-3 text-left"><a href="' . e($bank['url']) . '" title="' . e($bank['title']) . '" class="flex items-center gap-3 no-underline group">';
+    if ($bank['logo']) $h .= '<img src="' . e($bank['logo']) . '" alt="' . e($bank['alt']) . '" width="44" height="44" loading="lazy" class="w-11 h-11 rounded-[10px] object-contain shrink-0">';
     $h .= '<span class="font-bold text-slate-900 group-hover:text-blue-600 leading-tight">' . e($bank['name']) . ($bank['partner'] ? '<span class="mt-1 block w-fit rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' . e(t('partner')) . '</span>' : '') . '</span></a></td>';
     foreach ($cols as $c) {
         $r = $bank['rates'][$c] ?? null;
@@ -89,8 +92,8 @@ function idx_card(array $bank, string $cur, array $best): string
     $r = $bank['rates'][$cur] ?? null;
     if (!$r) return '';
     $isBest = !empty($best[$cur]['buy']) && abs($r['buy'] - $best[$cur]['buy']['rate']) < 0.00001;
-    $h = '<a href="' . e($bank['url']) . '" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]">';
-    $h .= $bank['logo'] ? '<img src="' . e($bank['logo']) . '" alt="" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-xl object-contain shrink-0">' : '<span class="w-12 h-12 shrink-0"></span>';
+    $h = '<a href="' . e($bank['url']) . '" title="' . e($bank['title']) . '" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]">';
+    $h .= $bank['logo'] ? '<img src="' . e($bank['logo']) . '" alt="' . e($bank['alt']) . '" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-xl object-contain shrink-0">' : '<span class="w-12 h-12 shrink-0"></span>';
     $h .= '<span class="min-w-0 flex-1"><span class="block font-bold text-slate-900 leading-tight truncate">' . e($bank['name']) . '</span>';
     if ($bank['partner']) $h .= '<span class="mt-1 mr-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' . e(t('partner')) . '</span>';
     if ($isBest) $h .= '<span class="mt-1 inline-block rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-green-600">' . e(t('best_buy')) . '</span>';
@@ -122,14 +125,14 @@ require __DIR__ . '/includes/header.php';
             <h1 class="mt-4 sm:mt-5 max-w-2xl text-[32px] sm:text-5xl lg:text-[54px] font-black leading-[1.08] tracking-tight text-slate-900 text-balance"><?= e(t('hero_title')) ?></h1>
             <p class="mt-4 max-w-xl text-base sm:text-lg leading-relaxed text-black"><?= e(t('hero_sub')) ?></p>
             <div class="mt-6 flex flex-wrap gap-3">
-                <a href="#rates" class="inline-flex items-center justify-center gap-2 min-h-[48px] rounded-[14px] bg-blue-600 px-6 font-bold no-underline shadow-[0_6px_16px_rgba(37,99,235,.28)] hover:bg-blue-700 text-white"><?= e(t('cta_banks')) ?> <span aria-hidden="true">→</span></a>
-                <a href="#calc" class="inline-flex items-center justify-center min-h-[48px] rounded-[14px] border border-slate-200 bg-white px-6 font-bold no-underline hover:border-blue-300"><?= e(t('calc_btn')) ?></a>
+                <a href="#rates" title="<?= e(t('compare_banks')) ?>" class="inline-flex items-center justify-center gap-2 min-h-[48px] rounded-[14px] bg-blue-600 px-6 font-bold no-underline shadow-[0_6px_16px_rgba(37,99,235,.28)] hover:bg-blue-700 text-white"><?= e(t('cta_banks')) ?> <span aria-hidden="true">→</span></a>
+                <a href="#calc" title="<?= e(t('calc_title')) ?>" class="inline-flex items-center justify-center min-h-[48px] rounded-[14px] border border-slate-200 bg-white px-6 font-bold no-underline hover:border-blue-300"><?= e(t('calc_btn')) ?></a>
             </div>
             <?php if ($heroCards): ?>
             <div class="mt-7 sm:mt-9 grid grid-cols-3 gap-2.5 sm:gap-3.5">
                 <?php foreach ($heroCards as $c): $bb = $best[$c]['buy']; ?>
-                <a href="/currency.php?cur=<?= e($c) ?>" class="block rounded-[18px] sm:rounded-[20px] border border-slate-100 bg-white p-3 sm:p-4 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(37,99,235,.14)]">
-                    <span class="flex items-center gap-2 text-[13px] sm:text-sm font-extrabold text-slate-900"><img src="<?= e($flags[$c]) ?>" alt="" width="28" height="28" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover shadow"><?= e($c) ?></span>
+                <a href="/currency.php?cur=<?= e($c) ?>" title="<?= e(tv('common.link_currency', ['name' => $names[$c], 'code' => $c])) ?>" class="block rounded-[18px] sm:rounded-[20px] border border-slate-100 bg-white p-3 sm:p-4 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(37,99,235,.14)]">
+                    <span class="flex items-center gap-2 text-[13px] sm:text-sm font-extrabold text-slate-900"><img src="<?= e($flags[$c]) ?>" alt="<?= e($flagAlt[$c]) ?>" width="28" height="28" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover shadow"><?= e($c) ?></span>
                     <span class="mt-1.5 block text-[22px] sm:text-[28px] font-black tracking-tight text-slate-900 tabular-nums leading-none"><?= e(fmt_rate($bb['rate'])) ?></span>
                     <span class="mt-1.5 block text-[11px] sm:text-xs leading-tight text-black"><?= e(t('best_buy')) ?> · <?= e($bb['name']) ?></span>
                 </a>
@@ -149,7 +152,7 @@ require __DIR__ . '/includes/header.php';
                 <div class="mt-1.5 flex items-center justify-between gap-3">
                     <input type="number" inputmode="decimal" min="0" id="calc-from-val" value="1000" class="min-w-0 w-full bg-transparent p-0 text-[28px] sm:text-3xl font-black text-slate-900 outline-none border-0 tabular-nums">
                     <div class="flex shrink-0 items-center gap-2 rounded-2xl border border-slate-100 bg-white px-2.5 py-2 shadow-sm">
-                        <img id="calc-from-flag" src="<?= e($flags[$calcFrom] ?? '') ?>" alt="" width="28" height="28" class="h-7 w-7 rounded-full object-cover">
+                        <img id="calc-from-flag" src="<?= e($flags[$calcFrom] ?? '') ?>" alt="<?= e($flagAlt[$calcFrom] ?? '') ?>" width="28" height="28" class="h-7 w-7 rounded-full object-cover">
                         <span class="relative inline-flex items-center"><select id="calc-from-curr" aria-label="<?= e(t('calc_give')) ?>" class="appearance-none bg-transparent pr-5 text-[15px] font-extrabold uppercase cursor-pointer outline-none">
                             <?php foreach ($have as $c): ?><option value="<?= e($c) ?>" <?= $c === $calcFrom ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?>
                             <option value="AMD">AMD</option>
@@ -167,7 +170,7 @@ require __DIR__ . '/includes/header.php';
                 <div class="mt-1.5 flex items-center justify-between gap-3">
                     <output id="calc-to-val" class="min-w-0 w-full truncate text-[28px] sm:text-3xl font-black text-slate-900 tabular-nums"><?= e($calcInit) ?></output>
                     <div class="flex shrink-0 items-center gap-2 rounded-2xl border border-slate-100 bg-white px-2.5 py-2 shadow-sm">
-                        <img id="calc-to-flag" src="<?= e($flags['AMD']) ?>" alt="" width="28" height="28" class="h-7 w-7 rounded-full object-cover">
+                        <img id="calc-to-flag" src="<?= e($flags['AMD']) ?>" alt="<?= e($flagAlt['AMD']) ?>" width="28" height="28" class="h-7 w-7 rounded-full object-cover">
                         <span class="relative inline-flex items-center"><select id="calc-to-curr" aria-label="<?= e(t('calc_get')) ?>" class="appearance-none bg-transparent pr-5 text-[15px] font-extrabold uppercase cursor-pointer outline-none">
                             <option value="AMD" selected>AMD</option>
                             <?php foreach ($have as $c): ?><option value="<?= e($c) ?>"><?= e($c) ?></option><?php endforeach; ?>
@@ -191,8 +194,8 @@ require __DIR__ . '/includes/header.php';
     <div class="md:hidden">
         <div id="m-chips" class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="<?= e(t('choose_currency')) ?>">
             <?php foreach ($have as $c): $on = ($c === $mobileCur); ?>
-            <button type="button" data-cur="<?= e($c) ?>" aria-pressed="<?= $on ? 'true' : 'false' ?>" class="m-chip flex shrink-0 items-center gap-2 min-h-[44px] rounded-xl border px-3.5 text-sm font-bold <?= $on ? 'border-blue-600 bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,.25)]' : 'border-slate-200 bg-white text-black' ?>">
-                <img src="<?= e($flags[$c]) ?>" alt="" width="22" height="22" class="h-[22px] w-[22px] rounded-full object-cover"><?= e($c) ?>
+            <button type="button" data-cur="<?= e($c) ?>" aria-pressed="<?= $on ? 'true' : 'false' ?>" title="<?= e(tv('common.link_currency', ['name' => $names[$c], 'code' => $c])) ?>" class="m-chip flex shrink-0 items-center gap-2 min-h-[44px] rounded-xl border px-3.5 text-sm font-bold <?= $on ? 'border-blue-600 bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,.25)]' : 'border-slate-200 bg-white text-black' ?>">
+                <img src="<?= e($flags[$c]) ?>" alt="<?= e($flagAlt[$c]) ?>" width="22" height="22" class="h-[22px] w-[22px] rounded-full object-cover"><?= e($c) ?>
             </button>
             <?php endforeach; ?>
         </div>
@@ -211,7 +214,7 @@ require __DIR__ . '/includes/header.php';
                         <?php foreach ($cols as $i => $c): ?>
                         <th scope="colgroup" colspan="2" class="border-l border-slate-200 px-2 py-3 text-center" data-col="<?= (int)$i ?>">
                             <span class="flex flex-col items-center gap-1.5">
-                                <img src="<?= e($flags[$c]) ?>" alt="" width="32" height="32" class="col-flag h-8 w-8 rounded-full object-cover shadow" data-col="<?= (int)$i ?>">
+                                <img src="<?= e($flags[$c]) ?>" alt="<?= e($flagAlt[$c]) ?>" width="32" height="32" class="col-flag h-8 w-8 rounded-full object-cover shadow" data-col="<?= (int)$i ?>">
                                 <span class="relative inline-flex items-center"><select class="col-select appearance-none rounded-lg border border-slate-200 bg-white py-1.5 pl-3 pr-7 text-sm font-extrabold uppercase cursor-pointer shadow-sm hover:border-blue-400 focus:border-blue-500 outline-none" data-col="<?= (int)$i ?>" aria-label="<?= e(t('choose_currency')) ?> <?= (int)$i + 1 ?>">
                                     <?php foreach ($have as $opt): ?><option value="<?= e($opt) ?>" <?= $opt === $c ? 'selected' : '' ?>><?= e($opt) ?></option><?php endforeach; ?>
                                 </select><?= idx_chevron('right-2.5') ?></span>
@@ -266,8 +269,8 @@ require __DIR__ . '/includes/header.php';
     }
     var body = document.getElementById('rates-body');
     function rowHtml(b) {
-        var h = '<tr class="border-t border-slate-100 hover:bg-blue-50/40 transition-colors"><td class="sticky left-0 z-10 bg-white px-4 sm:px-5 py-3 text-left"><a href="' + esc(b.url) + '" class="flex items-center gap-3 no-underline group">';
-        if (b.logo) h += '<img src="' + esc(b.logo) + '" alt="" width="44" height="44" loading="lazy" class="w-11 h-11 rounded-[10px] object-contain shrink-0">';
+        var h = '<tr class="border-t border-slate-100 hover:bg-blue-50/40 transition-colors"><td class="sticky left-0 z-10 bg-white px-4 sm:px-5 py-3 text-left"><a href="' + esc(b.url) + '" title="' + esc(b.title) + '" class="flex items-center gap-3 no-underline group">';
+        if (b.logo) h += '<img src="' + esc(b.logo) + '" alt="' + esc(b.alt) + '" width="44" height="44" loading="lazy" class="w-11 h-11 rounded-[10px] object-contain shrink-0">';
         h += '<span class="font-bold text-slate-900 group-hover:text-blue-600 leading-tight">' + esc(b.name) + (b.partner ? '<span class="mt-1 block w-fit rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' + esc(D.i18n.partner) + '</span>' : '') + '</span></a></td>';
         cols.forEach(function (c) {
             var r = b.rates && b.rates[c];
@@ -285,7 +288,7 @@ require __DIR__ . '/includes/header.php';
             var i = +this.getAttribute('data-col');
             cols[i] = this.value;
             var img = document.querySelector('.col-flag[data-col="' + i + '"]');
-            if (img) img.src = D.flags[this.value] || '';
+            if (img) { img.src = D.flags[this.value] || ''; img.alt = D.flagAlt[this.value] || ''; }
             renderTable();
             safeSet('pxq_cols', JSON.stringify(cols));
         });
@@ -296,8 +299,8 @@ require __DIR__ . '/includes/header.php';
     function cardHtml(b) {
         var r = b.rates && b.rates[mobileCur]; if (!r) return '';
         var best = isBest(mobileCur, r.buy);
-        return '<a href="' + esc(b.url) + '" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]">' +
-            (b.logo ? '<img src="' + esc(b.logo) + '" alt="" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-xl object-contain shrink-0">' : '<span class="w-12 h-12 shrink-0"></span>') +
+        return '<a href="' + esc(b.url) + '" title="' + esc(b.title) + '" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]">' +
+            (b.logo ? '<img src="' + esc(b.logo) + '" alt="' + esc(b.alt) + '" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-xl object-contain shrink-0">' : '<span class="w-12 h-12 shrink-0"></span>') +
             '<span class="min-w-0 flex-1"><span class="block font-bold text-slate-900 leading-tight truncate">' + esc(b.name) + '</span>' +
             (b.partner ? '<span class="mt-1 mr-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' + esc(D.i18n.partner) + '</span>' : '') + (best ? '<span class="mt-1 inline-block rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-green-600">' + esc(D.i18n.best) + '</span>' : '') + '</span>' +
             '<span class="grid grid-cols-2 gap-3 text-right shrink-0"><span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' + esc(D.i18n.buy) + '</span><span class="block text-[17px] font-extrabold tabular-nums ' + (best ? 'text-green-600' : 'text-slate-900') + '">' + fmt(r.buy) + '</span></span>' +
@@ -327,7 +330,7 @@ require __DIR__ . '/includes/header.php';
     function sellRate(c) { return D.best[c] && D.best[c].sell ? D.best[c].sell.rate : null; } // банк продаёт вам валюту
     function calc() {
         var a = parseFloat(fromV.value), f = fromC.value, t = toC.value;
-        fromF.src = D.flags[f] || ''; toF.src = D.flags[t] || '';
+        fromF.src = D.flags[f] || ''; toF.src = D.flags[t] || ''; fromF.alt = D.flagAlt[f] || ''; toF.alt = D.flagAlt[t] || '';
         if (!(a >= 0) || isNaN(a)) { toV.textContent = '0'; note.textContent = ''; return; }
         var out = null, info = '';
         if (f === t) { out = a; }
@@ -349,7 +352,7 @@ require __DIR__ . '/includes/header.php';
         var sc = JSON.parse(safeGet('pxq_cols') || 'null');
         if (Array.isArray(sc) && sc.length === cols.length && sc.every(function (c) { return D.cur.indexOf(c) >= 0; })) {
             cols = sc;
-            document.querySelectorAll('.col-select').forEach(function (s) { var i = +s.getAttribute('data-col'); s.value = cols[i]; var im = document.querySelector('.col-flag[data-col="' + i + '"]'); if (im) im.src = D.flags[cols[i]] || ''; });
+            document.querySelectorAll('.col-select').forEach(function (s) { var i = +s.getAttribute('data-col'); s.value = cols[i]; var im = document.querySelector('.col-flag[data-col="' + i + '"]'); if (im) { im.src = D.flags[cols[i]] || ''; im.alt = D.flagAlt[cols[i]] || ''; } });
             renderTable();
         }
         var mc = safeGet('pxq_mcur');
@@ -362,47 +365,12 @@ require __DIR__ . '/includes/header.php';
 <!-- ===== Текст для читателя и поисковиков (без изменений по смыслу) ===== -->
 <section class="mx-auto max-w-7xl px-4 sm:px-7 pt-10 sm:pt-14 grid gap-5 lg:grid-cols-2">
     <article class="rounded-3xl border border-slate-100 bg-white p-5 sm:p-8 shadow-[0_10px_40px_rgba(15,23,42,.06)]">
-        <h2 class="mb-4 text-xl font-black text-slate-900">
-            <?php if ($lang==='hy'): ?>Ինչպես փոխանակել արժույթ Հայաստանում անվտանգ
-            <?php elseif ($lang==='ru'): ?>Как безопасно обменять валюту в Армении
-            <?php else: ?>How to exchange currency safely in Armenia
-            <?php endif; ?>
-        </h2>
-        <div class="space-y-3 text-[15px] leading-relaxed text-black">
-            <?php if ($lang==='hy'): ?>
-            <p>Հայաստանում արժույթի փոխանակումը կատարվում է առևտրային բանկերում և լիցենզավորված փոխանակման կետերում։ Լավագույն փոխարժեք գտնելու համար համեմատեք մի քանի բանկերի գնման և վաճառքի կուրսերը։</p>
-            <p>Մեր կայքը հավաքում է բանկերի պաշտոնական կանխիկ փոխարժեքները և թարմացնում է դրանք մոտավորապես յուրաքանչյուր 15 րոպեն մեկ։ Աղյուսակում կարող եք փոխել արժույթները dropdown-ով։</p>
-            <p><strong>Անվտանգության խորհուրդներ.</strong> Փոխանակեք միայն բանկում, պահանջեք անդորրագիր, ստուգեք գումարը։ Մեծ գումարների դեպքում նախապես զանգահարեք բանկ։</p>
-            <?php elseif ($lang==='ru'): ?>
-            <p>В Армении обмен валюты проводится в коммерческих банках и лицензированных пунктах. Сравнивайте покупку и продажу в нескольких банках.</p>
-            <p>Сайт собирает официальные наличные курсы банков и обновляет их примерно каждые 15 минут. В таблице можно менять валюты через выпадающий список.</p>
-            <p><strong>Советы по безопасности:</strong> Обменивайте только в банке, требуйте чек, проверяйте сумму. При крупных суммах заранее позвоните в банк.</p>
-            <?php else: ?>
-            <p>In Armenia, exchange currency at commercial banks and licensed offices. Compare buy and sell rates across banks.</p>
-            <p>This site aggregates official cash rates and updates about every 15 minutes. Use the dropdowns in the table to switch currencies.</p>
-            <p><strong>Safety tips:</strong> Exchange only at a bank, take a receipt, check the amount. For large sums, call the bank ahead.</p>
-            <?php endif; ?>
-        </div>
+        <h2 class="mb-4 text-xl font-black text-slate-900"><?= e(t('home.art1.title')) ?></h2>
+        <div class="space-y-3 text-[15px] leading-relaxed text-black"><?= tp('home.art1.p1') . tp('home.art1.p2') . tp('home.art1.p3') ?></div>
     </article>
     <article class="rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-8">
-        <h2 class="mb-4 text-xl font-black text-slate-900">
-            <?php if ($lang==='hy'): ?>Ինչու համեմատել բանկերի փոխարժեքները
-            <?php elseif ($lang==='ru'): ?>Зачем сравнивать курсы банков
-            <?php else: ?>Why compare bank exchange rates
-            <?php endif; ?>
-        </h2>
-        <div class="space-y-3 text-[15px] leading-relaxed text-black">
-            <?php if ($lang==='hy'): ?>
-            <p>Տարբեր բանկեր առաջարկում են տարբեր կուրսեր։ Տարբերությունը մեծ գումարների դեպքում նշանակալի է։ Կանաչով նշված են լավագույն գնման կուրսերը։</p>
-            <p>Կուրսերը փոխվում են օրվա ընթացքում։ Միշտ հաստատեք վերջնական գինը բանկում։ Կայքը չի կատարում փոխանակում՝ միայն համեմատություն։</p>
-            <?php elseif ($lang==='ru'): ?>
-            <p>Разные банки дают разные курсы. На крупных суммах разница существенна. Лучшие курсы покупки выделены зелёным.</p>
-            <p>Курсы меняются в течение дня. Всегда подтверждайте цену в банке. Сайт не проводит обмен — только сравнение.</p>
-            <?php else: ?>
-            <p>Banks offer different rates. On large amounts the difference matters. Best buy rates are highlighted in green.</p>
-            <p>Rates change during the day. Always confirm at the bank. This site does not exchange currency — only comparison.</p>
-            <?php endif; ?>
-        </div>
+        <h2 class="mb-4 text-xl font-black text-slate-900"><?= e(t('home.art2.title')) ?></h2>
+        <div class="space-y-3 text-[15px] leading-relaxed text-black"><?= tp('home.art2.p1') . tp('home.art2.p2') ?></div>
     </article>
 </section>
 

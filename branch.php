@@ -14,17 +14,13 @@ $meta = get_bank_meta($code);
 $apiBank = get_bank($code);
 $displayName = bank_display_name($code, $lang, $apiBank['name'] ?? null);
 $rates = $apiBank['rates'] ?? [];
-$logo = bank_logo_url($code, $apiBank['logo'] ?? '');
+$logoUrl = bank_logo_url($code, $apiBank['logo'] ?? '');
 $updatedAt = $apiBank['updated_at'] ?? null;
 $branches = $meta['branches'] ?? [];
-$flags = currency_flags_map();
 
 $branch = null;
 foreach ($branches as $b) {
-    if (($b['slug'] ?? '') === $city) {
-        $branch = $b;
-        break;
-    }
+    if (($b['slug'] ?? '') === $city) { $branch = $b; break; }
 }
 if (!$branch) {
     header('Location: ' . bank_page_url($code));
@@ -35,167 +31,80 @@ $cityName = $branch['city'][$lang] ?? $city;
 $branchName = $branch['name'][$lang] ?? $cityName;
 $addr = $branch['address'][$lang] ?? '';
 $phone = $branch['phone'] ?? '';
+$website = $meta['website'] ?? '';
+$vars = ['bank' => $displayName, 'branch' => $branchName, 'city' => $cityName, 'address' => $addr, 'phone' => $phone];
 
-// SEO titles — full oriented
-if ($lang === 'hy') {
-    $pageTitle = $displayName . ' ' . $branchName . ' | Փոխարժեք և կոնտակտներ';
-    $pageDescription = $displayName . ' — ' . $branchName . ' (' . $cityName . '). Հասցե՝ ' . $addr . '. Ակտուալ փոխարժեքներ, հեռախոս և կոնտակտներ։';
-} elseif ($lang === 'ru') {
-    $pageTitle = $displayName . ' — ' . $branchName . ' | Курс и контакты';
-    $pageDescription = $displayName . ' — ' . $branchName . ' (' . $cityName . '). Адрес: ' . $addr . '. Актуальные курсы валют, телефон и контакты филиала.';
-} else {
-    $pageTitle = $displayName . ' ' . $branchName . ' | Rates and contacts';
-    $pageDescription = $displayName . ' — ' . $branchName . ' in ' . $cityName . '. Address: ' . $addr . '. Live exchange rates, phone and branch contacts.';
-}
+[$pageTitle, $pageDescription] = seo_meta('branch', $vars);
 $pageCanonical = rtrim(SITE_URL, '/') . '/' . $code . '/' . $city;
 $active = '';
+$crumbs = [[t('home'), '/'], [$displayName, bank_page_url($code)], [$cityName, null]];
 
 require __DIR__ . '/includes/header.php';
 ?>
 
-<nav class="text-sm text-black mb-6">
-    <a href="/" class="no-underline hover:text-brand text-black"><?= e(t('home')) ?></a>
-    <span class="mx-2">/</span>
-    <a href="<?= e(bank_page_url($code)) ?>" class="no-underline hover:text-brand text-black"><?= e($displayName) ?></a>
-    <span class="mx-2">/</span>
-    <span class="text-black font-medium"><?= e($cityName) ?></span>
-</nav>
+<?= ui_breadcrumbs($crumbs) ?>
 
-<div class="flex flex-col sm:flex-row sm:items-center gap-5 mb-8">
-    <div class="w-16 h-16 rounded-2xl bg-brand-light border border-black/10 flex items-center justify-center overflow-hidden shrink-0">
-        <?php if ($logo): ?>
-        <img src="<?= e($logo) ?>" alt="" class="w-12 h-12 object-contain" width="48" height="48">
-        <?php else: ?>
-        <span class="text-2xl font-bold text-brand"><?= e(substr($displayName, 0, 1)) ?></span>
-        <?php endif; ?>
-    </div>
-    <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-black"><?= e($displayName) ?> — <?= e($branchName) ?></h1>
-        <p class="text-black text-sm mt-1"><?= e($cityName) ?><?php if ($addr): ?> · <?= e($addr) ?><?php endif; ?></p>
-        <?php if ($updatedAt): ?>
-        <p class="text-sm text-black mt-2"><?= e(t('updated')) ?>: <?= e(format_datetime($updatedAt)) ?></p>
-        <?php endif; ?>
-    </div>
-</div>
-
-<!-- Rates table — same style as index -->
-<section class="mb-10">
-    <h2 class="text-lg font-bold text-black mb-4"><?= e(t('rates_of')) ?> — <?= e($displayName) ?></h2>
-    <?php if ($rates): ?>
-    <div class="bg-white border border-black/10 rounded-2xl overflow-hidden shadow-sm">
-        <div class="scroll-x">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="bg-brand-light border-b border-black/10">
-                        <th class="text-left px-4 py-3 font-semibold text-black"><?= e(t('currency')) ?></th>
-                        <th class="text-right px-4 py-3 font-semibold text-black"><?= e(t('buy')) ?></th>
-                        <th class="text-right px-4 py-3 font-semibold text-black"><?= e(t('sell')) ?></th>
-                        <th class="text-right px-4 py-3 font-semibold text-black"><?= e(t('spread')) ?></th>
-                        <th class="text-right px-4 py-3 font-semibold text-black"><?= e(t('updated')) ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($rates as $c => $r):
-                        $buy = $r['buy'] ?? null; $sell = $r['sell'] ?? null;
-                        $sp = ($buy && $sell) ? calc_spread((float)$buy, (float)$sell) : 0;
-                    ?>
-                    <tr class="border-b border-black/5 hover:bg-brand-light/40">
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center gap-2 font-medium text-black">
-                                <img src="<?= e($flags[$c] ?? currency_flag($c)) ?>" alt="<?= e($c) ?>" width="20" height="14" class="object-contain" onerror="this.style.display='none'">
-                                <?= e(currency_name($c, $lang)) ?>
-                                <span class="text-black text-xs"><?= e($c) ?></span>
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-right font-semibold text-emerald-700"><?= e(format_rate($buy)) ?></td>
-                        <td class="px-4 py-3 text-right font-semibold text-black"><?= e(format_rate($sell)) ?></td>
-                        <td class="px-4 py-3 text-right text-black"><?= e((string)$sp) ?>%</td>
-                        <td class="px-4 py-3 text-right text-sm text-black"><?= $updatedAt ? e(format_datetime($updatedAt)) : '—' ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
+<section class="flex flex-col gap-5 rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_24px_60px_-12px_rgba(15,23,42,.14)] sm:flex-row sm:items-center sm:p-7">
+    <?php if ($logoUrl): ?>
+    <?= ui_img($logoUrl, tv('common.logo_alt', $vars), 96, 96, 'h-20 w-20 shrink-0 rounded-2xl border border-slate-100 object-contain p-2 sm:h-24 sm:w-24') ?>
     <?php else: ?>
-    <div class="border border-black/10 rounded-xl p-8 text-center text-black"><?= e(t('no_data')) ?></div>
+    <span class="grid h-20 w-20 shrink-0 place-items-center rounded-2xl border border-slate-100 bg-blue-50 text-3xl font-black text-blue-700 sm:h-24 sm:w-24" aria-hidden="true"><?= e(mb_strtoupper(mb_substr($displayName, 0, 1))) ?></span>
+    <?php endif; ?>
+    <div class="min-w-0 flex-1">
+        <h1 class="text-[26px] font-black leading-tight tracking-tight text-slate-900 sm:text-4xl"><?= e($displayName) ?> — <?= e($branchName) ?></h1>
+        <p class="mt-1 text-sm font-semibold"><?= e($cityName) ?><?php if ($addr): ?> · <?= e($addr) ?><?php endif; ?></p>
+        <div class="mt-2"><?= ui_live($updatedAt) ?></div>
+    </div>
+    <?php if ($phone): ?>
+    <div class="sm:w-52"><?= ui_link('tel:' . preg_replace('/\s+/', '', $phone), t('bank.call') . ' ' . $phone, tv('bank.call_title', $vars), 'inline-flex min-h-[46px] w-full items-center justify-center rounded-[14px] bg-blue-600 px-5 text-sm font-bold text-white no-underline shadow-[0_6px_16px_rgba(37,99,235,.28)] hover:bg-blue-700') ?></div>
     <?php endif; ?>
 </section>
 
-<div class="grid md:grid-cols-2 gap-6 mb-10">
-    <div class="bg-white border border-black/10 rounded-xl p-5">
-        <h3 class="font-bold text-black mb-4"><?= e(t('contacts')) ?> — <?= e($cityName) ?></h3>
-        <ul class="space-y-3 text-sm text-black">
-            <li>
-                <div class="text-xs font-semibold uppercase text-black mb-0.5"><?= e(t('address')) ?></div>
-                <div><?= e($addr) ?></div>
-            </li>
-            <?php if ($phone): ?>
-            <li>
-                <div class="text-xs font-semibold uppercase text-black mb-0.5"><?= e(t('phone')) ?></div>
-                <a href="tel:<?= e(preg_replace('/\s+/','',$phone)) ?>" class="text-brand font-medium no-underline"><?= e($phone) ?></a>
-            </li>
-            <?php endif; ?>
-            <?php if ($meta && !empty($meta['website'])): ?>
-            <li>
-                <div class="text-xs font-semibold uppercase text-black mb-0.5"><?= e(t('website')) ?></div>
-                <a href="<?= e($meta['website']) ?>" target="_blank" rel="noopener" class="text-brand no-underline"><?= e(preg_replace('#https?://#','',$meta['website'])) ?></a>
-            </li>
-            <?php endif; ?>
-        </ul>
-        <a href="<?= e(bank_page_url($code)) ?>" class="inline-block mt-4 text-sm text-brand font-medium no-underline hover:underline">← <?= e($displayName) ?></a>
-    </div>
-    <div class="bg-brand-light border border-brand/20 rounded-xl p-5">
-        <h3 class="font-bold text-black mb-3"><?= e($branchName) ?></h3>
-        <p class="text-sm text-black leading-relaxed">
-            <?php if ($lang==='hy'): ?>
-            <?= e($displayName) ?>-ի <?= e($branchName) ?> մասնաճյուղը գտնվում է <?= e($cityName) ?> քաղաքում։ Այստեղ կարող եք փոխանակել արժույթ պաշտոնական կուրսով, ստանալ բանկային ծառայություններ և խորհրդատվություն։
-            <?php elseif ($lang==='ru'): ?>
-            Филиал <?= e($displayName) ?> «<?= e($branchName) ?>» находится в городе <?= e($cityName) ?>. Здесь можно обменять валюту по официальному курсу банка и получить банковские услуги.
-            <?php else: ?>
-            The <?= e($displayName) ?> branch «<?= e($branchName) ?>» is located in <?= e($cityName) ?>. You can exchange currency at the bank's official rate and get banking services here.
-            <?php endif; ?>
-        </p>
-    </div>
+<div class="mt-6 grid items-start gap-6 lg:grid-cols-[1fr_380px]">
+    <section class="min-w-0" aria-labelledby="rates-h">
+        <h2 id="rates-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(t('rates_of')) ?> — <?= e($displayName) ?></h2>
+        <?php if ($rates): ?>
+        <?= ui_bank_rates($rates, $displayName, $lang) ?>
+        <?php else: ?>
+        <div class="rounded-3xl border border-slate-100 bg-white p-10 text-center shadow-sm"><?= e(t('no_data')) ?></div>
+        <?php endif; ?>
+    </section>
+
+    <aside class="space-y-5 lg:sticky lg:top-24">
+        <section class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-6" aria-labelledby="ct-h">
+            <h2 id="ct-h" class="mb-4 text-lg font-black text-slate-900"><?= e(t('contacts')) ?> — <?= e($cityName) ?></h2>
+            <dl class="space-y-4 text-[15px]">
+                <div><dt class="text-[11px] font-bold uppercase tracking-wider"><?= e(t('address')) ?></dt><dd class="mt-0.5 font-semibold"><?= e($addr) ?></dd></div>
+                <?php if ($phone): ?><div><dt class="text-[11px] font-bold uppercase tracking-wider"><?= e(t('phone')) ?></dt><dd class="mt-0.5 font-semibold"><?= ui_link('tel:' . preg_replace('/\s+/', '', $phone), $phone, t('phone') . ': ' . $phone, 'no-underline hover:underline') ?></dd></div><?php endif; ?>
+                <?php if ($website): ?><div><dt class="text-[11px] font-bold uppercase tracking-wider"><?= e(t('website')) ?></dt><dd class="mt-0.5 break-all font-semibold"><?= ui_link($website, preg_replace('#https?://#', '', $website), tv('bank.site_title', $vars), 'no-underline hover:underline', ['target' => '_blank', 'rel' => 'noopener nofollow']) ?></dd></div><?php endif; ?>
+            </dl>
+            <?= ui_link(bank_page_url($code), tv('branch.back', $vars), $displayName . ' — ' . t('bank.branches_title'), 'mt-4 inline-block text-sm font-bold no-underline hover:underline') ?>
+        </section>
+        <section class="rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-6">
+            <h2 class="mb-3 text-lg font-black text-slate-900"><?= e($branchName) ?></h2>
+            <p class="text-[15px] leading-relaxed"><?= e(tv('branch.intro', $vars)) ?></p>
+        </section>
+    </aside>
 </div>
 
-<article class="bg-white border border-black/10 rounded-2xl p-6 sm:p-8 mb-8">
-    <h2 class="text-lg font-bold text-black mb-3">
-        <?php if ($lang==='hy'): ?><?= e($displayName) ?> <?= e($cityName) ?> — փոխարժեք և կոնտակտներ
-        <?php elseif ($lang==='ru'): ?><?= e($displayName) ?> <?= e($cityName) ?> — курс и контакты
-        <?php else: ?><?= e($displayName) ?> <?= e($cityName) ?> — rates and contacts
-        <?php endif; ?>
-    </h2>
-    <div class="text-sm text-black leading-relaxed space-y-2">
-        <?php if ($lang==='hy'): ?>
-        <p><?= e($displayName) ?>-ի <?= e($branchName) ?> մասնաճյուղում (<?= e($cityName) ?>) կարող եք փոխանակել ԱՄՆ դոլար, եվրո, ռուբլի և այլ արժույթներ։ Հասցե՝ <?= e($addr) ?><?php if ($phone): ?>։ Հեռախոս՝ <?= e($phone) ?><?php endif; ?>։</p>
-        <p>Կուրսերը թարմացվում են ավտոմատ։ Գործարքից առաջ խորհուրդ ենք տալիս զանգահարել և հաստատել վերջնական փոխարժեքը։ Տվյալները իրազեկման բնույթ ունեն։</p>
-        <?php elseif ($lang==='ru'): ?>
-        <p>В филиале <?= e($displayName) ?> «<?= e($branchName) ?>» (<?= e($cityName) ?>) можно обменять доллар США, евро, рубль и другие валюты. Адрес: <?= e($addr) ?><?php if ($phone): ?>. Телефон: <?= e($phone) ?><?php endif; ?>.</p>
-        <p>Курсы обновляются автоматически. Перед сделкой позвоните и подтвердите итоговый курс. Данные носят информационный характер.</p>
-        <?php else: ?>
-        <p>At the <?= e($displayName) ?> branch «<?= e($branchName) ?>» in <?= e($cityName) ?> you can exchange USD, EUR, RUB and other currencies. Address: <?= e($addr) ?><?php if ($phone): ?>. Phone: <?= e($phone) ?><?php endif; ?>.</p>
-        <p>Rates update automatically. Before exchanging, call and confirm the final rate. Information is for reference only.</p>
-        <?php endif; ?>
+<article class="mt-10 rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-8">
+    <h2 class="mb-3 text-xl font-black text-slate-900 sm:text-2xl"><?= e(tv('branch.article_title', $vars)) ?></h2>
+    <div class="space-y-2 text-[15px] leading-relaxed">
+        <p><?= e(tv('branch.article_p1', $vars)) ?><?= $phone ? ' ' . e(tv('branch.phone_sentence', $vars)) : '' ?></p>
+        <?= tp('branch.article_p2', $vars) ?>
     </div>
 </article>
 
-<div class="border border-amber-400 bg-amber-50 rounded-xl px-4 py-3 text-sm text-black mb-6">
-    <?= e(t('disclaimer_short')) ?>
-</div>
+<div class="mt-8 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-black"><?= e(t('disclaimer_short')) ?></div>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BankOrCreditUnion",
-  "name": "<?= e($displayName) ?> — <?= e($branchName) ?>",
-  "telephone": "<?= e($phone) ?>",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "<?= e($addr) ?>",
-    "addressLocality": "<?= e($cityName) ?>",
-    "addressCountry": "AM"
-  }
-}
-</script>
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<?php
+$org = ['@type' => 'BankOrCreditUnion', '@id' => $pageCanonical . '#branch', 'name' => $displayName . ' — ' . $branchName, 'url' => $pageCanonical, 'parentOrganization' => ['@id' => rtrim(SITE_URL, '/') . bank_page_url($code) . '#bank'],
+        'address' => ['@type' => 'PostalAddress', 'streetAddress' => $addr, 'addressLocality' => $cityName, 'addressCountry' => 'AM'], 'areaServed' => 'AM'];
+if ($phone) $org['telephone'] = $phone;
+echo ld_script([
+    ['@type' => 'WebPage', '@id' => $pageCanonical . '#webpage', 'url' => $pageCanonical, 'name' => $pageTitle, 'description' => $pageDescription, 'inLanguage' => $lang,
+     'isPartOf' => ['@id' => rtrim(SITE_URL, '/') . '/#website'], 'about' => ['@id' => $pageCanonical . '#branch'], 'breadcrumb' => ['@id' => $pageCanonical . '#breadcrumb']],
+    $org,
+    array_merge(ld_breadcrumbs($crumbs), ['@id' => $pageCanonical . '#breadcrumb']),
+]);
+require __DIR__ . '/includes/footer.php';
