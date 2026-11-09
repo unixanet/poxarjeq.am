@@ -14,16 +14,24 @@ foreach ($have as $c) { if (count($cols) >= 5) break; if (!in_array($c, $cols, t
 
 $banks = [];
 foreach ($matrix['banks'] as $code => $b) {
+    if (!bank_is_visible($code)) continue;           // скрыт в админке
     $banks[$code] = [
-        'code'  => $code,
-        'name'  => bank_display_name($code, $lang, $b['name'] ?? null),
-        'logo'  => $b['logo'] ?? '',
-        'url'   => bank_page_url($code),
-        'rates' => $b['rates'],
+        'code'    => $code,
+        'name'    => bank_display_name($code, $lang, $b['name'] ?? null),
+        'logo'    => bank_logo_url($code, $b['logo'] ?? ''),
+        'url'     => bank_page_url($code),
+        'partner' => bank_is_partner($code),
+        'order'   => bank_partner_order($code),
+        'rates'   => $b['rates'],
     ];
 }
 $sortCur = $cols[0] ?? 'USD';
-uasort($banks, fn($a, $b) => ($b['rates'][$sortCur]['buy'] ?? 0) <=> ($a['rates'][$sortCur]['buy'] ?? 0));
+// Партнёры закреплены сверху (по приоритету из админки), остальные по лучшей покупке
+uasort($banks, function ($a, $b) use ($sortCur) {
+    if ($a['partner'] !== $b['partner']) return $a['partner'] ? -1 : 1;
+    if ($a['partner']) return $a['order'] <=> $b['order'];
+    return ($b['rates'][$sortCur]['buy'] ?? 0) <=> ($a['rates'][$sortCur]['buy'] ?? 0);
+});
 
 $best = [];
 foreach ($have as $c) {
@@ -46,7 +54,7 @@ $jsData = [
     'flags'   => $flags,
     'names'   => $names,
     'noData'  => t('no_data'),
-    'i18n'    => ['buy' => t('buy'), 'sell' => t('sell'), 'best' => t('best_buy'), 'chooseCurrency' => t('choose_currency'), 'bestRate' => t('calc_best')],
+    'i18n'    => ['partner' => t('partner'), 'buy' => t('buy'), 'sell' => t('sell'), 'best' => t('best_buy'), 'chooseCurrency' => t('choose_currency'), 'bestRate' => t('calc_best')],
 ];
 
 $pageTitle = t('today_rates') . ' | ' . t('site_name');
@@ -56,17 +64,22 @@ $active = 'home';
 $fullWidth = true;
 
 /* ---- Хелперы серверного рендера (тот же HTML строит JS при смене валюты) ---- */
+function idx_chevron(string $cls = 'right-0'): string
+{
+    return '<svg class="pointer-events-none absolute top-1/2 h-3 w-3 -translate-y-1/2 ' . $cls . '" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 9l6 6 6-6"/></svg>';
+}
+
 function idx_row(array $bank, array $cols, array $best, bool $first): string
 {
     $h = '<tr class="border-t border-slate-100 hover:bg-blue-50/40 transition-colors">';
     $h .= '<td class="sticky left-0 z-10 bg-white px-4 sm:px-5 py-3 text-left"><a href="' . e($bank['url']) . '" class="flex items-center gap-3 no-underline group">';
     if ($bank['logo']) $h .= '<img src="' . e($bank['logo']) . '" alt="" width="44" height="44" loading="lazy" class="w-11 h-11 rounded-[10px] object-contain shrink-0">';
-    $h .= '<span class="font-bold text-slate-900 group-hover:text-blue-600 leading-tight">' . e($bank['name']) . '</span></a></td>';
+    $h .= '<span class="font-bold text-slate-900 group-hover:text-blue-600 leading-tight">' . e($bank['name']) . ($bank['partner'] ? '<span class="mt-1 block w-fit rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' . e(t('partner')) . '</span>' : '') . '</span></a></td>';
     foreach ($cols as $c) {
         $r = $bank['rates'][$c] ?? null;
         $isBest = $r && !empty($best[$c]['buy']) && abs($r['buy'] - $best[$c]['buy']['rate']) < 0.00001;
-        $h .= '<td class="px-2 py-3 text-center num border-l border-slate-100 font-semibold"><span class="' . ($isBest ? 'inline-block rounded-lg bg-green-50 px-2.5 py-1 font-extrabold text-green-600' : '') . '">' . e($r ? fmt_rate($r['buy']) : '—') . '</span></td>';
-        $h .= '<td class="px-2 py-3 text-center num font-semibold">' . e($r ? fmt_rate($r['sell']) : '—') . '</td>';
+        $h .= '<td class="px-2 py-3 text-center tabular-nums border-l border-slate-100 font-semibold"><span class="' . ($isBest ? 'inline-block rounded-lg bg-green-50 px-2.5 py-1 font-extrabold text-green-600' : '') . '">' . e($r ? fmt_rate($r['buy']) : '—') . '</span></td>';
+        $h .= '<td class="px-2 py-3 text-center tabular-nums font-semibold">' . e($r ? fmt_rate($r['sell']) : '—') . '</td>';
     }
     return $h . '</tr>';
 }
@@ -79,10 +92,11 @@ function idx_card(array $bank, string $cur, array $best): string
     $h = '<a href="' . e($bank['url']) . '" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]">';
     $h .= $bank['logo'] ? '<img src="' . e($bank['logo']) . '" alt="" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-xl object-contain shrink-0">' : '<span class="w-12 h-12 shrink-0"></span>';
     $h .= '<span class="min-w-0 flex-1"><span class="block font-bold text-slate-900 leading-tight truncate">' . e($bank['name']) . '</span>';
+    if ($bank['partner']) $h .= '<span class="mt-1 mr-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' . e(t('partner')) . '</span>';
     if ($isBest) $h .= '<span class="mt-1 inline-block rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-green-600">' . e(t('best_buy')) . '</span>';
     $h .= '</span><span class="grid grid-cols-2 gap-3 text-right shrink-0">';
-    $h .= '<span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' . e(t('buy')) . '</span><span class="block text-[17px] font-extrabold num ' . ($isBest ? 'text-green-600' : 'text-slate-900') . '">' . e(fmt_rate($r['buy'])) . '</span></span>';
-    $h .= '<span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' . e(t('sell')) . '</span><span class="block text-[17px] font-extrabold num text-slate-900">' . e(fmt_rate($r['sell'])) . '</span></span>';
+    $h .= '<span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' . e(t('buy')) . '</span><span class="block text-[17px] font-extrabold tabular-nums ' . ($isBest ? 'text-green-600' : 'text-slate-900') . '">' . e(fmt_rate($r['buy'])) . '</span></span>';
+    $h .= '<span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' . e(t('sell')) . '</span><span class="block text-[17px] font-extrabold tabular-nums text-slate-900">' . e(fmt_rate($r['sell'])) . '</span></span>';
     return $h . '</span></a>';
 }
 
@@ -108,7 +122,7 @@ require __DIR__ . '/includes/header.php';
             <h1 class="mt-4 sm:mt-5 max-w-2xl text-[32px] sm:text-5xl lg:text-[54px] font-black leading-[1.08] tracking-tight text-slate-900 text-balance"><?= e(t('hero_title')) ?></h1>
             <p class="mt-4 max-w-xl text-base sm:text-lg leading-relaxed text-black"><?= e(t('hero_sub')) ?></p>
             <div class="mt-6 flex flex-wrap gap-3">
-                <a href="#rates" class="inline-flex items-center justify-center gap-2 min-h-[48px] rounded-[14px] bg-blue-600 px-6 font-bold no-underline shadow-[0_6px_16px_rgba(37,99,235,.28)] hover:bg-blue-700" style="color:#fff"><?= e(t('cta_banks')) ?> <span aria-hidden="true">→</span></a>
+                <a href="#rates" class="inline-flex items-center justify-center gap-2 min-h-[48px] rounded-[14px] bg-blue-600 px-6 font-bold no-underline shadow-[0_6px_16px_rgba(37,99,235,.28)] hover:bg-blue-700 text-white"><?= e(t('cta_banks')) ?> <span aria-hidden="true">→</span></a>
                 <a href="#calc" class="inline-flex items-center justify-center min-h-[48px] rounded-[14px] border border-slate-200 bg-white px-6 font-bold no-underline hover:border-blue-300"><?= e(t('calc_btn')) ?></a>
             </div>
             <?php if ($heroCards): ?>
@@ -116,7 +130,7 @@ require __DIR__ . '/includes/header.php';
                 <?php foreach ($heroCards as $c): $bb = $best[$c]['buy']; ?>
                 <a href="/currency.php?cur=<?= e($c) ?>" class="block rounded-[18px] sm:rounded-[20px] border border-slate-100 bg-white p-3 sm:p-4 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(37,99,235,.14)]">
                     <span class="flex items-center gap-2 text-[13px] sm:text-sm font-extrabold text-slate-900"><img src="<?= e($flags[$c]) ?>" alt="" width="28" height="28" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover shadow"><?= e($c) ?></span>
-                    <span class="mt-1.5 block text-[22px] sm:text-[28px] font-black tracking-tight text-slate-900 num leading-none"><?= e(fmt_rate($bb['rate'])) ?></span>
+                    <span class="mt-1.5 block text-[22px] sm:text-[28px] font-black tracking-tight text-slate-900 tabular-nums leading-none"><?= e(fmt_rate($bb['rate'])) ?></span>
                     <span class="mt-1.5 block text-[11px] sm:text-xs leading-tight text-black"><?= e(t('best_buy')) ?> · <?= e($bb['name']) ?></span>
                 </a>
                 <?php endforeach; ?>
@@ -133,13 +147,13 @@ require __DIR__ . '/includes/header.php';
             <div class="rounded-[20px] border border-slate-200 bg-gray-50 p-4 focus-within:border-indigo-500 focus-within:bg-white transition">
                 <label for="calc-from-val" class="block text-[10.5px] font-bold uppercase tracking-widest"><?= e(t('calc_give')) ?></label>
                 <div class="mt-1.5 flex items-center justify-between gap-3">
-                    <input type="number" inputmode="decimal" min="0" id="calc-from-val" value="1000" class="min-w-0 w-full bg-transparent p-0 text-[28px] sm:text-3xl font-black text-slate-900 outline-none border-0 num">
+                    <input type="number" inputmode="decimal" min="0" id="calc-from-val" value="1000" class="min-w-0 w-full bg-transparent p-0 text-[28px] sm:text-3xl font-black text-slate-900 outline-none border-0 tabular-nums">
                     <div class="flex shrink-0 items-center gap-2 rounded-2xl border border-slate-100 bg-white px-2.5 py-2 shadow-sm">
                         <img id="calc-from-flag" src="<?= e($flags[$calcFrom] ?? '') ?>" alt="" width="28" height="28" class="h-7 w-7 rounded-full object-cover">
-                        <select id="calc-from-curr" aria-label="<?= e(t('calc_give')) ?>" class="cur-select bg-transparent pr-5 text-[15px] font-extrabold uppercase cursor-pointer outline-none">
+                        <span class="relative inline-flex items-center"><select id="calc-from-curr" aria-label="<?= e(t('calc_give')) ?>" class="appearance-none bg-transparent pr-5 text-[15px] font-extrabold uppercase cursor-pointer outline-none">
                             <?php foreach ($have as $c): ?><option value="<?= e($c) ?>" <?= $c === $calcFrom ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?>
                             <option value="AMD">AMD</option>
-                        </select>
+                        </select><?= idx_chevron() ?></span>
                     </div>
                 </div>
             </div>
@@ -151,13 +165,13 @@ require __DIR__ . '/includes/header.php';
             <div class="rounded-[20px] border border-slate-200 bg-gray-50 p-4">
                 <span class="block text-[10.5px] font-bold uppercase tracking-widest"><?= e(t('calc_get')) ?></span>
                 <div class="mt-1.5 flex items-center justify-between gap-3">
-                    <output id="calc-to-val" class="min-w-0 w-full truncate text-[28px] sm:text-3xl font-black text-slate-900 num"><?= e($calcInit) ?></output>
+                    <output id="calc-to-val" class="min-w-0 w-full truncate text-[28px] sm:text-3xl font-black text-slate-900 tabular-nums"><?= e($calcInit) ?></output>
                     <div class="flex shrink-0 items-center gap-2 rounded-2xl border border-slate-100 bg-white px-2.5 py-2 shadow-sm">
                         <img id="calc-to-flag" src="<?= e($flags['AMD']) ?>" alt="" width="28" height="28" class="h-7 w-7 rounded-full object-cover">
-                        <select id="calc-to-curr" aria-label="<?= e(t('calc_get')) ?>" class="cur-select bg-transparent pr-5 text-[15px] font-extrabold uppercase cursor-pointer outline-none">
+                        <span class="relative inline-flex items-center"><select id="calc-to-curr" aria-label="<?= e(t('calc_get')) ?>" class="appearance-none bg-transparent pr-5 text-[15px] font-extrabold uppercase cursor-pointer outline-none">
                             <option value="AMD" selected>AMD</option>
                             <?php foreach ($have as $c): ?><option value="<?= e($c) ?>"><?= e($c) ?></option><?php endforeach; ?>
-                        </select>
+                        </select><?= idx_chevron() ?></span>
                     </div>
                 </div>
             </div>
@@ -175,9 +189,9 @@ require __DIR__ . '/includes/header.php';
     <?php if ($banks): ?>
     <!-- Мобильная версия: одна валюта, карточки банков -->
     <div class="md:hidden">
-        <div id="m-chips" class="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="<?= e(t('choose_currency')) ?>">
+        <div id="m-chips" class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="<?= e(t('choose_currency')) ?>">
             <?php foreach ($have as $c): $on = ($c === $mobileCur); ?>
-            <button type="button" data-cur="<?= e($c) ?>" aria-pressed="<?= $on ? 'true' : 'false' ?>" class="m-chip flex shrink-0 items-center gap-2 min-h-[44px] rounded-xl border px-3.5 text-sm font-bold <?= $on ? 'border-blue-600 bg-blue-600 shadow-[0_2px_8px_rgba(37,99,235,.25)]' : 'border-slate-200 bg-white' ?>" style="<?= $on ? 'color:#fff' : '' ?>">
+            <button type="button" data-cur="<?= e($c) ?>" aria-pressed="<?= $on ? 'true' : 'false' ?>" class="m-chip flex shrink-0 items-center gap-2 min-h-[44px] rounded-xl border px-3.5 text-sm font-bold <?= $on ? 'border-blue-600 bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,.25)]' : 'border-slate-200 bg-white text-black' ?>">
                 <img src="<?= e($flags[$c]) ?>" alt="" width="22" height="22" class="h-[22px] w-[22px] rounded-full object-cover"><?= e($c) ?>
             </button>
             <?php endforeach; ?>
@@ -198,9 +212,9 @@ require __DIR__ . '/includes/header.php';
                         <th scope="colgroup" colspan="2" class="border-l border-slate-200 px-2 py-3 text-center" data-col="<?= (int)$i ?>">
                             <span class="flex flex-col items-center gap-1.5">
                                 <img src="<?= e($flags[$c]) ?>" alt="" width="32" height="32" class="col-flag h-8 w-8 rounded-full object-cover shadow" data-col="<?= (int)$i ?>">
-                                <select class="col-select cur-select rounded-lg border border-slate-200 bg-white py-1 pl-2.5 pr-6 text-sm font-extrabold uppercase cursor-pointer shadow-sm hover:border-blue-400 focus:border-blue-500 outline-none" data-col="<?= (int)$i ?>" aria-label="<?= e(t('choose_currency')) ?> <?= (int)$i + 1 ?>">
+                                <span class="relative inline-flex items-center"><select class="col-select appearance-none rounded-lg border border-slate-200 bg-white py-1.5 pl-3 pr-7 text-sm font-extrabold uppercase cursor-pointer shadow-sm hover:border-blue-400 focus:border-blue-500 outline-none" data-col="<?= (int)$i ?>" aria-label="<?= e(t('choose_currency')) ?> <?= (int)$i + 1 ?>">
                                     <?php foreach ($have as $opt): ?><option value="<?= e($opt) ?>" <?= $opt === $c ? 'selected' : '' ?>><?= e($opt) ?></option><?php endforeach; ?>
-                                </select>
+                                </select><?= idx_chevron('right-2.5') ?></span>
                             </span>
                         </th>
                         <?php endforeach; ?>
@@ -243,25 +257,28 @@ require __DIR__ . '/includes/header.php';
     function isBest(cur, buy) { var b = D.best[cur] && D.best[cur].buy; return b && buy != null && Math.abs(buy - b.rate) < 0.00001; }
 
     /* ---------- Таблица (десктоп) ---------- */
+    function sortBanks(cur) {
+        return D.banks.slice().sort(function (a, b) {
+            if (!!a.partner !== !!b.partner) return a.partner ? -1 : 1;
+            if (a.partner) return (a.order || 0) - (b.order || 0);
+            return ((b.rates[cur] || {}).buy || 0) - ((a.rates[cur] || {}).buy || 0);
+        });
+    }
     var body = document.getElementById('rates-body');
     function rowHtml(b) {
         var h = '<tr class="border-t border-slate-100 hover:bg-blue-50/40 transition-colors"><td class="sticky left-0 z-10 bg-white px-4 sm:px-5 py-3 text-left"><a href="' + esc(b.url) + '" class="flex items-center gap-3 no-underline group">';
         if (b.logo) h += '<img src="' + esc(b.logo) + '" alt="" width="44" height="44" loading="lazy" class="w-11 h-11 rounded-[10px] object-contain shrink-0">';
-        h += '<span class="font-bold text-slate-900 group-hover:text-blue-600 leading-tight">' + esc(b.name) + '</span></a></td>';
+        h += '<span class="font-bold text-slate-900 group-hover:text-blue-600 leading-tight">' + esc(b.name) + (b.partner ? '<span class="mt-1 block w-fit rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' + esc(D.i18n.partner) + '</span>' : '') + '</span></a></td>';
         cols.forEach(function (c) {
             var r = b.rates && b.rates[c];
-            h += '<td class="px-2 py-3 text-center num border-l border-slate-100 font-semibold"><span class="' + (r && isBest(c, r.buy) ? 'inline-block rounded-lg bg-green-50 px-2.5 py-1 font-extrabold text-green-600' : '') + '">' + (r ? fmt(r.buy) : '—') + '</span></td>';
-            h += '<td class="px-2 py-3 text-center num font-semibold">' + (r ? fmt(r.sell) : '—') + '</td>';
+            h += '<td class="px-2 py-3 text-center tabular-nums border-l border-slate-100 font-semibold"><span class="' + (r && isBest(c, r.buy) ? 'inline-block rounded-lg bg-green-50 px-2.5 py-1 font-extrabold text-green-600' : '') + '">' + (r ? fmt(r.buy) : '—') + '</span></td>';
+            h += '<td class="px-2 py-3 text-center tabular-nums font-semibold">' + (r ? fmt(r.sell) : '—') + '</td>';
         });
         return h + '</tr>';
     }
     function renderTable() {
         if (!body) return;
-        var first = cols[0];
-        var list = D.banks.slice().sort(function (a, b) {
-            return ((b.rates[first] || {}).buy || 0) - ((a.rates[first] || {}).buy || 0);
-        });
-        body.innerHTML = list.map(rowHtml).join('');
+        body.innerHTML = sortBanks(cols[0]).map(rowHtml).join('');
     }
     document.querySelectorAll('.col-select').forEach(function (sel) {
         sel.addEventListener('change', function () {
@@ -282,20 +299,19 @@ require __DIR__ . '/includes/header.php';
         return '<a href="' + esc(b.url) + '" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]">' +
             (b.logo ? '<img src="' + esc(b.logo) + '" alt="" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-xl object-contain shrink-0">' : '<span class="w-12 h-12 shrink-0"></span>') +
             '<span class="min-w-0 flex-1"><span class="block font-bold text-slate-900 leading-tight truncate">' + esc(b.name) + '</span>' +
-            (best ? '<span class="mt-1 inline-block rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-green-600">' + esc(D.i18n.best) + '</span>' : '') + '</span>' +
-            '<span class="grid grid-cols-2 gap-3 text-right shrink-0"><span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' + esc(D.i18n.buy) + '</span><span class="block text-[17px] font-extrabold num ' + (best ? 'text-green-600' : 'text-slate-900') + '">' + fmt(r.buy) + '</span></span>' +
-            '<span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' + esc(D.i18n.sell) + '</span><span class="block text-[17px] font-extrabold num text-slate-900">' + fmt(r.sell) + '</span></span></span></a>';
+            (b.partner ? '<span class="mt-1 mr-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800">★ ' + esc(D.i18n.partner) + '</span>' : '') + (best ? '<span class="mt-1 inline-block rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-green-600">' + esc(D.i18n.best) + '</span>' : '') + '</span>' +
+            '<span class="grid grid-cols-2 gap-3 text-right shrink-0"><span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' + esc(D.i18n.buy) + '</span><span class="block text-[17px] font-extrabold tabular-nums ' + (best ? 'text-green-600' : 'text-slate-900') + '">' + fmt(r.buy) + '</span></span>' +
+            '<span><span class="block text-[10px] font-bold uppercase tracking-wider text-black">' + esc(D.i18n.sell) + '</span><span class="block text-[17px] font-extrabold tabular-nums text-slate-900">' + fmt(r.sell) + '</span></span></span></a>';
     }
     function renderCards() {
         if (!mList) return;
-        var list = D.banks.slice().sort(function (a, b) { return ((b.rates[mobileCur] || {}).buy || 0) - ((a.rates[mobileCur] || {}).buy || 0); });
-        var html = list.map(cardHtml).join('');
+        var html = sortBanks(mobileCur).map(cardHtml).join('');
         mList.innerHTML = html || '<div class="rounded-2xl border border-slate-100 bg-white p-8 text-center">' + esc(D.noData) + '</div>';
         chips.forEach(function (ch) {
             var on = ch.getAttribute('data-cur') === mobileCur;
             ch.setAttribute('aria-pressed', on ? 'true' : 'false');
             ch.classList.toggle('border-blue-600', on); ch.classList.toggle('bg-blue-600', on); ch.classList.toggle('border-slate-200', !on); ch.classList.toggle('bg-white', !on);
-            ch.style.color = on ? '#fff' : '';
+            ch.classList.toggle('text-white', on); ch.classList.toggle('text-black', !on);
             ch.classList.toggle('shadow-[0_2px_8px_rgba(37,99,235,.25)]', on);
         });
     }

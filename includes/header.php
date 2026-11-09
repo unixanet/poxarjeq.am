@@ -75,7 +75,7 @@ $_hLangs = ['hy' => 'HY', 'ru' => 'RU', 'en' => 'EN'];
         <div class="ml-auto flex items-center gap-2">
             <div class="flex items-center bg-slate-100 rounded-[9px] p-[3px]" role="group" aria-label="<?= e(t('lang')) ?>">
                 <?php foreach ($_hLangs as $_hCode => $_hLabel): $_hCur = ($_hCode === $lang); ?>
-                <a href="<?= e(lang_url($_hCode)) ?>" hreflang="<?= e($_hCode) ?>" class="px-2.5 sm:px-3 py-1.5 rounded-[7px] text-[11.5px] font-black tracking-wide no-underline transition <?= $_hCur ? 'bg-blue-600 shadow-[0_2px_6px_rgba(37,99,235,.35)]' : '' ?>" style="<?= $_hCur ? 'color:#fff' : '' ?>" <?= $_hCur ? 'aria-current="true"' : '' ?>><?= e($_hLabel) ?></a>
+                <a href="<?= e(lang_url($_hCode)) ?>" hreflang="<?= e($_hCode) ?>" class="px-2.5 sm:px-3 py-1.5 rounded-[7px] text-[11.5px] font-black tracking-wide no-underline transition  <?= $_hCur ? 'bg-blue-600 text-white shadow-[0_2px_6px_rgba(37,99,235,.35)]' : 'text-slate-700' ?>" <?= $_hCur ? 'aria-current="true"' : '' ?>><?= e($_hLabel) ?></a>
                 <?php endforeach; ?>
             </div>
             <button type="button" id="burger" class="md:hidden w-10 h-10 grid place-items-center rounded-xl border border-[#eaedf2] bg-white text-slate-900" aria-label="<?= e(t('menu')) ?>" aria-expanded="false" aria-controls="mobile-menu">

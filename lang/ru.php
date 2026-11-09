@@ -67,4 +67,5 @@ return [
     'nav_menu' => 'Меню',
     'by_bank' => 'Банк',
     'per_unit' => 'за 1 единицу',
+    'partner' => 'Партнёр',
 ];

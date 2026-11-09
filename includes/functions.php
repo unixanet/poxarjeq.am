@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/bank_store.php';
 
 function detect_lang(): string
 {
@@ -238,8 +239,8 @@ function get_bank_meta(string $code): ?array
     if ($data === null) {
         $data = require __DIR__ . '/bank_data.php';
     }
-    if (!isset($data[$code])) return null;
-    $meta = $data[$code];
+    if (!isset($data[$code]) && !bank_override($code)) return null;
+    $meta = bank_apply_overrides($code, $data[$code] ?? null);
     static $branches = null;
     if ($branches === null) {
         $bf = __DIR__ . "/branches_data.php";

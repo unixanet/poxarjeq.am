@@ -16,7 +16,7 @@ if ($code === '') {
 $apiBank = get_bank($code);
 $meta = get_bank_meta($code);
 $rates = $apiBank['rates'] ?? [];
-$logo = $apiBank['logo'] ?? '';
+$logo = bank_logo_url($code, $apiBank['logo'] ?? '');
 $updatedAt = $apiBank['updated_at'] ?? null;
 $displayName = bank_display_name($code, $lang, $apiBank['name'] ?? null);
 $branches = $meta['branches'] ?? [];

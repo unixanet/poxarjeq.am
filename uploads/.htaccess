@@ -1,0 +1,4 @@
+# В uploads лежат только изображения: PHP здесь не исполняется
+<FilesMatch "\.(php|phtml|phar)$">
+    Require all denied
+</FilesMatch>

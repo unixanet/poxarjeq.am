@@ -91,7 +91,7 @@ require __DIR__ . '/includes/header.php';
                         <td class="px-4 py-3">
                             <a href="<?= e(bank_page_url($bank['code'])) ?>?lang=<?= e($lang) ?>" class="flex items-center gap-3 group">
                                 <?php if (!empty($bank['logo'])): ?>
-                                <img src="<?= e($bank['logo']) ?>" alt="" class="w-8 h-8 rounded-lg object-contain bg-white" width="32" height="32" loading="lazy" onerror="this.style.display='none'">
+                                <img src="<?= e(bank_logo_url($bank['code'], $bank['logo'])) ?>" alt="" class="w-8 h-8 rounded-lg object-contain bg-white" width="32" height="32" loading="lazy" onerror="this.style.display='none'">
                                 <?php endif; ?>
                                 <span class="font-medium group-hover:text-brand transition"><?= e($bName) ?></span>
                             </a>
