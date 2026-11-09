@@ -1,0 +1,24 @@
+{
+    "updated_at": "2026-11-09T16:38:48+04:00",
+    "code": "biblos-bank-armenia",
+    "name": "Библос Банк Армения",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/byblos.webp",
+    "rates": {
+        "EUR": {
+            "buy": 396,
+            "sell": 407
+        },
+        "GBP": {
+            "buy": 473,
+            "sell": 492
+        },
+        "RUR": {
+            "buy": 3.14,
+            "sell": 4.65
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362
+        }
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "currency": "AUD",
+    "updated_at": "2026-11-09T20:31:17+04:00",
+    "found": true,
+    "banks": [
+        {
+            "code": "konvers-bank",
+            "name": "Конверс Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/conversebank.png",
+            "buy": 235,
+            "sell": 253
+        },
+        {
+            "code": "ameriabank",
+            "name": "Америабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+            "buy": 233,
+            "sell": 253
+        },
+        {
+            "code": "araratbank",
+            "name": "АраратБанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/araratbank.webp",
+            "buy": 232,
+            "sell": 256
+        }
+    ]
+}

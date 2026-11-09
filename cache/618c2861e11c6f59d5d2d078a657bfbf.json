@@ -1,0 +1,77 @@
+{
+    "currency": "CHF",
+    "updated_at": "2026-11-09T20:31:18+04:00",
+    "found": true,
+    "banks": [
+        {
+            "code": "acba-bank",
+            "name": "Акба банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/acbabank.png",
+            "buy": 431,
+            "sell": 451
+        },
+        {
+            "code": "armsvisbank",
+            "name": "Армсвисбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armswiss.png",
+            "buy": 430,
+            "sell": 444
+        },
+        {
+            "code": "evocabank",
+            "name": "Эвокабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/evocabank.png",
+            "buy": 428,
+            "sell": 444
+        },
+        {
+            "code": "haybiznesbank",
+            "name": "Амио Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/amiobank.webp",
+            "buy": 428,
+            "sell": 451
+        },
+        {
+            "code": "ardshinbank",
+            "name": "Ардшинбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ardshinbank.png",
+            "buy": 428,
+            "sell": 452
+        },
+        {
+            "code": "ameriabank",
+            "name": "Америабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+            "buy": 427,
+            "sell": 447
+        },
+        {
+            "code": "arcakhbank",
+            "name": "Арцахбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/artsakhbank.webp",
+            "buy": 426,
+            "sell": 444
+        },
+        {
+            "code": "hayekonombank",
+            "name": "Армэкономбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armeconombank.png",
+            "buy": 425,
+            "sell": 449
+        },
+        {
+            "code": "konvers-bank",
+            "name": "Конверс Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/conversebank.png",
+            "buy": 424,
+            "sell": 448
+        },
+        {
+            "code": "araratbank",
+            "name": "АраратБанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/araratbank.webp",
+            "buy": 424,
+            "sell": 450
+        }
+    ]
+}

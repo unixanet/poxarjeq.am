@@ -1,0 +1,28 @@
+{
+    "updated_at": "2026-11-09T19:43:54+04:00",
+    "code": "vtbhayastan-bank",
+    "name": "ВТБ Армения",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/vtb.webp",
+    "rates": {
+        "EUR": {
+            "buy": 397,
+            "sell": 406
+        },
+        "GBP": {
+            "buy": 442,
+            "sell": 515
+        },
+        "GEL": {
+            "buy": 132,
+            "sell": 152
+        },
+        "RUR": {
+            "buy": 4.15,
+            "sell": 4.35
+        },
+        "USD": {
+            "buy": 359,
+            "sell": 362.5
+        }
+    }
+}

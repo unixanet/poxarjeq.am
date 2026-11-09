@@ -1,0 +1,32 @@
+{
+    "updated_at": "2026-11-09T17:23:15+04:00",
+    "code": "hayekonombank",
+    "name": "Армэкономбанк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/armeconombank.png",
+    "rates": {
+        "CHF": {
+            "buy": 425,
+            "sell": 449
+        },
+        "EUR": {
+            "buy": 397,
+            "sell": 408
+        },
+        "GBP": {
+            "buy": 470,
+            "sell": 492
+        },
+        "GEL": {
+            "buy": 135,
+            "sell": 145
+        },
+        "RUR": {
+            "buy": 4.14,
+            "sell": 4.42
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362.5
+        }
+    }
+}

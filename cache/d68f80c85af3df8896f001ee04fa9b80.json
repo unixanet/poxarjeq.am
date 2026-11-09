@@ -1,0 +1,119 @@
+{
+    "currency": "USD",
+    "updated_at": "2026-11-09T20:31:21+04:00",
+    "found": true,
+    "banks": [
+        {
+            "code": "fast-bank",
+            "name": "Фаст Банк\r\n",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/fastbank.webp",
+            "buy": 359,
+            "sell": 361
+        },
+        {
+            "code": "vtbhayastan-bank",
+            "name": "ВТБ Армения",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/vtb.webp",
+            "buy": 359,
+            "sell": 362.5
+        },
+        {
+            "code": "hayekonombank",
+            "name": "Армэкономбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armeconombank.png",
+            "buy": 358,
+            "sell": 362.5
+        },
+        {
+            "code": "aydi-bank",
+            "name": "АйДи Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/idbank.webp",
+            "buy": 358,
+            "sell": 362.5
+        },
+        {
+            "code": "evocabank",
+            "name": "Эвокабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/evocabank.png",
+            "buy": 358,
+            "sell": 362
+        },
+        {
+            "code": "arcakhbank",
+            "name": "Арцахбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/artsakhbank.webp",
+            "buy": 358,
+            "sell": 361.5
+        },
+        {
+            "code": "haybiznesbank",
+            "name": "Амио Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/amiobank.webp",
+            "buy": 358,
+            "sell": 362.5
+        },
+        {
+            "code": "ardshinbank",
+            "name": "Ардшинбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ardshinbank.png",
+            "buy": 358,
+            "sell": 362.5
+        },
+        {
+            "code": "inekobank",
+            "name": "Инекобанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/inecobank.webp",
+            "buy": 358,
+            "sell": 362.5
+        },
+        {
+            "code": "yunibank",
+            "name": "Юнибанк\/Армения",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/unibankarmenia.webp",
+            "buy": 358,
+            "sell": 361.5
+        },
+        {
+            "code": "konvers-bank",
+            "name": "Конверс Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/conversebank.png",
+            "buy": 358,
+            "sell": 362
+        },
+        {
+            "code": "armsvisbank",
+            "name": "Армсвисбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armswiss.png",
+            "buy": 358,
+            "sell": 362
+        },
+        {
+            "code": "biblos-bank-armenia",
+            "name": "Библос Банк Армения",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/byblos.webp",
+            "buy": 358,
+            "sell": 362
+        },
+        {
+            "code": "araratbank",
+            "name": "АраратБанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/araratbank.webp",
+            "buy": 358,
+            "sell": 362
+        },
+        {
+            "code": "acba-bank",
+            "name": "Акба банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/acbabank.png",
+            "buy": 358,
+            "sell": 362.5
+        },
+        {
+            "code": "ameriabank",
+            "name": "Америабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+            "buy": 357.5,
+            "sell": 362.5
+        }
+    ]
+}

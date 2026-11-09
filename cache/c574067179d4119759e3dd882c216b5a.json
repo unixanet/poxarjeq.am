@@ -1,0 +1,21 @@
+{
+    "currency": "CNY",
+    "updated_at": "2026-11-09T20:31:18+04:00",
+    "found": true,
+    "banks": [
+        {
+            "code": "ameriabank",
+            "name": "Америабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+            "buy": 52,
+            "sell": 56
+        },
+        {
+            "code": "konvers-bank",
+            "name": "Конверс Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/conversebank.png",
+            "buy": 50,
+            "sell": 59
+        }
+    ]
+}

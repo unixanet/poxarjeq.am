@@ -1,0 +1,12 @@
+{
+    "updated_at": "2026-11-09T20:10:05+04:00",
+    "code": "mellat-bank",
+    "name": "Меллат Банк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/mellat.webp",
+    "rates": {
+        "EUR": {
+            "buy": 390,
+            "sell": 402.5
+        }
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "updated_at": "2026-11-09T20:34:09+04:00",
+    "code": "aydi-bank",
+    "name": "АйДи Банк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/idbank.webp",
+    "rates": {
+        "EUR": {
+            "buy": 396,
+            "sell": 408
+        },
+        "GBP": {
+            "buy": 473,
+            "sell": 491
+        },
+        "GEL": {
+            "buy": 135,
+            "sell": 143
+        },
+        "RUR": {
+            "buy": 4.13,
+            "sell": 4.48
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362.5
+        }
+    }
+}

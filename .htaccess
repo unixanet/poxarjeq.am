@@ -1,0 +1,12 @@
+Options -Indexes
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # /ameriabank/vanadzor -> branch.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/?$ branch.php?code=$1&city=$2 [L,QSA]
+    # /ameriabank -> ameriabank.php if exists else bank.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([a-z0-9-]+)/?$ bank.php?code=$1 [L,QSA]
+</IfModule>

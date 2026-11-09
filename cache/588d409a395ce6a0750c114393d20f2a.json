@@ -1,0 +1,35 @@
+{
+    "currency": "AED",
+    "updated_at": "2026-11-09T20:31:16+04:00",
+    "found": true,
+    "banks": [
+        {
+            "code": "fast-bank",
+            "name": "Фаст Банк\r\n",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/fastbank.webp",
+            "buy": 95,
+            "sell": 99
+        },
+        {
+            "code": "ameriabank",
+            "name": "Америабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+            "buy": 94,
+            "sell": 99.5
+        },
+        {
+            "code": "araratbank",
+            "name": "АраратБанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/araratbank.webp",
+            "buy": 93.5,
+            "sell": 99
+        },
+        {
+            "code": "konvers-bank",
+            "name": "Конверс Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/conversebank.png",
+            "buy": 89,
+            "sell": 107
+        }
+    ]
+}

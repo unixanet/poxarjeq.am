@@ -1,0 +1,70 @@
+{
+    "currency": "GEL",
+    "updated_at": "2026-11-09T20:31:19+04:00",
+    "found": true,
+    "banks": [
+        {
+            "code": "fast-bank",
+            "name": "Фаст Банк\r\n",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/fastbank.webp",
+            "buy": 138,
+            "sell": 140.5
+        },
+        {
+            "code": "armsvisbank",
+            "name": "Армсвисбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armswiss.png",
+            "buy": 137.5,
+            "sell": 141
+        },
+        {
+            "code": "acba-bank",
+            "name": "Акба банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/acbabank.png",
+            "buy": 136,
+            "sell": 146
+        },
+        {
+            "code": "hayekonombank",
+            "name": "Армэкономбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armeconombank.png",
+            "buy": 135,
+            "sell": 145
+        },
+        {
+            "code": "aydi-bank",
+            "name": "АйДи Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/idbank.webp",
+            "buy": 135,
+            "sell": 143
+        },
+        {
+            "code": "ameriabank",
+            "name": "Америабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+            "buy": 133.5,
+            "sell": 144
+        },
+        {
+            "code": "vtbhayastan-bank",
+            "name": "ВТБ Армения",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/vtb.webp",
+            "buy": 132,
+            "sell": 152
+        },
+        {
+            "code": "arcakhbank",
+            "name": "Арцахбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/artsakhbank.webp",
+            "buy": 130,
+            "sell": 152
+        },
+        {
+            "code": "araratbank",
+            "name": "АраратБанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/araratbank.webp",
+            "buy": 129,
+            "sell": 140.5
+        }
+    ]
+}

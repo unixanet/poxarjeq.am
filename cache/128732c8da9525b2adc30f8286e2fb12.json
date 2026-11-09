@@ -1,0 +1,28 @@
+{
+    "updated_at": "2026-11-09T18:06:49+04:00",
+    "code": "ardshinbank",
+    "name": "Ардшинбанк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/ardshinbank.png",
+    "rates": {
+        "CHF": {
+            "buy": 428,
+            "sell": 452
+        },
+        "EUR": {
+            "buy": 396,
+            "sell": 410
+        },
+        "GBP": {
+            "buy": 473,
+            "sell": 494
+        },
+        "RUR": {
+            "buy": 4.08,
+            "sell": 4.45
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362.5
+        }
+    }
+}

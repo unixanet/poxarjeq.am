@@ -1,0 +1,32 @@
+{
+    "updated_at": "2026-11-09T17:37:12+04:00",
+    "code": "fast-bank",
+    "name": "Фаст Банк\r\n",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/fastbank.webp",
+    "rates": {
+        "AED": {
+            "buy": 95,
+            "sell": 99
+        },
+        "EUR": {
+            "buy": 400,
+            "sell": 403.5
+        },
+        "GBP": {
+            "buy": 477,
+            "sell": 486
+        },
+        "GEL": {
+            "buy": 138,
+            "sell": 140.5
+        },
+        "RUR": {
+            "buy": 4.15,
+            "sell": 4.41
+        },
+        "USD": {
+            "buy": 359,
+            "sell": 361
+        }
+    }
+}

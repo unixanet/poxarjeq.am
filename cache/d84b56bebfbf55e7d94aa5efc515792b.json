@@ -1,0 +1,44 @@
+{
+    "updated_at": "2026-11-09T16:12:10+04:00",
+    "code": "araratbank",
+    "name": "АраратБанк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/araratbank.webp",
+    "rates": {
+        "AED": {
+            "buy": 93.5,
+            "sell": 99
+        },
+        "AUD": {
+            "buy": 232,
+            "sell": 256
+        },
+        "CAD": {
+            "buy": 240,
+            "sell": 264
+        },
+        "CHF": {
+            "buy": 424,
+            "sell": 449
+        },
+        "EUR": {
+            "buy": 396,
+            "sell": 407
+        },
+        "GBP": {
+            "buy": 468,
+            "sell": 493
+        },
+        "GEL": {
+            "buy": 129,
+            "sell": 140.5
+        },
+        "RUR": {
+            "buy": 4.11,
+            "sell": 4.35
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362
+        }
+    }
+}

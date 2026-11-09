@@ -1,0 +1,24 @@
+{
+    "updated_at": "2026-11-09T20:05:24+04:00",
+    "code": "yunibank",
+    "name": "Юнибанк\/Армения",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/unibankarmenia.webp",
+    "rates": {
+        "EUR": {
+            "buy": 395,
+            "sell": 407
+        },
+        "GBP": {
+            "buy": 469,
+            "sell": 494
+        },
+        "RUR": {
+            "buy": 4.15,
+            "sell": 4.52
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 361.5
+        }
+    }
+}

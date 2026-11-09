@@ -1,0 +1,20 @@
+{
+    "updated_at": "2026-11-09T18:32:45+04:00",
+    "code": "inekobank",
+    "name": "Инекобанк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/inecobank.webp",
+    "rates": {
+        "EUR": {
+            "buy": 397,
+            "sell": 408
+        },
+        "RUR": {
+            "buy": 4.11,
+            "sell": 4.53
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362.5
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "updated_at": "2026-11-09T17:27:37+04:00",
+    "code": "armsvisbank",
+    "name": "Армсвисбанк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/armswiss.png",
+    "rates": {
+        "CHF": {
+            "buy": 430,
+            "sell": 444
+        },
+        "EUR": {
+            "buy": 397.5,
+            "sell": 406.5
+        },
+        "GBP": {
+            "buy": 472,
+            "sell": 490
+        },
+        "GEL": {
+            "buy": 137.5,
+            "sell": 141
+        },
+        "RUR": {
+            "buy": 4.12,
+            "sell": 4.43
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362
+        }
+    }
+}

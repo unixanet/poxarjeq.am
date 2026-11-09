@@ -1,0 +1,593 @@
+{
+    "updated_at": "2026-11-09T20:31:34+04:00",
+    "currencies": [
+        "AED",
+        "AUD",
+        "CAD",
+        "CHF",
+        "CNY",
+        "EUR",
+        "GBP",
+        "GEL",
+        "JPY",
+        "RUR",
+        "USD"
+    ],
+    "summary": {
+        "AED": {
+            "avg_buy": 92.88,
+            "avg_sell": 101.13,
+            "best_buy": 95,
+            "best_sell": 99
+        },
+        "AUD": {
+            "avg_buy": 233.33,
+            "avg_sell": 254,
+            "best_buy": 235,
+            "best_sell": 253
+        },
+        "CAD": {
+            "avg_buy": 240.88,
+            "avg_sell": 260.63,
+            "best_buy": 244,
+            "best_sell": 259
+        },
+        "CHF": {
+            "avg_buy": 427.1,
+            "avg_sell": 448,
+            "best_buy": 431,
+            "best_sell": 444
+        },
+        "CNY": {
+            "avg_buy": 51,
+            "avg_sell": 57.5,
+            "best_buy": 52,
+            "best_sell": 56
+        },
+        "EUR": {
+            "avg_buy": 396.44,
+            "avg_sell": 407.44,
+            "best_buy": 400,
+            "best_sell": 402.5
+        },
+        "GBP": {
+            "avg_buy": 470.17,
+            "avg_sell": 493.43,
+            "best_buy": 477,
+            "best_sell": 486
+        },
+        "GEL": {
+            "avg_buy": 134,
+            "avg_sell": 144.89,
+            "best_buy": 138,
+            "best_sell": 140.5
+        },
+        "JPY": {
+            "avg_buy": 2.15,
+            "avg_sell": 2.4,
+            "best_buy": 2.15,
+            "best_sell": 2.4
+        },
+        "RUR": {
+            "avg_buy": 4.07,
+            "avg_sell": 4.46,
+            "best_buy": 4.15,
+            "best_sell": 4.35
+        },
+        "USD": {
+            "avg_buy": 358.09,
+            "avg_sell": 362.13,
+            "best_buy": 359,
+            "best_sell": 361
+        }
+    },
+    "banks": [
+        {
+            "code": "fast-bank",
+            "name": "Фаст Банк\r\n",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/fastbank.webp",
+            "rates": {
+                "AED": {
+                    "buy": 95,
+                    "sell": 99
+                },
+                "EUR": {
+                    "buy": 400,
+                    "sell": 403.5
+                },
+                "GBP": {
+                    "buy": 477,
+                    "sell": 486
+                },
+                "GEL": {
+                    "buy": 138,
+                    "sell": 140.5
+                },
+                "RUR": {
+                    "buy": 4.13,
+                    "sell": 4.39
+                },
+                "USD": {
+                    "buy": 359,
+                    "sell": 361
+                }
+            }
+        },
+        {
+            "code": "konvers-bank",
+            "name": "Конверс Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/conversebank.png",
+            "rates": {
+                "AED": {
+                    "buy": 89,
+                    "sell": 107
+                },
+                "AUD": {
+                    "buy": 235,
+                    "sell": 253
+                },
+                "CAD": {
+                    "buy": 244,
+                    "sell": 259
+                },
+                "CHF": {
+                    "buy": 424,
+                    "sell": 448
+                },
+                "CNY": {
+                    "buy": 50,
+                    "sell": 59
+                },
+                "EUR": {
+                    "buy": 398,
+                    "sell": 409
+                },
+                "GBP": {
+                    "buy": 476,
+                    "sell": 493
+                },
+                "RUR": {
+                    "buy": 4.12,
+                    "sell": 4.51
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362
+                }
+            }
+        },
+        {
+            "code": "ameriabank",
+            "name": "Америабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+            "rates": {
+                "AED": {
+                    "buy": 94,
+                    "sell": 99.5
+                },
+                "AUD": {
+                    "buy": 233,
+                    "sell": 253
+                },
+                "CAD": {
+                    "buy": 240.5,
+                    "sell": 260.5
+                },
+                "CHF": {
+                    "buy": 427,
+                    "sell": 447
+                },
+                "CNY": {
+                    "buy": 52,
+                    "sell": 56
+                },
+                "EUR": {
+                    "buy": 395,
+                    "sell": 409
+                },
+                "GBP": {
+                    "buy": 471.5,
+                    "sell": 491.5
+                },
+                "GEL": {
+                    "buy": 133.5,
+                    "sell": 144
+                },
+                "JPY": {
+                    "buy": 2.15,
+                    "sell": 2.4
+                },
+                "RUR": {
+                    "buy": 4.08,
+                    "sell": 4.54
+                },
+                "USD": {
+                    "buy": 357.5,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "araratbank",
+            "name": "АраратБанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/araratbank.webp",
+            "rates": {
+                "AED": {
+                    "buy": 93.5,
+                    "sell": 99
+                },
+                "AUD": {
+                    "buy": 232,
+                    "sell": 256
+                },
+                "CAD": {
+                    "buy": 240,
+                    "sell": 264
+                },
+                "CHF": {
+                    "buy": 424,
+                    "sell": 450
+                },
+                "EUR": {
+                    "buy": 396,
+                    "sell": 408
+                },
+                "GBP": {
+                    "buy": 468,
+                    "sell": 494
+                },
+                "GEL": {
+                    "buy": 129,
+                    "sell": 140.5
+                },
+                "RUR": {
+                    "buy": 4.11,
+                    "sell": 4.35
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362
+                }
+            }
+        },
+        {
+            "code": "arcakhbank",
+            "name": "Арцахбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/artsakhbank.webp",
+            "rates": {
+                "CAD": {
+                    "buy": 239,
+                    "sell": 259
+                },
+                "CHF": {
+                    "buy": 426,
+                    "sell": 444
+                },
+                "EUR": {
+                    "buy": 396,
+                    "sell": 407
+                },
+                "GBP": {
+                    "buy": 469,
+                    "sell": 490
+                },
+                "GEL": {
+                    "buy": 130,
+                    "sell": 152
+                },
+                "RUR": {
+                    "buy": 4.15,
+                    "sell": 4.35
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 361.5
+                }
+            }
+        },
+        {
+            "code": "hayekonombank",
+            "name": "Армэкономбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armeconombank.png",
+            "rates": {
+                "CHF": {
+                    "buy": 425,
+                    "sell": 449
+                },
+                "EUR": {
+                    "buy": 397,
+                    "sell": 408
+                },
+                "GBP": {
+                    "buy": 470,
+                    "sell": 492
+                },
+                "GEL": {
+                    "buy": 135,
+                    "sell": 145
+                },
+                "RUR": {
+                    "buy": 4.14,
+                    "sell": 4.42
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "evocabank",
+            "name": "Эвокабанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/evocabank.png",
+            "rates": {
+                "CHF": {
+                    "buy": 428,
+                    "sell": 444
+                },
+                "EUR": {
+                    "buy": 397,
+                    "sell": 407
+                },
+                "GBP": {
+                    "buy": 473,
+                    "sell": 492
+                },
+                "RUR": {
+                    "buy": 4.14,
+                    "sell": 4.43
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362
+                }
+            }
+        },
+        {
+            "code": "haybiznesbank",
+            "name": "Амио Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/amiobank.webp",
+            "rates": {
+                "CHF": {
+                    "buy": 428,
+                    "sell": 451
+                },
+                "EUR": {
+                    "buy": 397,
+                    "sell": 410
+                },
+                "GBP": {
+                    "buy": 473,
+                    "sell": 494
+                },
+                "RUR": {
+                    "buy": 4.15,
+                    "sell": 4.47
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "ardshinbank",
+            "name": "Ардшинбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/ardshinbank.png",
+            "rates": {
+                "CHF": {
+                    "buy": 428,
+                    "sell": 452
+                },
+                "EUR": {
+                    "buy": 396,
+                    "sell": 410
+                },
+                "GBP": {
+                    "buy": 473,
+                    "sell": 494
+                },
+                "RUR": {
+                    "buy": 4.08,
+                    "sell": 4.45
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "armsvisbank",
+            "name": "Армсвисбанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/armswiss.png",
+            "rates": {
+                "CHF": {
+                    "buy": 430,
+                    "sell": 444
+                },
+                "EUR": {
+                    "buy": 397.5,
+                    "sell": 406.5
+                },
+                "GBP": {
+                    "buy": 472,
+                    "sell": 490
+                },
+                "GEL": {
+                    "buy": 137.5,
+                    "sell": 141
+                },
+                "RUR": {
+                    "buy": 4.12,
+                    "sell": 4.43
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362
+                }
+            }
+        },
+        {
+            "code": "acba-bank",
+            "name": "Акба банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/acbabank.png",
+            "rates": {
+                "CHF": {
+                    "buy": 431,
+                    "sell": 451
+                },
+                "EUR": {
+                    "buy": 399,
+                    "sell": 410
+                },
+                "GBP": {
+                    "buy": 473,
+                    "sell": 493
+                },
+                "GEL": {
+                    "buy": 136,
+                    "sell": 146
+                },
+                "RUR": {
+                    "buy": 4.15,
+                    "sell": 4.45
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "aydi-bank",
+            "name": "АйДи Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/idbank.webp",
+            "rates": {
+                "EUR": {
+                    "buy": 396,
+                    "sell": 408
+                },
+                "GBP": {
+                    "buy": 473,
+                    "sell": 491
+                },
+                "GEL": {
+                    "buy": 135,
+                    "sell": 143
+                },
+                "RUR": {
+                    "buy": 4.13,
+                    "sell": 4.48
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "vtbhayastan-bank",
+            "name": "ВТБ Армения",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/vtb.webp",
+            "rates": {
+                "EUR": {
+                    "buy": 397,
+                    "sell": 406
+                },
+                "GBP": {
+                    "buy": 442,
+                    "sell": 515
+                },
+                "GEL": {
+                    "buy": 132,
+                    "sell": 152
+                },
+                "RUR": {
+                    "buy": 4.15,
+                    "sell": 4.35
+                },
+                "USD": {
+                    "buy": 359,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "inekobank",
+            "name": "Инекобанк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/inecobank.webp",
+            "rates": {
+                "EUR": {
+                    "buy": 397,
+                    "sell": 408
+                },
+                "RUR": {
+                    "buy": 4.11,
+                    "sell": 4.53
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362.5
+                }
+            }
+        },
+        {
+            "code": "yunibank",
+            "name": "Юнибанк\/Армения",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/unibankarmenia.webp",
+            "rates": {
+                "EUR": {
+                    "buy": 395,
+                    "sell": 407
+                },
+                "GBP": {
+                    "buy": 469,
+                    "sell": 494
+                },
+                "RUR": {
+                    "buy": 4.15,
+                    "sell": 4.52
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 361.5
+                }
+            }
+        },
+        {
+            "code": "biblos-bank-armenia",
+            "name": "Библос Банк Армения",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/byblos.webp",
+            "rates": {
+                "EUR": {
+                    "buy": 396,
+                    "sell": 407
+                },
+                "GBP": {
+                    "buy": 473,
+                    "sell": 492
+                },
+                "RUR": {
+                    "buy": 3.14,
+                    "sell": 4.65
+                },
+                "USD": {
+                    "buy": 358,
+                    "sell": 362
+                }
+            }
+        },
+        {
+            "code": "mellat-bank",
+            "name": "Меллат Банк",
+            "logo": "https:\/\/poxarjeq.com\/media\/banks\/mellat.webp",
+            "rates": {
+                "EUR": {
+                    "buy": 390,
+                    "sell": 402.5
+                }
+            }
+        }
+    ]
+}

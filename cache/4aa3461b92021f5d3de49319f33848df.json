@@ -1,0 +1,36 @@
+{
+    "updated_at": "2026-11-09T19:09:46+04:00",
+    "code": "arcakhbank",
+    "name": "Арцахбанк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/artsakhbank.webp",
+    "rates": {
+        "CAD": {
+            "buy": 239,
+            "sell": 259
+        },
+        "CHF": {
+            "buy": 426,
+            "sell": 444
+        },
+        "EUR": {
+            "buy": 396,
+            "sell": 407
+        },
+        "GBP": {
+            "buy": 469,
+            "sell": 490
+        },
+        "GEL": {
+            "buy": 130,
+            "sell": 152
+        },
+        "RUR": {
+            "buy": 4.15,
+            "sell": 4.35
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 361.5
+        }
+    }
+}

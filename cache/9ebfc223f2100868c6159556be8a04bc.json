@@ -1,0 +1,44 @@
+{
+    "updated_at": "2026-11-09T17:55:22+04:00",
+    "code": "konvers-bank",
+    "name": "Конверс Банк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/conversebank.png",
+    "rates": {
+        "AED": {
+            "buy": 89,
+            "sell": 107
+        },
+        "AUD": {
+            "buy": 235,
+            "sell": 253
+        },
+        "CAD": {
+            "buy": 244,
+            "sell": 259
+        },
+        "CHF": {
+            "buy": 424,
+            "sell": 448
+        },
+        "CNY": {
+            "buy": 50,
+            "sell": 59
+        },
+        "EUR": {
+            "buy": 397,
+            "sell": 407
+        },
+        "GBP": {
+            "buy": 475,
+            "sell": 492
+        },
+        "RUR": {
+            "buy": 4.12,
+            "sell": 4.52
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362
+        }
+    }
+}

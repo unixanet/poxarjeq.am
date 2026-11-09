@@ -1,0 +1,32 @@
+{
+    "updated_at": "2026-11-09T19:46:26+04:00",
+    "code": "acba-bank",
+    "name": "Акба банк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/acbabank.png",
+    "rates": {
+        "CHF": {
+            "buy": 431,
+            "sell": 451
+        },
+        "EUR": {
+            "buy": 399,
+            "sell": 410
+        },
+        "GBP": {
+            "buy": 473,
+            "sell": 493
+        },
+        "GEL": {
+            "buy": 136,
+            "sell": 146
+        },
+        "RUR": {
+            "buy": 4.15,
+            "sell": 4.45
+        },
+        "USD": {
+            "buy": 358,
+            "sell": 362.5
+        }
+    }
+}

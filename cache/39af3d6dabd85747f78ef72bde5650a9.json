@@ -1,0 +1,52 @@
+{
+    "updated_at": "2026-11-09T20:15:35+04:00",
+    "code": "ameriabank",
+    "name": "Америабанк",
+    "logo": "https:\/\/poxarjeq.com\/media\/banks\/ameria.png",
+    "rates": {
+        "AED": {
+            "buy": 94,
+            "sell": 99.5
+        },
+        "AUD": {
+            "buy": 233,
+            "sell": 253
+        },
+        "CAD": {
+            "buy": 240.5,
+            "sell": 260.5
+        },
+        "CHF": {
+            "buy": 427,
+            "sell": 447
+        },
+        "CNY": {
+            "buy": 52,
+            "sell": 56
+        },
+        "EUR": {
+            "buy": 395,
+            "sell": 409
+        },
+        "GBP": {
+            "buy": 471.5,
+            "sell": 491.5
+        },
+        "GEL": {
+            "buy": 133.5,
+            "sell": 144
+        },
+        "JPY": {
+            "buy": 2.15,
+            "sell": 2.4
+        },
+        "RUR": {
+            "buy": 4.08,
+            "sell": 4.54
+        },
+        "USD": {
+            "buy": 357.5,
+            "sell": 362.5
+        }
+    }
+}
