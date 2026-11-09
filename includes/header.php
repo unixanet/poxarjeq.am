@@ -32,9 +32,8 @@ $pageCanonical = rtrim($pageCanonical, '?&');
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= e($pageTitle) ?>">
     <meta name="twitter:description" content="<?= e($pageDescription) ?>">
-    <link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/css/output.css?v=<?= (int)@filemtime(__DIR__ . '/../css/output.css') ?>">
+<?php require __DIR__ . '/tw.php'; ?>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN397C6CTH"></script>
@@ -47,7 +46,7 @@ $pageCanonical = rtrim($pageCanonical, '?&');
 </script>
 
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col bg-[#fcfcfd] text-black antialiased font-sans">
 <?php
 $_hNav = [
     ['key' => 'home',    'href' => '/',                       'label' => t('home')],

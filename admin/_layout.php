@@ -15,11 +15,10 @@ function adm_head(string $title, string $active = '', ?array $user = null): void
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#ffffff">
 <title><?= e($title) ?> — админка</title>
-<link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="/favicon.ico">
-<link rel="stylesheet" href="/css/output.css?v=<?= (int)@filemtime(__DIR__ . '/../css/output.css') ?>">
+<?php require __DIR__ . '/../includes/tw.php'; ?>
 </head>
-<body class="min-h-screen bg-slate-50 text-black">
+<body class="min-h-screen bg-slate-50 text-black antialiased font-sans">
 <div class="lg:flex">
     <!-- Боковое меню (десктоп) -->
     <aside class="hidden lg:flex lg:sticky lg:top-0 lg:h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white">

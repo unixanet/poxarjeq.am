@@ -41,9 +41,12 @@ function adm_ready(): void
 
 function adm_plain_page(string $title, string $text): never
 {
-    echo '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>' . e($title) . '</title>'
-       . '<link rel="stylesheet" href="/css/output.css?v=' . (int)@filemtime(__DIR__ . '/../css/output.css') . '"></head>'
-       . '<body class="min-h-screen grid place-items-center bg-slate-50 px-4"><div class="max-w-md rounded-3xl border border-slate-100 bg-white p-8 shadow-xl">'
+    ob_start();
+    require __DIR__ . '/../includes/tw.php';
+    $tw = ob_get_clean();
+    echo '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>' . e($title) . '</title>' . $tw
+       . '</head>'
+       . '<body class="min-h-screen grid place-items-center bg-slate-50 px-4 font-sans"><div class="max-w-md rounded-3xl border border-slate-100 bg-white p-8 shadow-xl">'
        . '<h1 class="text-xl font-black text-slate-900">' . e($title) . '</h1><p class="mt-3 text-black">' . e($text) . '</p></div></body></html>';
     exit;
 }

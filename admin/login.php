@@ -60,9 +60,9 @@ $inp = 'mt-1.5 block min-h-[48px] w-full rounded-xl border border-slate-300 bg-w
 <meta name="robots" content="noindex, nofollow">
 <title>Вход — админка</title>
 <link rel="icon" href="/favicon.ico">
-<link rel="stylesheet" href="/css/output.css?v=<?= (int)@filemtime(__DIR__ . '/../css/output.css') ?>">
+<?php require __DIR__ . '/../includes/tw.php'; ?>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-8 sm:grid sm:place-items-center">
+<body class="font-sans antialiased text-black min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-8 sm:grid sm:place-items-center">
 <main class="mx-auto w-full max-w-md">
     <div class="mb-6 flex items-center justify-center gap-3">
         <span class="grid h-11 w-11 place-items-center rounded-xl bg-blue-600 text-2xl font-extrabold text-white shadow-[0_6px_16px_rgba(37,99,235,.3)]">֏</span>
