@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-/** Мелкие помощники форм админки (Tailwind) */
 const ADM_INP = 'mt-1 block min-h-[44px] w-full rounded-xl border border-slate-300 bg-white px-3.5 text-[15px] text-black outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
 const ADM_TA  = 'mt-1 block w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] leading-relaxed text-black outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
 const ADM_LANGS = ['hy' => 'HY · Հայերեն (основной)', 'ru' => 'RU · Русский', 'en' => 'EN · English'];
@@ -18,7 +17,6 @@ function adm_field(string $id, string $name, string $label, string $value, bool 
     return $lab . '<input id="' . e($id) . '" type="text" name="' . e($name) . '" value="' . e($value) . '" class="' . ADM_INP . '" placeholder="' . e($placeholder) . '" ' . $extra . '></label>';
 }
 
-/** Сброс кэша сайта после любых правок контента */
 function adm_content_changed(): void
 {
     bank_store_clear_cache();

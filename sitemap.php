@@ -1,32 +1,33 @@
 <?php
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/sitemap_data.php';
+
 header('Content-Type: application/xml; charset=utf-8');
+header('Cache-Control: public, max-age=900');
 $base = rtrim(SITE_URL, '/');
-$urls = [
-    ['loc' => $base . '/', 'priority' => '1.0', 'changefreq' => 'hourly'],
-    ['loc' => $base . '/about.php', 'priority' => '0.5', 'changefreq' => 'monthly'],
-    ['loc' => $base . '/contact.php', 'priority' => '0.4', 'changefreq' => 'monthly'],
-    ['loc' => $base . '/privacy.php', 'priority' => '0.3', 'changefreq' => 'yearly'],
-    ['loc' => $base . '/disclaimer.php', 'priority' => '0.3', 'changefreq' => 'yearly'],
-];
-foreach (all_currency_codes() as $c) {
-    $urls[] = ['loc' => $base . '/currency.php?cur=' . $c, 'priority' => '0.9', 'changefreq' => 'hourly'];
+$parts = ['pages', 'currencies', 'banks', 'branches'];
+$part = (string)($_GET['part'] ?? '');
+echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+
+if (!in_array($part, $parts, true)) {
+    echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    foreach ($parts as $p) {
+        $last = '';
+        foreach (sm_entries($p) as $en) if ($en['lastmod'] > $last) $last = $en['lastmod'];
+        echo '  <sitemap><loc>' . $base . '/sitemap-' . $p . '.xml</loc>' . ($last ? '<lastmod>' . $last . '</lastmod>' : '') . "</sitemap>\n";
+    }
+    echo '</sitemapindex>';
+    exit;
 }
-$list = get_banks_list();
-if ($list && !empty($list['banks'])) {
-    foreach ($list['banks'] as $b) {
-        $urls[] = ['loc' => $base . bank_page_url($b['code']), 'priority' => '0.7', 'changefreq' => 'daily'];
+
+echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
+foreach (sm_entries($part) as $en) {
+    $alts = page_urls($en['path']);
+    foreach (SUPPORTED_LANGS as $l) {
+        echo "  <url>\n    <loc>" . htmlspecialchars($alts[$l], ENT_XML1) . "</loc>\n";
+        foreach (SUPPORTED_LANGS as $al) echo '    <xhtml:link rel="alternate" hreflang="' . $al . '" href="' . htmlspecialchars($alts[$al], ENT_XML1) . '"/>' . "\n";
+        echo '    <xhtml:link rel="alternate" hreflang="x-default" href="' . htmlspecialchars($alts[DEFAULT_LANG], ENT_XML1) . '"/>' . "\n";
+        echo '    <lastmod>' . $en['lastmod'] . "</lastmod>\n    <changefreq>" . $en['freq'] . "</changefreq>\n    <priority>" . $en['prio'] . "</priority>\n  </url>\n";
     }
 }
-echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<?php foreach ($urls as $u): ?>
-  <url>
-    <loc><?= htmlspecialchars($u['loc']) ?></loc>
-    <changefreq><?= $u['changefreq'] ?></changefreq>
-    <priority><?= $u['priority'] ?></priority>
-    <lastmod><?= date('Y-m-d') ?></lastmod>
-  </url>
-<?php endforeach; ?>
-</urlset>
+echo '</urlset>';

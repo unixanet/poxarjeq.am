@@ -21,11 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach (['label_hy', 'label_ru', 'label_en'] as $k) $v[$k] = mb_substr(trim((string)($_POST[$k] ?? '')), 0, 190);
     foreach (['title_hy', 'title_ru', 'title_en'] as $k) $v[$k] = mb_substr(trim((string)($_POST[$k] ?? '')), 0, 255);
     $v['new_tab'] = isset($_POST['new_tab']) ? 1 : 0; $v['nofollow'] = isset($_POST['nofollow']) ? 1 : 0; $v['is_active'] = isset($_POST['is_active']) ? 1 : 0;
-    if (!preg_match('~^(/|https?://|mailto:|tel:)[^\s]*$~i', $v['url'])) $errors[] = 'Адрес ссылки должен начинаться с «/», http://, https://, mailto: или tel:';
+    if (!preg_match('~^(/|#currencies$|#banks$|https?://|mailto:|tel:)[^\s]*$~i', $v['url'])) $errors[] = 'Адрес ссылки должен начинаться с «/», http://, https://, mailto: или tel: (в шапке также #currencies и #banks — выпадающие меню)';
     if ($v['label_hy'] === '') $errors[] = 'Заполните текст ссылки на армянском (основной язык).';
     if (!$errors) {
         foreach (['ru', 'en'] as $l) if ($v["label_$l"] === '') $v["label_$l"] = $v['label_hy'];
-        foreach (SUPPORTED_LANGS as $l) if ($v["title_$l"] === '') $v["title_$l"] = $v["label_$l"];   // title всегда заполнен
+        foreach (SUPPORTED_LANGS as $l) if ($v["title_$l"] === '') $v["title_$l"] = $v["label_$l"];
         if ($id) {
             db()->prepare('UPDATE nav_links SET area=?, grp=?, url=?, label_hy=?, label_ru=?, label_en=?, title_hy=?, title_ru=?, title_en=?, new_tab=?, nofollow=?, is_active=? WHERE id=?')
                 ->execute([$v['area'], $v['grp'], $v['url'], $v['label_hy'], $v['label_ru'], $v['label_en'], $v['title_hy'], $v['title_ru'], $v['title_en'], $v['new_tab'], $v['nofollow'], $v['is_active'], $id]);

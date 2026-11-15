@@ -26,7 +26,6 @@ function adm_head(string $title, string $active = '', ?array $user = null): void
 </head>
 <body class="min-h-screen bg-slate-50 text-black antialiased font-sans">
 <div class="lg:flex">
-    <!-- Боковое меню (десктоп) -->
     <aside class="hidden lg:flex lg:sticky lg:top-0 lg:h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
         <a href="/admin/" class="flex h-[68px] items-center gap-2.5 px-6 border-b border-slate-100 no-underline">
             <span class="grid h-9 w-9 place-items-center rounded-[10px] bg-blue-600 text-[19px] font-extrabold text-white">֏</span>
@@ -52,7 +51,6 @@ function adm_head(string $title, string $active = '', ?array $user = null): void
     </aside>
 
     <div class="min-w-0 flex-1">
-        <!-- Верхняя панель (телефон/планшет) -->
         <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur lg:hidden">
             <div class="flex h-14 items-center gap-3 px-4">
                 <button type="button" id="adm-burger" class="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white" aria-label="Меню" aria-expanded="false" aria-controls="adm-menu">
@@ -95,7 +93,6 @@ function adm_foot(): void
 <?php
 }
 
-/** Переключатель-тумблер на Tailwind (peer) */
 function adm_switch(string $name, bool $on, string $label, string $id): string
 {
     return '<label for="' . e($id) . '" class="flex min-h-[44px] cursor-pointer items-center gap-3">'

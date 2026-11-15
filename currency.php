@@ -3,17 +3,14 @@ require_once __DIR__ . '/includes/functions.php';
 
 $lang = detect_lang();
 $L = load_lang($lang);
-
-/* ---- Валюта: все 11 прежних кодов + всё, что сейчас торгуется у банков по данным API ---- */
 $validCodes = array_values(array_unique(array_merge(all_currency_codes(), table_currency_codes())));
-$cur = strtoupper(trim($_GET['cur'] ?? 'USD'));
-if (!in_array($cur, $validCodes, true)) $cur = 'USD';
+if (!isset($_GET['cur'])) pxq_redirect(with_lang('/currency.php?cur=USD', $lang));
+$cur = strtoupper(trim((string)$_GET['cur']));
+if (!in_array($cur, $validCodes, true)) pxq_not_found();
 
-$ov = currency_override($cur, $lang);                       // свои тексты валюты из админки
-$name = ($ov['name'] ?? '') !== '' ? $ov['name'] : currency_name($cur, $lang);
-$vars = ['name' => $name, 'code' => $cur];
-
-/* ---- Банки: видимость, партнёры, логотипы из админки ---- */
+$ov = currency_override($cur, $lang);
+$name = ($ov['name'] ?? '') !== '' ? $ov['name'] : cur_name($cur, $lang);
+$vars = ['name' => $name, 'code' => $cur] + cur_vars($cur, $lang);
 $banksData = get_banks_for_currency($cur);
 $rows = [];
 foreach (($banksData['banks'] ?? []) as $b) {
@@ -37,26 +34,23 @@ foreach ($rows as $r) {
 }
 if ($rows) $avgBuy = array_sum(array_column($rows, 'buy')) / count($rows);
 $updatedAt = $banksData['updated_at'] ?? null;
-
-/* ---- История для графика (первые 30 дней — сразу в странице, остальные периоды подгружает history.php) ---- */
 $hist = get_history($cur, 30);
 $points = [];
 foreach (($hist['points'] ?? []) as $p) {
     if (!isset($p['date'])) continue;
     $points[] = ['date' => (string)$p['date'], 'buy' => (float)($p['buy'] ?? 0), 'sell' => (float)($p['sell'] ?? 0)];
 }
-
-/* ---- Тексты и SEO ---- */
-[$seoTitle, $seoDesc] = seo_meta('currency', $vars);
-$pageTitle = ($ov['seo_title'] ?? '') !== '' ? $ov['seo_title'] : $seoTitle;
-$pageDescription = ($ov['seo_description'] ?? '') !== '' ? $ov['seo_description'] : $seoDesc;
-$pageCanonical = SITE_URL . '/currency.php?cur=' . $cur . '&lang=' . $lang;
+$pageTitle = ($ov['seo_title'] ?? '') !== '' ? $ov['seo_title'] : cur_title($cur, $lang);
+$pageDescription = ($ov['seo_description'] ?? '') !== '' ? $ov['seo_description'] : cur_description($cur, $lang, $bestBuy, $bestBuyBank, $bestSell, $bestSellBank, count($rows));
+$pagePath = '/currency.php?cur=' . $cur;
 $active = strtolower($cur);
 $fullWidth = false;
 
-$h1 = ($ov['h1'] ?? '') !== '' ? $ov['h1'] : $name . ' (' . $cur . ')';
-$leadHtml = ($ov['lead'] ?? '') !== '' ? md_paragraphs(cms_fill($ov['lead'], $vars)) : md_paragraphs(tv('cur.lead', $vars));
-$aboutTitle = ($ov['about_title'] ?? '') !== '' ? $ov['about_title'] : tv('cur.about_title', $vars);
+$h1 = ($ov['h1'] ?? '') !== '' ? $ov['h1'] : cur_h1($cur, $lang);
+$vars += ['best_buy' => $bestBuy !== null ? fmt_rate($bestBuy) : '', 'best_buy_bank' => $bestBuyBank, 'best_sell' => $bestSell !== null ? fmt_rate($bestSell) : '', 'best_sell_bank' => $bestSellBank, 'avg_buy' => $avgBuy !== null ? fmt_rate($avgBuy) : '', 'banks' => count($rows)];
+$leadKey = ($bestBuy !== null && $bestSell !== null) ? 'cur.lead' : 'cur.lead_plain';
+$leadHtml = ($ov['lead'] ?? '') !== '' ? md_paragraphs(cms_fill($ov['lead'], $vars)) : md_paragraphs(cms_text_in($leadKey, $lang, $vars));
+$aboutTitle = ($ov['about_title'] ?? '') !== '' ? $ov['about_title'] : cms_text_in('cur.about_title', $lang, $vars);
 $aboutHtml = ($ov['about_body'] ?? '') !== '' ? md_paragraphs(cms_fill($ov['about_body'], $vars)) : tp('cur.about_p1', $vars) . tp('cur.about_p2', $vars);
 $faq = cms_faq('cur', $vars);
 $crumbs = [[t('home'), '/'], [$name, null]];
@@ -90,12 +84,10 @@ require __DIR__ . '/includes/header.php';
     <?= ui_live($updatedAt) ?>
 </div>
 <div class="mt-3 max-w-3xl space-y-2 text-base sm:text-lg leading-relaxed"><?= $leadHtml ?></div>
-
-<!-- Переключатель валют -->
 <nav class="mt-5" aria-label="<?= e(t('currency_rates')) ?>">
     <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:px-0">
         <?php foreach ($chipCodes as $c): $on = ($c === $cur); $cn = currency_name($c, $lang); ?>
-        <?= ui_link('/currency.php?cur=' . $c . '&lang=' . $lang,
+        <?= ui_link(lurl('/currency.php?cur=' . $c),
             ui_flag($c, 22, 'h-[22px] w-[22px] rounded-full object-cover') . e($c),
             tv('common.link_currency', ['name' => $cn, 'code' => $c]),
             'flex min-h-[44px] shrink-0 items-center gap-2 rounded-xl border px-3.5 text-sm font-bold no-underline ' . ($on ? 'border-blue-600 bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,.25)]' : 'border-slate-200 bg-white text-black hover:border-blue-300'),
@@ -106,7 +98,6 @@ require __DIR__ . '/includes/header.php';
 
 <div class="mt-6 grid items-start gap-5 lg:grid-cols-[1fr_400px] lg:gap-6">
     <div class="min-w-0 space-y-5">
-        <!-- Плитки -->
         <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
             <?php foreach ([[t('best_buy'), $bestBuy, 'text-green-600', $bestBuyBank], [t('best_sell'), $bestSell, 'text-slate-900', $bestSellBank], [t('avg_buy'), $avgBuy, 'text-slate-900', count($rows) . ' ' . t('banks')]] as [$lab, $val, $clr, $sub]): ?>
             <div class="rounded-[18px] border border-slate-100 bg-white p-3 shadow-[0_6px_24px_rgba(15,23,42,.06)] sm:rounded-[22px] sm:p-5">
@@ -116,8 +107,6 @@ require __DIR__ . '/includes/header.php';
             </div>
             <?php endforeach; ?>
         </div>
-
-        <!-- График uPlot -->
         <section class="rounded-3xl border border-slate-100 bg-white p-4 shadow-[0_10px_40px_rgba(15,23,42,.07)] sm:p-6" aria-labelledby="chart-h">
             <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -136,14 +125,12 @@ require __DIR__ . '/includes/header.php';
             <div id="rate-chart" class="relative h-[240px] w-full sm:h-[340px]" role="img" aria-label="<?= e(t('cur.chart_title') . ' ' . $cur) ?>"></div>
             <p id="chart-empty" class="hidden py-16 text-center"><?= e(t('cur.no_history')) ?></p>
             <dl id="chart-stats" class="mt-3 grid grid-cols-3 gap-2 border-t border-slate-100 pt-3 text-sm">
-                <div><dt class="text-[10px] font-bold uppercase tracking-wider"><?= e(t('cur.stat_min')) ?></dt><dd id="st-min" class="font-extrabold tabular-nums text-slate-900">—</dd></div>
-                <div><dt class="text-[10px] font-bold uppercase tracking-wider"><?= e(t('cur.stat_max')) ?></dt><dd id="st-max" class="font-extrabold tabular-nums text-slate-900">—</dd></div>
-                <div><dt class="text-[10px] font-bold uppercase tracking-wider"><?= e(t('cur.stat_change')) ?></dt><dd id="st-chg" class="font-extrabold tabular-nums text-slate-900">—</dd></div>
+                <div><dt class="text-[10px] font-bold uppercase tracking-wider"><?= e(t('cur.stat_min')) ?></dt><dd id="chart-stats-min" class="font-extrabold tabular-nums text-slate-900">—</dd></div>
+                <div><dt class="text-[10px] font-bold uppercase tracking-wider"><?= e(t('cur.stat_max')) ?></dt><dd id="chart-stats-max" class="font-extrabold tabular-nums text-slate-900">—</dd></div>
+                <div><dt class="text-[10px] font-bold uppercase tracking-wider"><?= e(t('cur.stat_change')) ?></dt><dd id="chart-stats-chg" class="font-extrabold tabular-nums text-slate-900">—</dd></div>
             </dl>
         </section>
     </div>
-
-    <!-- Калькулятор -->
     <div class="lg:sticky lg:top-24">
         <div id="calc" class="rounded-[28px] border border-slate-100 bg-white p-4 shadow-[0_24px_60px_-12px_rgba(15,23,42,.18)] sm:p-6">
             <h2 class="mb-4 flex items-center gap-3 text-lg font-black text-slate-900 sm:text-xl">
@@ -173,15 +160,13 @@ require __DIR__ . '/includes/header.php';
         </div>
     </div>
 </div>
-
-<!-- Таблица банков -->
 <section class="mt-10" aria-labelledby="banks-h">
-    <h2 id="banks-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(tv('cur.table_title', $vars)) ?></h2>
+    <h2 id="banks-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(cms_text_in('cur.table_title', $lang, $vars)) ?></h2>
     <?php if ($rows): ?>
     <div class="hidden overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_24px_60px_-12px_rgba(15,23,42,.14)] md:block">
         <div class="relative overflow-x-auto">
             <table class="w-full text-sm">
-                <caption class="sr-only"><?= e(tv('cur.table_title', $vars)) ?></caption>
+                <caption class="sr-only"><?= e(cms_text_in('cur.table_title', $lang, $vars)) ?></caption>
                 <thead>
                     <tr class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100">
                         <th scope="col" class="w-12 px-4 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider">#</th>
@@ -201,7 +186,7 @@ require __DIR__ . '/includes/header.php';
                     <tr class="border-t border-slate-100 hover:bg-blue-50/40 <?= $r['partner'] ? 'bg-amber-50/40' : '' ?>">
                         <td class="px-4 py-3 font-semibold tabular-nums"><?= $i + 1 ?></td>
                         <td class="px-2 py-3">
-                            <a href="<?= e($r['url']) ?>?lang=<?= e($lang) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 no-underline">
+                            <a href="<?= e(lurl($r['url'])) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 text-slate-900 no-underline">
                                 <?= ui_bank_logo($r['code'], $r['name'], $r['logo'], 44, 'h-11 w-11 shrink-0 rounded-[10px] object-contain') ?>
                                 <span class="font-bold leading-tight text-slate-900"><?= e($r['name']) ?><?php if ($r['partner']): ?><span class="mt-1 block"><?= ui_partner_badge() ?></span><?php endif; ?></span>
                             </a>
@@ -209,7 +194,7 @@ require __DIR__ . '/includes/header.php';
                         <td class="px-4 py-3 text-right font-semibold tabular-nums"><span class="<?= $isBest ? 'inline-block rounded-lg bg-green-50 px-2.5 py-1 font-extrabold text-green-600' : '' ?>"><?= ui_rate($r['buy']) ?></span></td>
                         <td class="px-4 py-3 text-right font-semibold tabular-nums"><?= ui_rate($r['sell']) ?></td>
                         <td class="px-4 py-3 text-right tabular-nums"><?= e((string)$sp) ?>%</td>
-                        <td class="px-4 py-3 text-right"><?= ui_link($r['url'] . '?lang=' . $lang, t('cur.details'), $bt, 'inline-block rounded-lg bg-blue-50 px-3 py-1.5 text-[13px] font-bold no-underline') ?></td>
+                        <td class="px-4 py-3 text-right"><?= ui_link(lurl($r['url']), t('cur.details'), $bt, 'inline-block rounded-lg bg-blue-50 px-3 py-1.5 text-[13px] font-bold no-underline') ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -221,7 +206,7 @@ require __DIR__ . '/includes/header.php';
             $isBest = abs($r['buy'] - (float)$bestBuy) < 0.00001;
             $bt = tv('common.link_bank', ['bank' => $r['name']]);
         ?>
-        <a href="<?= e($r['url']) ?>?lang=<?= e($lang) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 rounded-2xl border p-3.5 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] <?= $r['partner'] ? 'border-amber-200 bg-amber-50/40' : 'border-slate-100 bg-white' ?>">
+        <a href="<?= e(lurl($r['url'])) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 rounded-2xl border p-3.5 text-slate-900 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] <?= $r['partner'] ? 'border-amber-200 bg-amber-50/40' : 'border-slate-100 bg-white' ?>">
             <?= ui_bank_logo($r['code'], $r['name'], $r['logo'], 48, 'h-12 w-12 shrink-0 rounded-xl object-contain') ?>
             <span class="min-w-0 flex-1">
                 <span class="block truncate font-bold leading-tight text-slate-900"><?= e($r['name']) ?></span>
@@ -239,8 +224,6 @@ require __DIR__ . '/includes/header.php';
     <div class="rounded-3xl border border-slate-100 bg-white p-10 text-center shadow-sm"><?= e(t('no_data')) ?></div>
     <?php endif; ?>
 </section>
-
-<!-- Пересчёт сумм и текст о валюте -->
 <div class="mt-10 grid gap-6 lg:grid-cols-2">
     <?php if ($bestBuy): ?>
     <section aria-labelledby="conv-h">
@@ -271,76 +254,12 @@ require __DIR__ . '/includes/header.php';
 <div class="mt-8 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-black"><?= e(t('disclaimer_full')) ?></div>
 
 <script src="/assets/js/uplot.min.js"></script>
+<script src="/assets/js/pxq-chart.js"></script>
 <script>
 (function () {
     var C = <?= json_encode($jsCfg, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?>;
-    var el = document.getElementById('rate-chart'), empty = document.getElementById('chart-empty'), stats = document.getElementById('chart-stats');
-    var btns = document.querySelectorAll('.period-btn'), u = null, tip = null, ro = null, data = null;
-
-    function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-    function f2(n) { return Number(n).toFixed(n < 10 ? 2 : 2); }
-    function fmtD(v, long) { var d = new Date(v * 1000); var dd = ('0' + d.getUTCDate()).slice(-2) + '.' + ('0' + (d.getUTCMonth() + 1)).slice(-2); return long ? dd + '.' + d.getUTCFullYear() : dd; }
-
-    function setStats(d) {
-        var buys = d[1]; if (!buys.length) return;
-        var mn = Math.min.apply(null, buys), mx = Math.max.apply(null, buys), ch = (buys[buys.length - 1] - buys[0]) / buys[0] * 100;
-        document.getElementById('st-min').textContent = f2(mn); document.getElementById('st-max').textContent = f2(mx);
-        var c = document.getElementById('st-chg'); c.textContent = (ch > 0 ? '+' : '') + ch.toFixed(2) + '%';
-        c.className = 'font-extrabold tabular-nums ' + (ch > 0 ? 'text-green-600' : ch < 0 ? 'text-red-600' : 'text-slate-900');
-    }
-
-    function draw(points) {
-        if (u) { u.destroy(); u = null; }
-        if (ro) { ro.disconnect(); ro = null; }
-        if (tip && tip.parentNode) tip.parentNode.removeChild(tip);
-        el.innerHTML = '';
-        if (!points || points.length < 2 || typeof uPlot === 'undefined') { el.classList.add('hidden'); stats.classList.add('hidden'); empty.classList.remove('hidden'); return; }
-        el.classList.remove('hidden'); stats.classList.remove('hidden'); empty.classList.add('hidden');
-        data = [points.map(function (p) { return Date.parse(p.date + 'T00:00:00Z') / 1000; }), points.map(function (p) { return p.buy; }), points.map(function (p) { return p.sell; })];
-        setStats(data);
-        tip = document.createElement('div');
-        tip.className = 'pointer-events-none absolute z-10 hidden whitespace-nowrap rounded-xl border border-slate-100 bg-white px-3 py-2 text-xs shadow-[0_10px_30px_rgba(15,23,42,.15)]';
-        el.appendChild(tip);
-        var h = el.clientHeight || 300, font = '600 12px Inter, "Noto Sans Armenian", sans-serif';
-        var grad = function (rgb) { return function (uu) { var g = uu.ctx.createLinearGradient(0, uu.bbox.top, 0, uu.bbox.top + uu.bbox.height); g.addColorStop(0, 'rgba(' + rgb + ',.22)'); g.addColorStop(1, 'rgba(' + rgb + ',0)'); return g; }; };
-        u = new uPlot({
-            width: el.clientWidth, height: h, legend: { show: false }, padding: [12, 8, 0, 0],
-            cursor: { drag: { x: false, y: false }, points: { size: 9, fill: '#fff', width: 2 } },
-            scales: { x: { time: true }, y: { range: function (uu, mn, mx) { var p = (mx - mn) * 0.15 || 1; return [mn - p, mx + p]; } } },
-            axes: [
-                { stroke: '#0f172a', font: font, grid: { stroke: '#eef0f4', width: 1 }, ticks: { show: false }, gap: 8, values: function (uu, s) { return s.map(function (v) { return fmtD(v, false); }); } },
-                { stroke: '#0f172a', font: font, grid: { stroke: '#eef0f4', width: 1 }, ticks: { show: false }, size: 56, values: function (uu, s) { return s.map(function (v) { return f2(v); }); } }
-            ],
-            series: [{}, { label: C.t.buy, stroke: '#2563eb', width: 2.5, fill: grad('37,99,235'), points: { show: false } },
-                         { label: C.t.sell, stroke: '#6366f1', width: 2, dash: [6, 5], points: { show: false } }],
-            hooks: { setCursor: [function (uu) {
-                var i = uu.cursor.idx; if (i == null) { tip.classList.add('hidden'); return; }
-                tip.classList.remove('hidden');
-                tip.innerHTML = '<div class="font-bold text-slate-900">' + fmtD(data[0][i], true) + '</div>' +
-                    '<div class="mt-0.5 flex items-center gap-1.5"><i class="inline-block h-2 w-2 rounded-full bg-blue-600"></i>' + esc(C.t.buy) + '<b class="ml-auto pl-3 tabular-nums">' + f2(data[1][i]) + '</b></div>' +
-                    '<div class="flex items-center gap-1.5"><i class="inline-block h-2 w-2 rounded-full bg-indigo-500"></i>' + esc(C.t.sell) + '<b class="ml-auto pl-3 tabular-nums">' + f2(data[2][i]) + '</b></div>';
-                var x = uu.valToPos(data[0][i], 'x'), y = uu.valToPos(data[1][i], 'y'), w = tip.offsetWidth;
-                tip.style.left = Math.max(4, Math.min(el.clientWidth - w - 4, x - w / 2)) + 'px'; tip.style.top = Math.max(0, y - 78) + 'px';
-            }] }
-        }, data, el);
-        ro = new ResizeObserver(function () { if (u) u.setSize({ width: el.clientWidth, height: el.clientHeight || h }); });
-        ro.observe(el);
-    }
-
-    function load(days) {
-        fetch('/history.php?cur=' + encodeURIComponent(C.cur) + '&days=' + days, { headers: { 'Accept': 'application/json' } })
-            .then(function (r) { return r.json(); }).then(function (j) { draw(j.points || []); }).catch(function () { draw([]); });
-    }
-    btns.forEach(function (b) {
-        b.addEventListener('click', function () {
-            btns.forEach(function (x) { var on = x === b; x.setAttribute('aria-pressed', on ? 'true' : 'false'); x.classList.toggle('bg-white', on); x.classList.toggle('shadow', on); });
-            load(+b.getAttribute('data-days'));
-        });
-    });
-    var ready = (document.fonts && document.fonts.load) ? document.fonts.load('600 12px Inter').catch(function () {}) : Promise.resolve();
-    ready.then(function () { draw(C.points); });
-
-    /* Калькулятор: валюта <-> драм по лучшему курсу банков */
+    function f2(n) { return Number(n).toFixed(2); }
+    PxqChart({ el: 'rate-chart', empty: 'chart-empty', stats: 'chart-stats', buttons: '.period-btn', cur: C.cur, points: C.points, days: 30, t: C.t });
     var from = document.getElementById('cc-from'), to = document.getElementById('cc-to'), note = document.getElementById('cc-note'),
         fc = document.getElementById('cc-from-chip'), tc = document.getElementById('cc-to-chip'), swapped = false;
     function calc() {

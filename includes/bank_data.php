@@ -1,8 +1,5 @@
 <?php
-/**
- * Bank contact & profile data (researched from official sources)
- * Keys = API code
- */
+
 return [
     'ameriabank' => [
         'name' => ['hy' => 'Ամերիաբանկ', 'ru' => 'Америабанк', 'en' => 'Ameriabank'],

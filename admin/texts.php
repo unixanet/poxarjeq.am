@@ -9,7 +9,6 @@ $defs = cms_defs();
 $groups = $defs['groups'];
 $g = (string)($_GET['g'] ?? '');
 
-/** Все ключи группы: [key => ['s'=>секция,'l'=>подпись,'long'=>bool,'h'=>подсказка]] — SEO-секция первой */
 function adm_group_keys(array $defs, string $g): array
 {
     $items = [];
@@ -105,7 +104,7 @@ if ($g === ''):
                         <?= adm_field($idb . '_' . $l, "t[$k][$l]", '<span class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider"><span>' . e($ln) . '</span>' . ($isCustom ? '<span class="rounded-full bg-blue-100 px-2 py-0.5 text-blue-800">изменено</span>' : '') . '</span>', $val, $m['long'], $m['long'] ? 4 : 2,
                             ($isTitle || $isDesc) ? 'data-seo="' . ($isTitle ? 'title' : 'desc') . '"' : '', $dflt) ?>
                         <?php if ($isTitle || $isDesc):
-                            $keepLang = $lang; $lang = $l;    // подставляем плейсхолдеры на языке поля
+                            $keepLang = $lang; $lang = $l;
                             $sample = cms_fill($val, ['name' => currency_name('USD', $l), 'code' => 'USD', 'bank' => cms_default('site_name', $l) ? ($l === 'hy' ? 'Ամերիաբանկ' : ($l === 'ru' ? 'Америабанк' : 'Ameriabank')) : '', 'branch' => '…', 'city' => '…', 'address' => '…', 'phone' => '…']);
                             $lang = $keepLang;
                         ?>
@@ -129,7 +128,6 @@ if ($g === ''):
 </form>
 <script>
 (function () {
-    // Счётчики длины для SEO-полей (рекомендуется: заголовок до 60–70, описание 120–160 символов)
     document.querySelectorAll('[data-seo]').forEach(function (inp) {
         var out = document.querySelector('[data-counter-for="' + inp.id + '"]'), kind = inp.getAttribute('data-seo');
         var lo = kind === 'title' ? 30 : 100, hi = kind === 'title' ? 70 : 170;

@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /cache/
+Disallow: /includes/
+Disallow: /lang/
+Disallow: /history.php
+Disallow: /legacy.php
 
-Sitemap: https://example.com/sitemap.php
+Sitemap: https://poxarjeq.am/sitemap.xml

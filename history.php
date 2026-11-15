@@ -1,8 +1,4 @@
 <?php
-/**
- * История курса для графика (JSON). Кэширует ответ API на 10 минут, чтобы страницы не нагружали основной сервер.
- * GET /history.php?cur=USD&days=30
- */
 require_once __DIR__ . '/includes/functions.php';
 header('Content-Type: application/json; charset=utf-8');
 header('X-Robots-Tag: noindex, nofollow');
@@ -10,12 +6,15 @@ header('Cache-Control: public, max-age=300');
 
 $cur = strtoupper(trim((string)($_GET['cur'] ?? 'USD')));
 if (!preg_match('/^[A-Z]{3}$/', $cur)) { http_response_code(400); echo '{"points":[]}'; exit; }
+$bank = strtolower(trim((string)($_GET['bank'] ?? '')));
+if ($bank !== '' && !preg_match('/^[a-z0-9-]{2,64}$/', $bank)) { http_response_code(400); echo '{"points":[]}'; exit; }
 $days = (int)($_GET['days'] ?? 30);
-$allowed = [7, 30, 90, 180, 365, 730];
-foreach ($allowed as $a) { if ($days <= $a) { $days = $a; break; } }
+foreach ([7, 30, 90, 180, 365, 730] as $a) { if ($days <= $a) { $days = $a; break; } }
 if ($days > 730) $days = 730;
 
-$d = api_get('history.php', ['cur' => $cur, 'days' => $days], 600);
+$d = $bank !== ''
+    ? api_v2('history.php', ['cur' => $cur, 'days' => $days, 'bank' => $bank], 600)
+    : api_get('history.php', ['cur' => $cur, 'days' => $days], 600);
 $points = [];
 foreach (($d['points'] ?? []) as $p) {
     if (!isset($p['date'])) continue;

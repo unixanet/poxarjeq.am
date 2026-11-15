@@ -33,7 +33,7 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST') && ($_POST['action'] ?? '') === 'aud
     $ctx = stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true, 'header' => "User-Agent: PoxarjeqAudit\r\n"], 'ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
     $audit = [];
     foreach ($langs as $l) foreach ($paths as $p) {
-        $url = $base . $p . (str_contains($p, '?') ? '&' : '?') . 'lang=' . $l;
+        $url = $base . with_lang($p, $l);
         $html = @file_get_contents($url, false, $ctx);
         $audit[] = ['lang' => $l, 'path' => $p, 'issues' => $html === false ? ['страница не открылась'] : seo_audit_html($html)];
     }

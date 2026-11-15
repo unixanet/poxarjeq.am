@@ -14,7 +14,7 @@ if (!$bank) {
 }
 
 $errors = [];
-$v = $bank; // значения формы
+$v = $bank;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
@@ -33,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($v['email'] !== '' && !filter_var($v['email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Email указан неверно.';
     if ($v['website'] !== '' && !preg_match('#^https?://[^\s]+$#i', $v['website'])) $errors[] = 'Сайт должен начинаться с http:// или https://';
 
-    // Логотип
     $newLogo = null;
     $hasFile = isset($_FILES['logo']) && ($_FILES['logo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
     if (!$errors && $hasFile) {
@@ -47,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         elseif (!empty($_POST['logo_remove'])) { adm_delete_logo($logoPath); $logoPath = null; }
 
         $order = $bank['partner_order'];
-        if ($v['is_partner'] && !$bank['is_partner']) $order = 100000; // новый партнёр встаёт в конец партнёров
+        if ($v['is_partner'] && !$bank['is_partner']) $order = 100000;
         db()->prepare('UPDATE banks SET name_hy=:nh, name_ru=:nr, name_en=:ne, legal=:legal, phone=:phone, phone2=:phone2, email=:email, website=:website, swift=:swift,
             address_hy=:ah, address_ru=:ar, address_en=:ae, about_hy=:abh, about_ru=:abr, about_en=:abe,
             seo_title_hy=:sth, seo_title_ru=:str, seo_title_en=:ste, seo_description_hy=:sdh, seo_description_ru=:sdr, seo_description_en=:sde,

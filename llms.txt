@@ -1,51 +1,52 @@
-# Լավագույն Փոխարժեք (Poxarjeq.am)
+# Poxarjeq.am
 
-> Independent aggregator of cash exchange rates of banks in Armenia. Compare buy and sell rates of USD, EUR, RUR, GBP, GEL and other currencies across 17 banks, see rate history charts, and find bank branches with addresses and phone numbers. Rates are refreshed about every 15 minutes. The site does not exchange money and does not give financial advice.
+> Independent comparison of cash currency exchange rates in Armenia: buy and sell rates of 17 banks and of exchange offices in Yerevan, bank branches with addresses and phone numbers, gold prices and financial news. Rates are refreshed about every 15 minutes and every page shows the time of its last update.
 
-Primary language: Armenian (hy). Russian and English versions are available on every page with the parameter `?lang=ru` or `?lang=en`.
-
-Armenian summary: Անկախ ֆինանսական տվյալների ագրեգատոր Հայաստանի բանկերի փոխարժեքների համար։
+Primary language: Armenian (hy). Russian and English versions: add `?lang=ru` or `?lang=en` to any page URL. Poxarjeq.am is an official project of Leads.am and a sister site of Poxarjeq.com (loans, deposits and cards).
 
 ## Main pages
-- [Home — exchange rates today](https://poxarjeq.am/): live comparison table of all banks, switchable currencies, currency calculator.
-- [About](https://poxarjeq.am/about.php): who runs the site and how the data is collected.
-- [Contact](https://poxarjeq.am/contact.php): email info@leads.am, phone +374 44 140 813.
+- [Exchange rates today](https://poxarjeq.am/): bank-by-bank table for USD, EUR, RUR, GBP, GEL and more, with a converter.
+- [Banks](https://poxarjeq.am/banks): all banks with USD and EUR rates, plus branches grouped by city.
+- [Exchange offices](https://poxarjeq.am/poxanakman-keter): rates of exchange offices in Yerevan, sorted by the best USD buy rate.
+- [Gold price](https://poxarjeq.am/voski): daily gold price by purity (583 and others) and for bars.
+- [News](https://poxarjeq.am/news): financial news headlines; full articles are on poxarjeq.com.
+- [About](https://poxarjeq.am/about.php): who runs the site, where the data comes from, partner disclosure.
+- [Contact](https://poxarjeq.am/contact.php): 41 Pushkin St., Yerevan, Armenia, +374 44 140 813, info@leads.am.
 
 ## Currency pages
-- [ԱՄԷ դիրհամ (AED)](https://poxarjeq.am/currency.php?cur=AED): UAE Dirham buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Ավստրալիական դոլար (AUD)](https://poxarjeq.am/currency.php?cur=AUD): Australian Dollar buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Կանադական դոլար (CAD)](https://poxarjeq.am/currency.php?cur=CAD): Canadian Dollar buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Շվեյցարական ֆրանկ (CHF)](https://poxarjeq.am/currency.php?cur=CHF): Swiss Franc buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Չինական յուան (CNY)](https://poxarjeq.am/currency.php?cur=CNY): Chinese Yuan buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Եվրո (EUR)](https://poxarjeq.am/currency.php?cur=EUR): Euro buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Բրիտանական ֆունտ (GBP)](https://poxarjeq.am/currency.php?cur=GBP): British Pound buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Վրացական լարի (GEL)](https://poxarjeq.am/currency.php?cur=GEL): Georgian Lari buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Ճապոնական իեն (JPY)](https://poxarjeq.am/currency.php?cur=JPY): Japanese Yen buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Ռուսական ռուբլի (RUR)](https://poxarjeq.am/currency.php?cur=RUR): Russian Ruble buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [ԱՄՆ դոլար (USD)](https://poxarjeq.am/currency.php?cur=USD): US Dollar buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Ղազախական տենգե (KZT)](https://poxarjeq.am/currency.php?cur=KZT): Kazakhstani Tenge buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
-- [Ոսկի (XAU)](https://poxarjeq.am/currency.php?cur=XAU): Gold buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.
+- [UAE Dirham to AMD](https://poxarjeq.am/currency.php?cur=AED): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Australian Dollar to AMD](https://poxarjeq.am/currency.php?cur=AUD): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Canadian Dollar to AMD](https://poxarjeq.am/currency.php?cur=CAD): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Swiss Franc to AMD](https://poxarjeq.am/currency.php?cur=CHF): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Chinese Yuan to AMD](https://poxarjeq.am/currency.php?cur=CNY): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Euro to AMD](https://poxarjeq.am/currency.php?cur=EUR): buy and sell rates at every bank, best rate, history chart up to one year.
+- [British Pound to AMD](https://poxarjeq.am/currency.php?cur=GBP): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Georgian Lari to AMD](https://poxarjeq.am/currency.php?cur=GEL): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Japanese Yen to AMD](https://poxarjeq.am/currency.php?cur=JPY): buy and sell rates at every bank, best rate, history chart up to one year.
+- [Russian Ruble to AMD](https://poxarjeq.am/currency.php?cur=RUR): buy and sell rates at every bank, best rate, history chart up to one year.
+- [US Dollar to AMD](https://poxarjeq.am/currency.php?cur=USD): buy and sell rates at every bank, best rate, history chart up to one year.
 
 ## Banks
-- [Ամերիաբանկ](https://poxarjeq.am/ameriabank): Ameriabank — current cash rates, contacts, 14 branches.
-- [ԱԿԲԱ Բանկ](https://poxarjeq.am/acba-bank): ACBA Bank — current cash rates, contacts, 12 branches.
-- [ԱյԴի Բանկ](https://poxarjeq.am/aydi-bank): IDBank — current cash rates, contacts, 5 branches.
-- [Արդշինբանկ](https://poxarjeq.am/ardshinbank): Ardshinbank — current cash rates, contacts, 14 branches.
-- [ՎՏԲ Հայաստան](https://poxarjeq.am/vtbhayastan-bank): VTB Armenia — current cash rates, contacts, 3 branches.
-- [Ինեկո Գործընկեր](https://poxarjeq.am/inekobank): Inecobank — current cash rates, contacts, 4 branches.
-- [Էվոկաբանկ](https://poxarjeq.am/evocabank): Evocabank — current cash rates, contacts, 3 branches.
-- [Յունիբանկ](https://poxarjeq.am/yunibank): Unibank — current cash rates, contacts, 3 branches.
-- [Ֆաստ Բանկ](https://poxarjeq.am/fast-bank): Fast Bank — current cash rates, contacts, 2 branches.
-- [ԱՄԻՕ Բանկ](https://poxarjeq.am/haybiznesbank): AMIO Bank — current cash rates, contacts, 3 branches.
-- [ԱրարատԲանկ](https://poxarjeq.am/araratbank): AraratBank — current cash rates, contacts, 3 branches.
-- [Արմսվիսբանկ](https://poxarjeq.am/armsvisbank): ArmSwissBank — current cash rates, contacts, 2 branches.
-- [Արմէկոնոմբանկ](https://poxarjeq.am/hayekonombank): Armeconombank — current cash rates, contacts, 3 branches.
-- [Արցախբանկ](https://poxarjeq.am/arcakhbank): Artsakhbank — current cash rates, contacts, 3 branches.
-- [Բիբլոս Բանկ Արմենիա](https://poxarjeq.am/biblos-bank-armenia): Byblos Bank Armenia — current cash rates, contacts, 2 branches.
-- [Կոնվերս Բանկ](https://poxarjeq.am/konvers-bank): Converse Bank — current cash rates, contacts, 4 branches.
-- [Մելլաթ Բանկ](https://poxarjeq.am/mellat-bank): Mellat Bank — current cash rates, contacts, 2 branches.
+- [Ameriabank](https://poxarjeq.am/ameriabank): current cash rates, contacts, 14 branches. Per-currency pages: https://poxarjeq.am/ameriabank/usd, /eur, /rur and others.
+- [ACBA Bank](https://poxarjeq.am/acba-bank): current cash rates, contacts, 12 branches. Per-currency pages: https://poxarjeq.am/acba-bank/usd, /eur, /rur and others.
+- [IDBank](https://poxarjeq.am/aydi-bank): current cash rates, contacts, 5 branches. Per-currency pages: https://poxarjeq.am/aydi-bank/usd, /eur, /rur and others.
+- [Ardshinbank](https://poxarjeq.am/ardshinbank): current cash rates, contacts, 14 branches. Per-currency pages: https://poxarjeq.am/ardshinbank/usd, /eur, /rur and others.
+- [VTB Armenia](https://poxarjeq.am/vtbhayastan-bank): current cash rates, contacts, 3 branches. Per-currency pages: https://poxarjeq.am/vtbhayastan-bank/usd, /eur, /rur and others.
+- [Inecobank](https://poxarjeq.am/inekobank): current cash rates, contacts, 4 branches. Per-currency pages: https://poxarjeq.am/inekobank/usd, /eur, /rur and others.
+- [Evocabank](https://poxarjeq.am/evocabank): current cash rates, contacts, 3 branches. Per-currency pages: https://poxarjeq.am/evocabank/usd, /eur, /rur and others.
+- [Unibank](https://poxarjeq.am/yunibank): current cash rates, contacts, 3 branches. Per-currency pages: https://poxarjeq.am/yunibank/usd, /eur, /rur and others.
+- [Fast Bank](https://poxarjeq.am/fast-bank): current cash rates, contacts, 2 branches. Per-currency pages: https://poxarjeq.am/fast-bank/usd, /eur, /rur and others.
+- [AMIO Bank](https://poxarjeq.am/haybiznesbank): current cash rates, contacts, 3 branches. Per-currency pages: https://poxarjeq.am/haybiznesbank/usd, /eur, /rur and others.
+- [AraratBank](https://poxarjeq.am/araratbank): current cash rates, contacts, 3 branches. Per-currency pages: https://poxarjeq.am/araratbank/usd, /eur, /rur and others.
+- [ArmSwissBank](https://poxarjeq.am/armsvisbank): current cash rates, contacts, 2 branches. Per-currency pages: https://poxarjeq.am/armsvisbank/usd, /eur, /rur and others.
+- [Armeconombank](https://poxarjeq.am/hayekonombank): current cash rates, contacts, 3 branches. Per-currency pages: https://poxarjeq.am/hayekonombank/usd, /eur, /rur and others.
+- [Artsakhbank](https://poxarjeq.am/arcakhbank): current cash rates, contacts, 3 branches. Per-currency pages: https://poxarjeq.am/arcakhbank/usd, /eur, /rur and others.
+- [Byblos Bank Armenia](https://poxarjeq.am/biblos-bank-armenia): current cash rates, contacts, 2 branches. Per-currency pages: https://poxarjeq.am/biblos-bank-armenia/usd, /eur, /rur and others.
+- [Converse Bank](https://poxarjeq.am/konvers-bank): current cash rates, contacts, 4 branches. Per-currency pages: https://poxarjeq.am/konvers-bank/usd, /eur, /rur and others.
+- [Mellat Bank](https://poxarjeq.am/mellat-bank): current cash rates, contacts, 2 branches. Per-currency pages: https://poxarjeq.am/mellat-bank/usd, /eur, /rur and others.
 
 ## Optional
 - [Privacy](https://poxarjeq.am/privacy.php)
-- [Disclaimer](https://poxarjeq.am/disclaimer.php): rates are informational; always confirm the final rate with the bank.
+- [Disclaimer](https://poxarjeq.am/disclaimer.php): rates are informational; confirm the final rate with the bank.
+- [Sitemap](https://poxarjeq.am/sitemap.xml)
 - [Full text version](https://poxarjeq.am/llms-full.txt)

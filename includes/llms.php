@@ -1,58 +1,47 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Генерация llms.txt и llms-full.txt для ИИ-поисковиков (ChatGPT, Claude, Perplexity, Gemini).
- * Тексты берутся из админки (с учётом правок), банки и филиалы — из БД или файлов по умолчанию.
- */
 function llms_build(): array
 {
     $site = rtrim(SITE_URL, '/');
-    $T = fn(string $k, string $l = 'hy') => cms_overrides()[$l][$k] ?? cms_default($k, $l) ?? $k;
-    $name = $T('site_name');
+    $T = fn(string $k, string $l = 'hy') => cms_text_in($k, $l);
     $codes = array_values(array_unique(array_merge(all_currency_codes(), table_currency_codes())));
-    $banksMeta = require __DIR__ . '/bank_data.php';
-    $bankCodes = array_keys($banksMeta);
-    foreach (bank_overrides() as $c => $o) if (!in_array($c, $bankCodes, true) && (int)$o['is_active'] === 1) $bankCodes[] = $c;
-    $bankCodes = array_values(array_filter($bankCodes, 'bank_is_visible'));
+    $bankCodes = array_values(array_filter(sm_bank_codes_safe(), fn($c) => bank_is_visible($c) && get_bank_meta($c)));
+    $branchesN = 0;
+    foreach ($bankCodes as $c) $branchesN += count(get_bank_meta($c)['branches'] ?? []);
 
-    $en = "# {$name} (Poxarjeq.am)\n\n";
-    $en .= "> Independent aggregator of cash exchange rates of banks in Armenia. Compare buy and sell rates of USD, EUR, RUR, GBP, GEL and other currencies across " . count($bankCodes) . " banks, see rate history charts, and find bank branches with addresses and phone numbers. Rates are refreshed about every 15 minutes. The site does not exchange money and does not give financial advice.\n\n";
-    $en .= "Primary language: Armenian (hy). Russian and English versions are available on every page with the parameter `?lang=ru` or `?lang=en`.\n\n";
-    $en .= "Armenian summary: " . $T('footer_text') . "\n\n";
+    $en = "# Poxarjeq.am\n\n";
+    $en .= "> Independent comparison of cash currency exchange rates in Armenia: buy and sell rates of " . count($bankCodes) . " banks and of exchange offices in Yerevan, bank branches with addresses and phone numbers, gold prices and financial news. Rates are refreshed about every 15 minutes and every page shows the time of its last update.\n\n";
+    $en .= "Primary language: Armenian (hy). Russian and English versions: add `?lang=ru` or `?lang=en` to any page URL. Poxarjeq.am is an official project of Leads.am and a sister site of Poxarjeq.com (loans, deposits and cards).\n\n";
     $en .= "## Main pages\n";
-    $en .= "- [Home — exchange rates today]($site/): live comparison table of all banks, switchable currencies, currency calculator.\n";
-    $en .= "- [About]($site/about.php): who runs the site and how the data is collected.\n";
-    $en .= "- [Contact]($site/contact.php): email " . CONTACT_EMAIL . ", phone " . CONTACT_PHONE . ".\n\n";
+    $en .= "- [Exchange rates today]($site/): bank-by-bank table for USD, EUR, RUR, GBP, GEL and more, with a converter.\n";
+    $en .= "- [Banks]($site/banks): all banks with USD and EUR rates, plus branches grouped by city.\n";
+    $en .= "- [Exchange offices]($site/poxanakman-keter): rates of exchange offices in Yerevan, sorted by the best USD buy rate.\n";
+    $en .= "- [Gold price]($site/voski): daily gold price by purity (583 and others) and for bars.\n";
+    $en .= "- [News]($site/news): financial news headlines; full articles are on poxarjeq.com.\n";
+    $en .= "- [About]($site/about.php): who runs the site, where the data comes from, partner disclosure.\n";
+    $en .= "- [Contact]($site/contact.php): " . CONTACT_ADDRESS['en'] . ", " . CONTACT_PHONE . ", " . CONTACT_EMAIL . ".\n\n";
     $en .= "## Currency pages\n";
     foreach ($codes as $c) {
-        $en .= "- [" . currency_name($c, 'hy') . " ($c)]($site/currency.php?cur=$c): " . currency_name($c, 'en') . " buy/sell rates by bank, best rate, price history chart (7 days to 1 year), conversion of popular amounts.\n";
+        $en .= "- [" . cur_name($c, 'en') . " to AMD]($site/currency.php?cur=$c): buy and sell rates at every bank, best rate, history chart up to one year.\n";
     }
     $en .= "\n## Banks\n";
     foreach ($bankCodes as $code) {
         $m = get_bank_meta($code) ?? [];
-        $n = $m['name']['hy'] ?? $code; $ne = $m['name']['en'] ?? $code;
-        $en .= "- [$n]($site" . bank_page_url($code) . "): $ne — current cash rates, contacts" . (!empty($m['branches']) ? ', ' . count($m['branches']) . ' branches' : '') . ".\n";
+        $n = $m['name']['en'] ?? $code;
+        $en .= "- [$n]($site" . bank_page_url($code) . "): current cash rates, contacts" . (!empty($m['branches']) ? ', ' . count($m['branches']) . ' branches' : '') . ". Per-currency pages: $site" . bank_page_url($code) . "/usd, /eur, /rur and others.\n";
     }
     $en .= "\n## Optional\n";
-    $en .= "- [Privacy]($site/privacy.php)\n- [Disclaimer]($site/disclaimer.php): rates are informational; always confirm the final rate with the bank.\n- [Full text version]($site/llms-full.txt)\n";
+    $en .= "- [Privacy]($site/privacy.php)\n- [Disclaimer]($site/disclaimer.php): rates are informational; confirm the final rate with the bank.\n- [Sitemap]($site/sitemap.xml)\n- [Full text version]($site/llms-full.txt)\n";
 
-    $full = $en . "\n---\n\n# Details\n\n## How the data is produced\n";
-    $full .= "Rates are collected automatically from official bank sources through the poxarjeq.com API and cached for about 15 minutes. The table highlights the highest buy rate per currency. Banks marked as partners are listed first; this does not change the displayed rates.\n\n";
-    $full .= "## Frequently asked questions (English)\n";
-    for ($i = 1; $i <= 4; $i++) {
-        $q = str_replace(['{name}', '{code}'], ['the currency', 'XXX'], $T("cur.faq$i.q", 'en')); $a = str_replace(['{name}', '{code}'], ['the currency', 'XXX'], $T("cur.faq$i.a", 'en'));
-        $full .= "### $q\n$a\n\n";
-    }
-    $full .= "## Frequently asked questions (Armenian)\n";
-    for ($i = 1; $i <= 4; $i++) {
-        $q = str_replace(['{name}', '{code}'], ['արժույթ', ''], $T("cur.faq$i.q")); $a = str_replace(['{name}', '{code}'], ['արժույթ', ''], $T("cur.faq$i.a"));
-        $full .= "### $q\n$a\n\n";
-    }
+    $full = $en . "\n---\n\n# Details\n\n## Where the data comes from\n";
+    $full .= "Cash rates are published by banks and exchange offices, collected into the Poxarjeq.com database and shown here. They refresh about every 15 minutes. Each page states the time of the last update. The highest buy rate and the lowest sell rate are highlighted. Partner banks carry a label and their rates are not altered. The site does not exchange money; the bank or office sets the final rate.\n\n";
+    $full .= "## How to read a rate\n";
+    $full .= "Buy is what the bank pays you in drams for one unit of currency. Sell is what you pay the bank in drams for one unit. The gap is the bank's margin.\n\n";
     $full .= "## Bank details\n";
     foreach ($bankCodes as $code) {
         $m = get_bank_meta($code) ?? [];
-        $full .= "### " . ($m['name']['hy'] ?? $code) . " / " . ($m['name']['en'] ?? $code) . "\n";
+        $full .= "### " . ($m['name']['en'] ?? $code) . " / " . ($m['name']['hy'] ?? $code) . " / " . ($m['name']['ru'] ?? $code) . "\n";
         $full .= "Page: $site" . bank_page_url($code) . "\n";
         if (!empty($m['legal'])) $full .= "Legal name: {$m['legal']}\n";
         if (!empty($m['address']['en'])) $full .= "Head office: {$m['address']['en']}\n";
@@ -61,15 +50,14 @@ function llms_build(): array
         if (!empty($m['about']['en'])) $full .= $m['about']['en'] . "\n";
         if (!empty($m['branches'])) {
             $full .= "Branches:\n";
-            foreach ($m['branches'] as $b) $full .= "- " . ($b['name']['en'] ?? '') . ", " . ($b['city']['en'] ?? '') . ", " . ($b['address']['en'] ?? '') . (!empty($b['phone']) ? ', ' . $b['phone'] : '') . " — $site" . branch_page_url($code, $b['slug']) . "\n";
+            foreach ($m['branches'] as $b) $full .= "- " . ($b['name']['en'] ?? '') . ", " . ($b['city']['en'] ?? '') . ", " . ($b['address']['en'] ?? '') . (!empty($b['phone']) ? ', ' . $b['phone'] : '') . " ($site" . branch_page_url($code, $b['slug']) . ")\n";
         }
         $full .= "\n";
     }
-    $full .= "## Citing\nYou may cite rates and bank information with a link to the corresponding page on $site. Exchange rates are informational and change during the day.\n";
+    $full .= "## Citing\nYou may cite rates and bank information with a link to the corresponding page on $site and mention the update time shown on the page. Exchange rates change during the day.\n";
     return ['llms.txt' => $en, 'llms-full.txt' => $full];
 }
 
-/** Записывает файлы в корень сайта. @return array{0:bool,1:string} */
 function llms_write(): array
 {
     $files = llms_build();

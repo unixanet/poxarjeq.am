@@ -19,7 +19,6 @@ session_start();
 const LOGO_DIR = __DIR__ . '/../uploads/banks';
 const LOGO_URL = 'uploads/banks';
 
-/* ---------- БД ---------- */
 function adm_ready(): void
 {
     static $done = false;
@@ -30,7 +29,7 @@ function adm_ready(): void
         $in = "'" . implode("','", $need) . "'";
         $have = (int)$pdo->query("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN ($in)")->fetchColumn();
         $cols = (int)$pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'banks' AND COLUMN_NAME = 'seo_title_hy'")->fetchColumn();
-        if ($have < count($need) || $cols < 1) pxq_migrate($pdo);   // новые таблицы и колонки создаются сами при обновлении сайта
+        if ($have < count($need) || $cols < 1) pxq_migrate($pdo);
     } catch (Throwable $e) {
         http_response_code(503);
         adm_plain_page('Нет подключения к базе данных', 'Проверьте параметры в config.db.php и что база запущена. Сайт при этом продолжает работать.');
@@ -50,7 +49,6 @@ function adm_plain_page(string $title, string $text): never
     exit;
 }
 
-/* ---------- Сессия, CSRF, уведомления ---------- */
 function csrf_token(): string
 {
     if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
@@ -84,7 +82,6 @@ function redirect(string $to): never
     exit;
 }
 
-/* ---------- Авторизация ---------- */
 function adm_user(): ?array
 {
     if (empty($_SESSION['uid'])) return null;
@@ -123,7 +120,6 @@ function adm_login_ok(int $uid): void
     db()->prepare('DELETE FROM admin_login_attempts WHERE ip = ?')->execute([adm_ip()]);
 }
 
-/* ---------- Банки ---------- */
 function adm_sync_api_banks(): void
 {
     $stamp = CACHE_DIR . '/api_sync.stamp';
@@ -152,7 +148,6 @@ function adm_logo_src(array $b): string
     return '';
 }
 
-/** Логотипы из API (кэш) — чтобы в админке видеть то, что сейчас на сайте, пока свой логотип не загружен */
 function adm_api_logos(): array
 {
     static $map = null;
@@ -169,7 +164,6 @@ function adm_logo_display(array $b): string
     return adm_logo_src($b) ?: (adm_api_logos()[$b['code']] ?? '');
 }
 
-/** Принимает загруженный файл, нормализует (≤320px, WebP/PNG, прозрачность сохраняется), возвращает путь относительно корня сайта */
 function adm_save_logo(string $code, array $file): string
 {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {

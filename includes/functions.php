@@ -5,28 +5,56 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/bank_store.php';
 require_once __DIR__ . '/cms.php';
 require_once __DIR__ . '/ui.php';
+require_once __DIR__ . '/currency_seo.php';
+require_once __DIR__ . '/bank_seo.php';
+require_once __DIR__ . '/news_ui.php';
 require_once __DIR__ . '/llms.php';
 require_once __DIR__ . '/seo_audit.php';
 
 function detect_lang(): string
 {
-    // Set from GET once, then rely on cookie (URLs stay clean)
-    if (!empty($_GET['lang']) && in_array($_GET['lang'], SUPPORTED_LANGS, true)) {
-        setcookie('lang', $_GET['lang'], [
-            'expires' => time() + 86400 * 365,
-            'path' => '/',
-            'samesite' => 'Lax',
-        ]);
-        $_COOKIE['lang'] = $_GET['lang'];
-        return $_GET['lang'];
-    }
-    if (!empty($_COOKIE['lang']) && in_array($_COOKIE['lang'], SUPPORTED_LANGS, true)) {
-        return $_COOKIE['lang'];
+    if (!array_key_exists('lang', $_GET)) return DEFAULT_LANG;
+    $q = $_GET['lang'];
+    if (is_string($q) && in_array($q, SUPPORTED_LANGS, true) && $q !== DEFAULT_LANG) return $q;
+    if (in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true) && !headers_sent()) {
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+        $query = [];
+        parse_str(parse_url($uri, PHP_URL_QUERY) ?? '', $query);
+        unset($query['lang']);
+        header('Location: ' . $path . ($query ? '?' . http_build_query($query) : ''), true, 301);
+        exit;
     }
     return DEFAULT_LANG;
 }
 
-/** Merge rates for multiple currencies keyed by bank code */
+function lang_suffix(string $lang): string
+{
+    return $lang === DEFAULT_LANG ? '' : $lang;
+}
+
+function with_lang(string $path, string $lang): string
+{
+    if ($lang === DEFAULT_LANG) return $path;
+    $frag = '';
+    if (($h = strpos($path, '#')) !== false) { $frag = substr($path, $h); $path = substr($path, 0, $h); }
+    return $path . (str_contains($path, '?') ? '&' : '?') . 'lang=' . $lang . $frag;
+}
+
+function lurl(string $path): string
+{
+    global $lang;
+    return with_lang($path, $lang ?? DEFAULT_LANG);
+}
+
+function page_urls(string $path): array
+{
+    $base = rtrim(SITE_URL, '/');
+    $out = [];
+    foreach (SUPPORTED_LANGS as $l) $out[$l] = $base . with_lang($path, $l);
+    return $out;
+}
+
 function get_multi_currency_table(array $currencies = ['USD','EUR','RUR','GBP','GEL']): array
 {
     $byBank = [];
@@ -51,7 +79,7 @@ function get_multi_currency_table(array $currencies = ['USD','EUR','RUR','GBP','
             ];
         }
     }
-    // Find best buy per currency for highlight
+
     $bestBuy = [];
     foreach ($currencies as $cur) {
         $best = null;
@@ -68,12 +96,11 @@ function lang_switch_url(string $lang): string
 {
     $uri = $_SERVER['REQUEST_URI'] ?? '/';
     $path = parse_url($uri, PHP_URL_PATH) ?: '/';
-    // Clean existing lang query
     $query = [];
     parse_str(parse_url($uri, PHP_URL_QUERY) ?? '', $query);
     unset($query['lang']);
-    $query['lang'] = $lang; // one-time set via GET, cookie stores it
-    return $path . '?' . http_build_query($query);
+    if ($lang !== DEFAULT_LANG) $query['lang'] = $lang;
+    return $path . ($query ? '?' . http_build_query($query) : '');
 }
 
 function load_lang(string $lang): array
@@ -90,54 +117,93 @@ function lang_url(string $lang): string
     return lang_switch_url($lang);
 }
 
-function current_path_with_lang(string $path, string $lang): string
+function api_cache_file(string $url): string
 {
-    $sep = str_contains($path, '?') ? '&' : '?';
-    return $path . $sep . 'lang=' . $lang;
+    return CACHE_DIR . '/' . md5($url) . '.json';
+}
+
+function api_url(string $endpoint, array $params = []): string
+{
+    return API_BASE . '/' . ltrim($endpoint, '/') . ($params ? '?' . http_build_query($params) : '');
+}
+
+function api_fetch_raw(string $url, int $timeout = 8): ?string
+{
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true, CURLOPT_CONNECTTIMEOUT => 4, CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_USERAGENT => 'Poxarjeq.am/2.0', CURLOPT_HTTPHEADER => ['Accept: application/json'], CURLOPT_ENCODING => '',
+        ]);
+        $raw = curl_exec($ch);
+        $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return ($http === 200 && is_string($raw)) ? $raw : null;
+    }
+    $ctx = stream_context_create(['http' => ['method' => 'GET', 'header' => "Accept: application/json\r\nUser-Agent: Poxarjeq.am/2.0\r\n", 'timeout' => $timeout, 'ignore_errors' => true]]);
+    $raw = @file_get_contents($url, false, $ctx);
+    return $raw === false ? null : $raw;
+}
+
+function api_store(string $url, ?string $raw): ?array
+{
+    $data = $raw !== null ? json_decode($raw, true) : null;
+    if (!is_array($data) || isset($data['error'])) return null;
+    @file_put_contents(api_cache_file($url), $raw, LOCK_EX);
+    return $data;
+}
+
+function api_schedule_refresh(string $url): void
+{
+    static $queue = [], $registered = false;
+    $queue[$url] = true;
+    if ($registered) return;
+    $registered = true;
+    register_shutdown_function(function () use (&$queue) {
+        if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+        elseif (function_exists('litespeed_finish_request')) litespeed_finish_request();
+        foreach (array_keys($queue) as $u) {
+            $lock = api_cache_file($u) . '.lock';
+            if (is_file($lock) && time() - filemtime($lock) < 60) continue;
+            @touch($lock);
+            api_store($u, api_fetch_raw($u, 10));
+            @unlink($lock);
+        }
+    });
+}
+
+function api_can_defer(): bool
+{
+    return function_exists('fastcgi_finish_request') || function_exists('litespeed_finish_request');
 }
 
 function api_get(string $endpoint, array $params = [], int $ttl = CACHE_TTL): ?array
 {
-    $url = API_BASE . '/' . ltrim($endpoint, '/');
-    if ($params) {
-        $url .= '?' . http_build_query($params);
+    $url = api_url($endpoint, $params);
+    $f = api_cache_file($url);
+    $age = is_file($f) ? time() - (int)filemtime($f) : null;
+    if ($age !== null && $age < $ttl) {
+        $d = json_decode((string)file_get_contents($f), true);
+        if (is_array($d)) return $d;
     }
-    $cacheKey = md5($url);
-    $cacheFile = CACHE_DIR . '/' . $cacheKey . '.json';
-
-    if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $ttl) {
-        $data = json_decode((string)file_get_contents($cacheFile), true);
-        if (is_array($data)) return $data;
+    if ($age !== null && $age < 86400 && api_can_defer()) {
+        $d = json_decode((string)file_get_contents($f), true);
+        if (is_array($d)) { api_schedule_refresh($url); return $d; }
     }
-
-    $ctx = stream_context_create([
-        'http' => [
-            'method' => 'GET',
-            'header' => "Accept: application/json\r\nUser-Agent: BestRate.am/2.0\r\n",
-            'timeout' => 12,
-            'ignore_errors' => true,
-        ],
-        'ssl' => ['verify_peer' => true, 'verify_peer_name' => true],
-    ]);
-
-    $raw = @file_get_contents($url, false, $ctx);
-    if ($raw === false) {
-        if (file_exists($cacheFile)) {
-            $data = json_decode((string)file_get_contents($cacheFile), true);
-            if (is_array($data)) return $data;
-        }
-        return null;
+    $d = api_store($url, api_fetch_raw($url, 8));
+    if ($d !== null) return $d;
+    if ($age !== null) {
+        $d = json_decode((string)file_get_contents($f), true);
+        if (is_array($d)) return $d;
     }
-    $data = json_decode($raw, true);
-    if (!is_array($data)) return null;
-    @file_put_contents($cacheFile, $raw, LOCK_EX);
-    return $data;
+    return null;
 }
 
 function get_rates_summary(): ?array { return api_get('rates.php'); }
 function get_banks_for_currency(string $cur = 'USD'): ?array { return api_get('banks.php', ['cur' => strtoupper($cur)]); }
 function get_bank(string $code): ?array { return api_get('bank.php', ['code' => $code]); }
 function get_banks_list(): ?array { return api_get('list.php'); }
+function api_v2(string $endpoint, array $params = [], int $ttl = CACHE_TTL): ?array { return api_get('v2/' . $endpoint, $params, $ttl); }
 function get_history(string $cur = 'USD', int $days = 30): ?array { return api_get('history.php', ['cur' => strtoupper($cur), 'days' => $days]); }
 function get_currencies(): ?array { return api_get('currencies.php'); }
 
@@ -151,7 +217,7 @@ function currency_name(string $code, string $lang = 'hy'): string
         'CHF' => ['hy' => 'Շվեյցարական ֆրանկ', 'ru' => 'Швейцарский франк', 'en' => 'Swiss Franc'],
         'GEL' => ['hy' => 'Վրացական լարի', 'ru' => 'Грузинский лари', 'en' => 'Georgian Lari'],
         'AED' => ['hy' => 'ԱՄԷ դիրհամ', 'ru' => 'Дирхам ОАЭ', 'en' => 'UAE Dirham'],
-        'AUD' => ['hy' => 'Ավստրալիական դոլար', 'ru' => 'Австралийский доллар', 'en' => 'Australian Dollar'],
+        'AUD' => ['hy' => 'Ավստրալական դոլար', 'ru' => 'Австралийский доллар', 'en' => 'Australian Dollar'],
         'CAD' => ['hy' => 'Կանադական դոլար', 'ru' => 'Канадский доллар', 'en' => 'Canadian Dollar'],
         'CNY' => ['hy' => 'Չինական յուան', 'ru' => 'Китайский юань', 'en' => 'Chinese Yuan'],
         'JPY' => ['hy' => 'Ճապոնական իեն', 'ru' => 'Японская иена', 'en' => 'Japanese Yen'],
@@ -191,8 +257,6 @@ function calc_spread(float $buy, float $sell): float
     return round((($sell - $buy) / $buy) * 100, 2);
 }
 
-
-/** Currency flag PNG path — upload files to /assets/flags/{CODE}.png */
 function currency_flag(string $code): string
 {
     $code = strtoupper(preg_replace('/[^A-Za-z]/', '', $code));
@@ -202,7 +266,6 @@ function currency_flag(string $code): string
     return '/assets/flags/GLOBE.png';
 }
 
-/** Language flag PNG — upload to /assets/lang/{hy|ru|en}.png */
 function lang_flag(string $lang): string
 {
     $lang = strtolower($lang);
@@ -210,7 +273,6 @@ function lang_flag(string $lang): string
     return '/assets/lang/' . $lang . '.png';
 }
 
-/** All currency flag map for JS */
 function currency_flags_map(): array
 {
     $map = [];
@@ -239,11 +301,11 @@ function get_bank_meta(string $code): ?array
     if (!isset($data[$code]) && !bank_override($code)) return null;
     $meta = bank_apply_overrides($code, $data[$code] ?? null);
     $db = bank_branches_from_db();
-    if ($db !== null) {                       // филиалы ведутся в админке
+    if ($db !== null) {
         if (!empty($db[$code])) $meta['branches'] = $db[$code];
         return $meta;
     }
-    static $branches = null;                  // запасной вариант: статичный файл
+    static $branches = null;
     if ($branches === null) {
         $bf = __DIR__ . "/branches_data.php";
         $branches = file_exists($bf) ? require $bf : [];
@@ -261,19 +323,11 @@ function bank_display_name(string $code, string $lang, ?string $apiName = null):
     return $apiName ?? $code;
 }
 
-/** All currency codes from API */
 function all_currency_codes(): array
 {
     return ['AED','AUD','CAD','CHF','CNY','EUR','GBP','GEL','JPY','RUR','USD'];
 }
 
-
-/**
- * Валюты для переключателей в таблице на главной.
- * Берём живой список из API (то, что реально торгуется у банков), а при его
- * недоступности — статический список. URL-ы страниц валют (currency.php) и
- * sitemap по-прежнему строятся от all_currency_codes(), здесь только таблица.
- */
 function table_currency_codes(): array
 {
     static $codes = null;
@@ -296,45 +350,31 @@ function table_currency_codes(): array
     return $codes = array_values(array_unique($found));
 }
 
-/**
- * Параллельная загрузка нескольких эндпоинтов API с тем же файловым кэшем,
- * что и api_get(). Холодный кэш = один круг запросов, а не N последовательных.
- * $reqs: ключ => [эндпоинт, параметры]. Возвращает ключ => массив|null.
- */
 function api_get_many(array $reqs, int $ttl = CACHE_TTL): array
 {
     $out = [];
     $pending = [];
-    foreach ($reqs as $key => $r) {
-        [$endpoint, $params] = $r;
-        $url = API_BASE . '/' . ltrim($endpoint, '/') . ($params ? '?' . http_build_query($params) : '');
-        $cacheFile = CACHE_DIR . '/' . md5($url) . '.json';
-        if (is_file($cacheFile) && (time() - filemtime($cacheFile)) < $ttl) {
-            $d = json_decode((string)file_get_contents($cacheFile), true);
-            if (is_array($d)) { $out[$key] = $d; continue; }
-        }
-        $pending[$key] = [$url, $cacheFile, $endpoint, $params];
+    foreach ($reqs as $key => [$endpoint, $params]) {
+        $url = api_url($endpoint, $params);
+        $f = api_cache_file($url);
+        $age = is_file($f) ? time() - (int)filemtime($f) : null;
+        $d = $age !== null ? json_decode((string)file_get_contents($f), true) : null;
+        if (is_array($d) && $age < $ttl) { $out[$key] = $d; continue; }
+        if (is_array($d) && $age < 86400 && api_can_defer()) { $out[$key] = $d; api_schedule_refresh($url); continue; }
+        $pending[$key] = [$url, $f, is_array($d) ? $d : null];
     }
     if (!$pending) return $out;
-
     if (!function_exists('curl_multi_init')) {
-        foreach ($pending as $key => [$url, $cacheFile, $endpoint, $params]) {
-            $out[$key] = api_get($endpoint, $params, $ttl);
-        }
+        foreach ($pending as $key => [$url, $f, $old]) $out[$key] = api_store($url, api_fetch_raw($url, 8)) ?? $old;
         return $out;
     }
-
     $mh = curl_multi_init();
     $handles = [];
     foreach ($pending as $key => [$url]) {
         $ch = curl_init($url);
         curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_CONNECTTIMEOUT => 4,
-            CURLOPT_TIMEOUT => 8,
-            CURLOPT_USERAGENT => 'Poxarjeq.am/2.0',
-            CURLOPT_HTTPHEADER => ['Accept: application/json'],
+            CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true, CURLOPT_CONNECTTIMEOUT => 4, CURLOPT_TIMEOUT => 8,
+            CURLOPT_USERAGENT => 'Poxarjeq.am/2.0', CURLOPT_HTTPHEADER => ['Accept: application/json'], CURLOPT_ENCODING => '',
         ]);
         curl_multi_add_handle($mh, $ch);
         $handles[$key] = $ch;
@@ -343,18 +383,11 @@ function api_get_many(array $reqs, int $ttl = CACHE_TTL): array
         $status = curl_multi_exec($mh, $running);
         if ($running) curl_multi_select($mh, 1.0);
     } while ($running && $status === CURLM_OK);
-
     foreach ($handles as $key => $ch) {
-        [$url, $cacheFile] = $pending[$key];
+        [$url, $f, $old] = $pending[$key];
         $raw = curl_multi_getcontent($ch);
         $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $data = ($http === 200 && is_string($raw)) ? json_decode($raw, true) : null;
-        if (is_array($data)) {
-            @file_put_contents($cacheFile, $raw, LOCK_EX);
-        } elseif (is_file($cacheFile)) {
-            $data = json_decode((string)file_get_contents($cacheFile), true); // устаревший кэш лучше, чем пустота
-        }
-        $out[$key] = is_array($data) ? $data : null;
+        $out[$key] = api_store($url, ($http === 200 && is_string($raw)) ? $raw : null) ?? $old;
         curl_multi_remove_handle($mh, $ch);
         curl_close($ch);
     }
@@ -362,10 +395,6 @@ function api_get_many(array $reqs, int $ttl = CACHE_TTL): array
     return $out;
 }
 
-/**
- * Матрица «банк × валюта» для главной: курсы по ВСЕМ валютам из API.
- * @return array{banks: array<string,array>, updated_at: ?string, currencies: string[]}
- */
 function get_rates_matrix(array $currencies): array
 {
     $reqs = [];
@@ -394,7 +423,6 @@ function get_rates_matrix(array $currencies): array
     return ['banks' => $banks, 'updated_at' => $updated, 'currencies' => $have];
 }
 
-/** Лучший курс покупки (max) и продажи (min) по валюте среди банков матрицы */
 function matrix_best(array $banks, string $cur): array
 {
     $bb = null; $bs = null;
@@ -407,11 +435,42 @@ function matrix_best(array $banks, string $cur): array
     return ['buy' => $bb, 'sell' => $bs];
 }
 
-/** Курс без хвостовых нулей, но не меньше 2 знаков: 388.5 → 388.50, 4.2813 → 4.2813 */
 function fmt_rate(?float $n): string
 {
     if ($n === null || $n <= 0) return '—';
     $s = rtrim(rtrim(number_format($n, 4, '.', ''), '0'), '.');
     $dec = strpos($s, '.') === false ? 0 : strlen($s) - strpos($s, '.') - 1;
     return $dec < 2 ? number_format($n, 2, '.', '') : $s;
+}
+
+function pxq_not_found(): void
+{
+    global $lang, $L;
+    if (!isset($lang)) { $lang = detect_lang(); $L = load_lang($lang); }
+    require __DIR__ . '/../404.php';
+    exit;
+}
+
+function pxq_redirect(string $url, int $code = 301): void
+{
+    header('Location: ' . $url, true, $code);
+    exit;
+}
+
+function top_bank_codes(int $limit = 10): array
+{
+    $priority = ['acba-bank', 'hayekonombank', 'araratbank', 'ardshinbank', 'inekobank', 'yunibank', 'evocabank', 'ameriabank', 'konvers-bank', 'fast-bank', 'vtbhayastan-bank', 'aydi-bank', 'haybiznesbank', 'armsvisbank', 'arcakhbank', 'mellat-bank', 'biblos-bank-armenia'];
+    $out = [];
+    foreach ($priority as $c) {
+        if (get_bank_meta($c) && bank_is_visible($c)) $out[] = $c;
+        if (count($out) >= $limit) break;
+    }
+    return $out;
+}
+
+function sm_bank_codes_safe(): array
+{
+    $codes = array_keys(require __DIR__ . '/bank_data.php');
+    foreach (bank_overrides() as $c => $o) if (!in_array($c, $codes, true) && (int)$o['is_active'] === 1) $codes[] = $c;
+    return $codes;
 }

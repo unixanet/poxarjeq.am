@@ -54,7 +54,6 @@ $all = db()->query('SELECT * FROM banks ORDER BY is_partner DESC, partner_order,
 $partnerCount = 0;
 foreach ($all as $b) if ($b['is_partner']) $partnerCount++;
 
-/** Мини-форма с одной кнопкой действия */
 function adm_act(int $id, string $action, string $label, string $cls, string $aria = ''): string
 {
     return '<form method="post" class="inline">' . csrf_field() . '<input type="hidden" name="id" value="' . $id . '"><input type="hidden" name="action" value="' . e($action) . '">'

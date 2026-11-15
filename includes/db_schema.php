@@ -1,10 +1,6 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Таблицы админки poxarjeq.am (MySQL / MariaDB). Идемпотентно: CREATE TABLE IF NOT EXISTS.
- * Вызывается из админки; публичный сайт таблицы не создаёт.
- */
 function pxq_migrate(PDO $pdo): void
 {
     $pdo->exec("CREATE TABLE IF NOT EXISTS banks (
@@ -131,7 +127,6 @@ function pxq_ensure_column(PDO $pdo, string $table, string $col, string $def): v
     if ((int)$st->fetchColumn() === 0) $pdo->exec("ALTER TABLE `$table` ADD COLUMN `$col` $def");
 }
 
-/** Меню по умолчанию — только когда таблица пуста */
 function pxq_seed_nav(PDO $pdo): void
 {
     if ((int)$pdo->query('SELECT COUNT(*) FROM nav_links')->fetchColumn() > 0) return;
@@ -144,7 +139,6 @@ function pxq_seed_nav(PDO $pdo): void
     }
 }
 
-/** Филиалы из includes/branches_data.php — один раз, когда таблица пуста */
 function pxq_seed_branches(PDO $pdo): void
 {
     if ((int)$pdo->query('SELECT COUNT(*) FROM branches')->fetchColumn() > 0) return;
@@ -163,7 +157,6 @@ function pxq_seed_branches(PDO $pdo): void
     }
 }
 
-/** Первичное наполнение из includes/bank_data.php (только отсутствующие банки) */
 function pxq_seed_banks(PDO $pdo): int
 {
     $data = require __DIR__ . '/bank_data.php';

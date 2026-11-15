@@ -2,10 +2,8 @@
 require_once __DIR__ . '/includes/functions.php';
 $lang = detect_lang();
 $L = load_lang($lang);
-
-/* ---- Данные: курсы по ВСЕМ валютам из API одним параллельным запросом ---- */
 $matrix   = get_rates_matrix(table_currency_codes());
-$have     = $matrix['currencies'];                 // валюты, по которым реально есть курсы
+$have     = $matrix['currencies'];
 $updatedAt = $matrix['updated_at'] ?? null;
 
 $defaultPref = ['USD', 'EUR', 'RUR', 'GBP', 'GEL'];
@@ -14,12 +12,12 @@ foreach ($have as $c) { if (count($cols) >= 5) break; if (!in_array($c, $cols, t
 
 $banks = [];
 foreach ($matrix['banks'] as $code => $b) {
-    if (!bank_is_visible($code)) continue;           // скрыт в админке
+    if (!bank_is_visible($code)) continue;
     $banks[$code] = [
         'code'    => $code,
         'name'    => bank_display_name($code, $lang, $b['name'] ?? null),
         'logo'    => bank_logo_url($code, $b['logo'] ?? ''),
-        'url'     => bank_page_url($code),
+        'url'     => lurl(bank_page_url($code)),
         'title'   => tv('common.link_bank', ['bank' => bank_display_name($code, $lang, $b['name'] ?? null)]),
         'alt'     => tv('common.logo_alt', ['bank' => bank_display_name($code, $lang, $b['name'] ?? null)]),
         'partner' => bank_is_partner($code),
@@ -28,7 +26,6 @@ foreach ($matrix['banks'] as $code => $b) {
     ];
 }
 $sortCur = $cols[0] ?? 'USD';
-// Партнёры закреплены сверху (по приоритету из админки), остальные по лучшей покупке
 uasort($banks, function ($a, $b) use ($sortCur) {
     if ($a['partner'] !== $b['partner']) return $a['partner'] ? -1 : 1;
     if ($a['partner']) return $a['order'] <=> $b['order'];
@@ -62,11 +59,9 @@ $jsData = [
 ];
 
 [$pageTitle, $pageDescription] = seo_meta('home');
-$pageCanonical = rtrim(SITE_URL, '/') . '/';
+$pagePath = '/';
 $active = 'home';
 $fullWidth = true;
-
-/* ---- Хелперы серверного рендера (тот же HTML строит JS при смене валюты) ---- */
 function idx_chevron(string $cls = 'right-0'): string
 {
     return '<svg class="pointer-events-none absolute top-1/2 h-3 w-3 -translate-y-1/2 ' . $cls . '" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 9l6 6 6-6"/></svg>';
@@ -111,8 +106,6 @@ $heroCards = array_values(array_filter(['USD', 'EUR', 'RUR'], fn($c) => !empty($
 
 require __DIR__ . '/includes/header.php';
 ?>
-
-<!-- ===== HERO ===== -->
 <section class="bg-white border-b border-slate-100">
     <div class="mx-auto max-w-7xl px-4 sm:px-7 py-8 sm:py-12 lg:py-14 grid lg:grid-cols-[1fr_440px] gap-8 lg:gap-14 items-center">
         <div>
@@ -131,7 +124,7 @@ require __DIR__ . '/includes/header.php';
             <?php if ($heroCards): ?>
             <div class="mt-7 sm:mt-9 grid grid-cols-3 gap-2.5 sm:gap-3.5">
                 <?php foreach ($heroCards as $c): $bb = $best[$c]['buy']; ?>
-                <a href="/currency.php?cur=<?= e($c) ?>" title="<?= e(tv('common.link_currency', ['name' => $names[$c], 'code' => $c])) ?>" class="block rounded-[18px] sm:rounded-[20px] border border-slate-100 bg-white p-3 sm:p-4 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(37,99,235,.14)]">
+                <a href="<?= e(lurl('/currency.php?cur=' . $c)) ?>" title="<?= e(tv('common.link_currency', ['name' => $names[$c], 'code' => $c])) ?>" class="block rounded-[18px] sm:rounded-[20px] border border-slate-100 bg-white p-3 sm:p-4 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(37,99,235,.14)]">
                     <span class="flex items-center gap-2 text-[13px] sm:text-sm font-extrabold text-slate-900"><img src="<?= e($flags[$c]) ?>" alt="<?= e($flagAlt[$c]) ?>" width="28" height="28" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover shadow"><?= e($c) ?></span>
                     <span class="mt-1.5 block text-[22px] sm:text-[28px] font-black tracking-tight text-slate-900 tabular-nums leading-none"><?= e(fmt_rate($bb['rate'])) ?></span>
                     <span class="mt-1.5 block text-[11px] sm:text-xs leading-tight text-black"><?= e(t('best_buy')) ?> · <?= e($bb['name']) ?></span>
@@ -140,8 +133,6 @@ require __DIR__ . '/includes/header.php';
             </div>
             <?php endif; ?>
         </div>
-
-        <!-- Калькулятор -->
         <div id="calc" class="scroll-mt-24 rounded-[28px] sm:rounded-[32px] border border-slate-100 bg-white p-4 sm:p-6 shadow-[0_24px_60px_-12px_rgba(15,23,42,.18)]">
             <h2 class="mb-4 sm:mb-5 flex items-center gap-3 text-lg sm:text-xl font-black text-slate-900">
                 <span class="grid h-9 w-9 place-items-center rounded-xl bg-indigo-600 text-white"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></span>
@@ -184,13 +175,10 @@ require __DIR__ . '/includes/header.php';
         </div>
     </div>
 </section>
-
-<!-- ===== КУРСЫ ===== -->
 <section id="rates" class="mx-auto max-w-7xl px-4 sm:px-7 pt-10 sm:pt-14 scroll-mt-20">
     <h2 class="mb-5 sm:mb-6 text-2xl sm:text-3xl font-black tracking-tight text-slate-900"><?= e(t('compare_banks')) ?></h2>
 
     <?php if ($banks): ?>
-    <!-- Мобильная версия: одна валюта, карточки банков -->
     <div class="md:hidden">
         <div id="m-chips" class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="<?= e(t('choose_currency')) ?>">
             <?php foreach ($have as $c): $on = ($c === $mobileCur); ?>
@@ -203,8 +191,6 @@ require __DIR__ . '/includes/header.php';
             <?php foreach ($banks as $b) echo idx_card($b, $mobileCur, $best); ?>
         </div>
     </div>
-
-    <!-- Десктоп: таблица, у каждой колонки свой переключатель валюты -->
     <div class="hidden md:block overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_24px_60px_-12px_rgba(15,23,42,.14)]">
         <div class="overflow-x-auto">
             <table class="w-full min-w-[860px] text-sm" id="rates-table">
@@ -258,8 +244,6 @@ require __DIR__ . '/includes/header.php';
     function safeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
     function safeSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
     function isBest(cur, buy) { var b = D.best[cur] && D.best[cur].buy; return b && buy != null && Math.abs(buy - b.rate) < 0.00001; }
-
-    /* ---------- Таблица (десктоп) ---------- */
     function sortBanks(cur) {
         return D.banks.slice().sort(function (a, b) {
             if (!!a.partner !== !!b.partner) return a.partner ? -1 : 1;
@@ -293,8 +277,6 @@ require __DIR__ . '/includes/header.php';
             safeSet('pxq_cols', JSON.stringify(cols));
         });
     });
-
-    /* ---------- Карточки (мобильные) ---------- */
     var mList = document.getElementById('m-list'), chips = document.querySelectorAll('.m-chip');
     function cardHtml(b) {
         var r = b.rates && b.rates[mobileCur]; if (!r) return '';
@@ -321,13 +303,11 @@ require __DIR__ . '/includes/header.php';
     chips.forEach(function (ch) {
         ch.addEventListener('click', function () { mobileCur = this.getAttribute('data-cur'); renderCards(); safeSet('pxq_mcur', mobileCur); });
     });
-
-    /* ---------- Калькулятор: любая валюта через лучший курс банков ---------- */
     var fromV = document.getElementById('calc-from-val'), fromC = document.getElementById('calc-from-curr'), toC = document.getElementById('calc-to-curr'),
         toV = document.getElementById('calc-to-val'), fromF = document.getElementById('calc-from-flag'), toF = document.getElementById('calc-to-flag'),
         note = document.getElementById('calc-note'), swap = document.getElementById('calc-swap');
-    function buyRate(c) { return D.best[c] && D.best[c].buy ? D.best[c].buy.rate : null; }   // банк покупает у вас валюту
-    function sellRate(c) { return D.best[c] && D.best[c].sell ? D.best[c].sell.rate : null; } // банк продаёт вам валюту
+    function buyRate(c) { return D.best[c] && D.best[c].buy ? D.best[c].buy.rate : null; }
+    function sellRate(c) { return D.best[c] && D.best[c].sell ? D.best[c].sell.rate : null; }
     function calc() {
         var a = parseFloat(fromV.value), f = fromC.value, t = toC.value;
         fromF.src = D.flags[f] || ''; toF.src = D.flags[t] || ''; fromF.alt = D.flagAlt[f] || ''; toF.alt = D.flagAlt[t] || '';
@@ -346,8 +326,6 @@ require __DIR__ . '/includes/header.php';
     }
     [fromV, fromC, toC].forEach(function (el) { el && el.addEventListener('input', calc); el && el.addEventListener('change', calc); });
     swap && swap.addEventListener('click', function () { var x = fromC.value; fromC.value = toC.value; toC.value = x; calc(); });
-
-    /* ---------- Восстановление выбора посетителя ---------- */
     try {
         var sc = JSON.parse(safeGet('pxq_cols') || 'null');
         if (Array.isArray(sc) && sc.length === cols.length && sc.every(function (c) { return D.cur.indexOf(c) >= 0; })) {
@@ -361,8 +339,40 @@ require __DIR__ . '/includes/header.php';
     calc();
 })();
 </script>
+<?php $homeNews = news_fetch(3); ?>
+<?php if (!empty($homeNews['items'])): ?>
+<section class="mx-auto max-w-7xl px-4 sm:px-7 pt-10 sm:pt-14" aria-labelledby="home-news-h">
+    <div class="mb-5 flex items-end justify-between gap-4">
+        <h2 id="home-news-h" class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900"><?= e(t('news.home_title')) ?></h2>
+        <?= ui_link(lurl('/news'), t('news.home_all') . ' →', t('news.all_title'), 'shrink-0 text-sm font-bold text-blue-600 no-underline hover:underline') ?>
+    </div>
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <?php foreach (array_slice($homeNews['items'], 0, 3) as $hn) echo news_card($hn); ?>
+    </div>
+</section>
+<?php endif; ?>
 
-<!-- ===== Текст для читателя и поисковиков (без изменений по смыслу) ===== -->
+<section class="mx-auto max-w-7xl px-4 sm:px-7 pt-10 sm:pt-14" aria-labelledby="home-more-h">
+    <h2 id="home-more-h" class="mb-5 text-2xl sm:text-3xl font-black tracking-tight text-slate-900"><?= e(t('home.more_title')) ?></h2>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <?php foreach ([['/poxanakman-keter', 'home.more_exchange'], ['/voski', 'home.more_gold'], ['/banks', 'home.more_banks'], ['/news', 'home.more_news']] as [$mu, $mk]): ?>
+        <?= ui_link(lurl($mu), t($mk), t($mk), 'flex min-h-[64px] items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-white px-5 py-4 text-[15px] font-bold text-slate-900 no-underline shadow-[0_6px_24px_rgba(15,23,42,.05)] transition hover:border-blue-300 hover:text-blue-600') ?>
+        <?php endforeach; ?>
+    </div>
+    <h3 class="mb-3 mt-8 text-lg font-black text-slate-900"><?= e(t('home.cur_links_title')) ?></h3>
+    <ul class="flex flex-wrap gap-2">
+        <?php foreach (array_values(array_unique(array_merge(['USD', 'EUR', 'RUR', 'GEL', 'GBP', 'CHF', 'CNY', 'AED'], $have))) as $lc): ?>
+        <li><?= ui_link(lurl('/currency.php?cur=' . $lc), ui_flag($lc, 20, 'h-5 w-5 rounded-full object-cover') . e(cur_menu_label($lc, $lang)), tv('common.link_currency', ['name' => currency_name($lc, $lang), 'code' => $lc]), 'flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-bold text-slate-900 no-underline hover:border-blue-300 hover:text-blue-600', [], true) ?></li>
+        <?php endforeach; ?>
+    </ul>
+    <h3 class="mb-3 mt-8 text-lg font-black text-slate-900"><?= e(t('home.bank_links_title')) ?></h3>
+    <ul class="flex flex-wrap gap-2">
+        <?php foreach (top_bank_codes(17) as $lb): $ln = bank_display_name($lb, $lang); ?>
+        <li><?= ui_link(lurl(bank_page_url($lb)), $ln, tv('common.link_bank', ['bank' => $ln]), 'flex min-h-[44px] items-center rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-bold text-slate-900 no-underline hover:border-blue-300 hover:text-blue-600') ?></li>
+        <?php endforeach; ?>
+    </ul>
+</section>
+
 <section class="mx-auto max-w-7xl px-4 sm:px-7 pt-10 sm:pt-14 grid gap-5 lg:grid-cols-2">
     <article class="rounded-3xl border border-slate-100 bg-white p-5 sm:p-8 shadow-[0_10px_40px_rgba(15,23,42,.06)]">
         <h2 class="mb-4 text-xl font-black text-slate-900"><?= e(t('home.art1.title')) ?></h2>

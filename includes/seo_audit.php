@@ -1,11 +1,6 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Проверка HTML страницы по SEO-правилам проекта:
- * у каждой ссылки есть title, у каждой картинки — alt, один H1, есть title/description/canonical/hreflang/lang.
- * @return string[] список проблем (пусто — всё в порядке)
- */
 function seo_audit_html(string $html): array
 {
     $issues = [];
@@ -16,7 +11,7 @@ function seo_audit_html(string $html): array
     $x = new DOMXPath($doc);
 
     foreach ($x->query('//a[@href]') as $a) {
-        /** @var DOMElement $a */
+
         if (trim($a->getAttribute('title')) === '' && !str_starts_with($a->getAttribute('href'), '#')) {
             $issues[] = 'ссылка без title: ' . $a->getAttribute('href') . ' («' . mb_substr(trim(preg_replace('/\s+/u', ' ', $a->textContent)), 0, 40) . '»)';
         }
@@ -25,7 +20,7 @@ function seo_audit_html(string $html): array
         }
     }
     foreach ($x->query('//img') as $img) {
-        /** @var DOMElement $img */
+
         if (trim($img->getAttribute('alt')) === '') $issues[] = 'картинка без alt: ' . $img->getAttribute('src');
         if ($img->getAttribute('width') === '' || $img->getAttribute('height') === '') $issues[] = 'картинка без width/height: ' . $img->getAttribute('src');
     }
@@ -45,7 +40,7 @@ function seo_audit_html(string $html): array
         if (json_decode($s->textContent, true) === null) $issues[] = 'ошибка в JSON-LD';
     }
     foreach ($x->query('//input[not(@type="hidden") and not(@type="submit")]|//select|//textarea') as $in) {
-        /** @var DOMElement $in */
+
         $id = $in->getAttribute('id');
         $labelled = $in->getAttribute('aria-label') !== '' || ($id !== '' && $x->query('//label[@for="' . $id . '"]')->length > 0) || $x->query('ancestor::label', $in)->length > 0;
         if (!$labelled && $in->getAttribute('type') !== 'hidden' && $in->getAttribute('tabindex') !== '-1') $issues[] = 'поле формы без подписи: ' . ($id ?: $in->getAttribute('name'));

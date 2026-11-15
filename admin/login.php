@@ -6,7 +6,7 @@ adm_ready();
 if (adm_user()) redirect('/admin/');
 
 $users = (int)db()->query('SELECT COUNT(*) FROM admin_users')->fetchColumn();
-$setup = $users === 0;           // первый запуск: создаём администратора
+$setup = $users === 0;
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $st = db()->prepare('SELECT id, password_hash FROM admin_users WHERE username = ?');
         $st->execute([$username]);
         $row = $st->fetch();
-        // password_verify выполняем всегда, чтобы время ответа не выдавало существование логина
+
         $hash = $row['password_hash'] ?? '$2y$10$usesomesillystringforsaltuseless0000000000000000000000';
         if ($row && password_verify($password, $hash)) {
             if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
