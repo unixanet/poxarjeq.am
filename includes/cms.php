@@ -202,6 +202,7 @@ function nav_defaults(): array
 
 function nav_reseed(PDO $pdo): void
 {
+    $pdo->beginTransaction();
     $pdo->exec('DELETE FROM nav_links');
     $ins = $pdo->prepare('INSERT INTO nav_links (area, grp, sort, url, label_hy, label_ru, label_en, title_hy, title_ru, title_en, new_tab, nofollow, is_active)
         VALUES (:area,:grp,:sort,:url,:lh,:lr,:le,:th,:tr,:te,0,0,1)');
@@ -211,6 +212,7 @@ function nav_reseed(PDO $pdo): void
             'lh' => $r['label_hy'], 'lr' => $r['label_ru'], 'le' => $r['label_en'], 'th' => $r['title_hy'], 'tr' => $r['title_ru'], 'te' => $r['title_en']]);
     }
     $pdo->prepare("REPLACE INTO site_texts (k, lang, value) VALUES ('_nav_version', 'xx', ?)")->execute([(string)NAV_VERSION]);
+    $pdo->commit();
 }
 
 function cms_nav(string $area): array
