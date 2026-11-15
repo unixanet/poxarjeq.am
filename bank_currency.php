@@ -45,7 +45,7 @@ $curGen = cur_gen($cur, $lang);
 $vars = bank_vars($displayName, $lang) + [
     'cur' => $cur, 'name' => $curName, 'gen' => $curGen, 'gen_uc' => cur_ucfirst($curGen),
     'buy' => fmt_rate($buy), 'sell' => fmt_rate($sell), 'place' => $place, 'of' => $of, 'place_ord' => ord_num($place, $lang),
-    'best_buy' => fmt_rate($bestBuy), 'best_sell' => fmt_rate($bestSell), 'avg_buy' => fmt_rate($avgBuy), 'spread' => number_format($spread, 2, '.', ''),
+    'best_buy' => fmt_rate($bestBuy), 'best_sell' => fmt_rate($bestSell), 'avg_buy' => number_format($avgBuy, 2, '.', ''), 'spread' => number_format($spread, 2, '.', ''),
     'diff_best' => number_format($bestBuy - $buy, 2, '.', ''),
 ];
 $pageTitle = cms_text_in('seo.bcur.title', $lang, $vars);
@@ -111,7 +111,7 @@ require __DIR__ . '/includes/header.php';
 <?php if ($rows): ?>
 <section class="mt-10" aria-labelledby="cmp-h">
     <h2 id="cmp-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(tv('bcur.table_title', $vars)) ?></h2>
-    <div class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_24px_60px_-12px_rgba(15,23,42,.14)]">
+    <div class="hidden overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_24px_60px_-12px_rgba(15,23,42,.14)] md:block">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <caption class="sr-only"><?= e(tv('bcur.table_title', $vars)) ?></caption>
@@ -141,6 +141,19 @@ require __DIR__ . '/includes/header.php';
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="grid gap-2.5 md:hidden">
+        <?php foreach ($rows as $i => $row): $me = $row['code'] === $code; $bt = tv('bcur.row_title', bank_vars($row['name'], $lang) + ['gen' => $curGen]); $isBest = abs($row['buy'] - $bestBuy) < 0.00001; ?>
+        <?php if ($me): ?><div class="flex items-center gap-3 rounded-2xl border border-blue-300 bg-blue-50 p-3.5"><?php else: ?><a href="<?= e(lurl(bank_page_url($row['code']) . '/' . strtolower($cur))) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 text-slate-900 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]"><?php endif; ?>
+            <span class="w-6 shrink-0 text-center text-sm font-bold tabular-nums"><?= $i + 1 ?></span>
+            <?= ui_bank_logo($row['code'], $row['name'], $row['logo'], 40, 'h-10 w-10 shrink-0 rounded-lg object-contain') ?>
+            <span class="min-w-0 flex-1 truncate font-bold text-slate-900"><?= e($row['name']) ?></span>
+            <span class="grid shrink-0 grid-cols-2 gap-3 text-right">
+                <span><span class="block text-[10px] font-bold uppercase tracking-wider"><?= e(t('buy')) ?></span><span class="block text-[16px] font-extrabold tabular-nums <?= $isBest ? 'text-green-600' : 'text-slate-900' ?>"><?= ui_rate($row['buy']) ?></span></span>
+                <span><span class="block text-[10px] font-bold uppercase tracking-wider"><?= e(t('sell')) ?></span><span class="block text-[16px] font-extrabold tabular-nums text-slate-900"><?= ui_rate($row['sell']) ?></span></span>
+            </span>
+        <?php if ($me): ?></div><?php else: ?></a><?php endif; ?>
+        <?php endforeach; ?>
     </div>
 </section>
 <?php endif; ?>

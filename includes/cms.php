@@ -150,7 +150,7 @@ function currency_override(string $code, string $lang): array
     return is_array($all) ? ($all[strtoupper($code)][$lang] ?? []) : [];
 }
 
-const NAV_VERSION = 2;
+const NAV_VERSION = 3;
 
 function nav_defaults(): array
 {
@@ -181,6 +181,14 @@ function nav_defaults(): array
         $mk('footer', 2, '/' . $code, $lab, $tit);
     }
     $mk('footer', 2, '/banks', $tr('menu.all_banks'), $tr('menu.all_banks_title'));
+    foreach (array_slice(cities_index(), 0, 8, true) as $slug => $ci) {
+        $lab = []; $tit = [];
+        foreach (SUPPORTED_LANGS as $l) {
+            $lab[$l] = $ci['name'][$l];
+            $tit[$l] = cms_text_in('city.link_title', $l, ['city' => $ci['name'][$l], 'city_loc' => city_loc($ci['name'][$l], $l)]);
+        }
+        $mk('footer', 5, city_page_url($slug), $lab, $tit);
+    }
     $mk('footer', 3, '/poxanakman-keter', $tr('menu.exchange'), $tr('menu.exchange_title'));
     $mk('footer', 3, '/voski', $tr('menu.gold'), $tr('menu.gold_title'));
     $mk('footer', 3, '/news', $tr('menu.news'), $tr('menu.news_title'));

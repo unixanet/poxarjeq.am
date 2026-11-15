@@ -20,6 +20,8 @@ foreach ($codes as $code) {
     }
 }
 usort($rows, fn($a, $b) => [$b['partner'], $b['usd']['buy'] ?? 0] <=> [$a['partner'], $a['usd']['buy'] ?? 0]);
+$citySlugByName = [];
+foreach (cities_index() as $cs => $ci) $citySlugByName[$ci['name'][$lang]] = $cs;
 uasort($byCity, fn($a, $b) => count($b) <=> count($a));
 $updatedAt = $matrix['updated_at'] ?? null;
 
@@ -94,7 +96,7 @@ require __DIR__ . '/includes/header.php';
     <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <?php foreach ($byCity as $cn => $list): ?>
         <div class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)]">
-            <h3 class="mb-3 text-lg font-black text-slate-900"><?= e($cn) ?> <span class="text-sm font-semibold"><?= e('· ' . count($list)) ?></span></h3>
+            <h3 class="mb-3 text-lg font-black text-slate-900"><?php $cslug = $citySlugByName[$cn] ?? ''; ?><?= $cslug !== '' ? ui_link(lurl(city_page_url($cslug)), $cn, cms_text_in('city.link_title', $lang, ['city' => $cn, 'city_loc' => city_loc($cn, $lang)]), 'text-slate-900 no-underline hover:text-blue-600') : e($cn) ?> <span class="text-sm font-semibold"><?= e('· ' . count($list)) ?></span></h3>
             <ul class="flex flex-wrap gap-2">
                 <?php foreach ($list as $code => $b): ?>
                 <li><?= ui_link(lurl(branch_page_url($code, $b['slug'])), $b['bank'], tv('bank.branch_title', ['bank' => $b['bank'], 'branch' => $b['branch'], 'city' => $cn]), 'inline-flex min-h-[40px] items-center rounded-xl border border-slate-200 bg-white px-3 text-[13px] font-bold text-slate-900 no-underline hover:border-blue-300 hover:text-blue-600') ?></li>

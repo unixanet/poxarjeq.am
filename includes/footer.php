@@ -23,7 +23,7 @@ $_fTgIcon = '<svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColo
             <?= ui_link($_fTg, e(t('tg.btn')) . ' <span aria-hidden="true">→</span>', t('tg.title_attr'), 'inline-flex min-h-[50px] shrink-0 items-center justify-center gap-2 rounded-[14px] bg-white px-7 text-base font-extrabold text-blue-600 no-underline hover:bg-blue-50', ['target' => '_blank', 'rel' => 'noopener'], true) ?>
         </section>
 
-        <div class="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+        <div class="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_repeat(5,1fr)]">
             <div class="col-span-2 lg:col-span-1">
                 <a href="<?= e(lurl('/')) ?>" title="<?= e(t('site_name')) ?> — <?= e(t('today_rates')) ?>" class="mb-4 inline-flex items-center gap-2.5 text-slate-900 no-underline">
                     <span class="flex h-9 w-9 items-center justify-center rounded-[10px] bg-blue-600 text-[19px] font-extrabold text-white" aria-hidden="true">֏</span>
@@ -33,8 +33,8 @@ $_fTgIcon = '<svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColo
                 <p class="mt-3 max-w-xs text-sm leading-relaxed text-black"><?= e(t('footer.data')) ?></p>
             </div>
             <?php foreach ($_fCols as $_fg => $_fItems): ?>
-            <nav aria-label="<?= e(t('footer.col' . min(max((int)$_fg, 1), 4))) ?>">
-                <h3 class="mb-4 text-[15px] font-extrabold text-slate-900"><?= e(t('footer.col' . min(max((int)$_fg, 1), 4))) ?></h3>
+            <nav aria-label="<?= e(t('footer.col' . min(max((int)$_fg, 1), 5))) ?>">
+                <h3 class="mb-4 text-[15px] font-extrabold text-slate-900"><?= e(t('footer.col' . min(max((int)$_fg, 1), 5))) ?></h3>
                 <ul class="space-y-2.5 text-sm">
                     <?php foreach ($_fItems as $_fl): ?>
                     <li><?= ui_link(str_starts_with($_fl['url'], 'mailto:') || str_starts_with($_fl['url'], 'tel:') || str_starts_with($_fl['url'], 'http') ? $_fl['url'] : lurl($_fl['url']), nav_label($_fl, $lang), nav_title($_fl, $lang), 'text-slate-900 no-underline hover:text-blue-600 hover:underline',

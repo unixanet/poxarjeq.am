@@ -56,6 +56,8 @@ function sm_entries(string $part): array
             foreach ($b['cur'] as $c) $addPage(bank_page_url($code) . '/' . strtolower($c), $d, 'daily', '0.5');
         }
     } elseif ($part === 'branches') {
+        $dc = sm_date(null, max($mt('includes/branches_data.php'), $mt('includes/bank_data.php')));
+        foreach (array_keys(cities_index()) as $cs) $addPage(city_page_url($cs), $dc, 'weekly', '0.6');
         $d = sm_date(null, max($mt('includes/branches_data.php'), $mt('includes/bank_data.php')));
         foreach (sm_bank_codes() as $code) {
             foreach (get_bank_meta($code)['branches'] ?? [] as $br) {

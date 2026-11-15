@@ -8,6 +8,7 @@ require_once __DIR__ . '/ui.php';
 require_once __DIR__ . '/currency_seo.php';
 require_once __DIR__ . '/bank_seo.php';
 require_once __DIR__ . '/news_ui.php';
+require_once __DIR__ . '/cities.php';
 require_once __DIR__ . '/llms.php';
 require_once __DIR__ . '/seo_audit.php';
 

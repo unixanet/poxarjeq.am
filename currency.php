@@ -47,7 +47,7 @@ $active = strtolower($cur);
 $fullWidth = false;
 
 $h1 = ($ov['h1'] ?? '') !== '' ? $ov['h1'] : cur_h1($cur, $lang);
-$vars += ['best_buy' => $bestBuy !== null ? fmt_rate($bestBuy) : '', 'best_buy_bank' => $bestBuyBank, 'best_sell' => $bestSell !== null ? fmt_rate($bestSell) : '', 'best_sell_bank' => $bestSellBank, 'avg_buy' => $avgBuy !== null ? fmt_rate($avgBuy) : '', 'banks' => count($rows)];
+$vars += ['best_buy' => $bestBuy !== null ? fmt_rate($bestBuy) : '', 'best_buy_bank' => $bestBuyBank, 'best_sell' => $bestSell !== null ? fmt_rate($bestSell) : '', 'best_sell_bank' => $bestSellBank, 'avg_buy' => $avgBuy !== null ? number_format($avgBuy, 2, '.', '') : '', 'banks' => count($rows)];
 $leadKey = ($bestBuy !== null && $bestSell !== null) ? 'cur.lead' : 'cur.lead_plain';
 $leadHtml = ($ov['lead'] ?? '') !== '' ? md_paragraphs(cms_fill($ov['lead'], $vars)) : md_paragraphs(cms_text_in($leadKey, $lang, $vars));
 $aboutTitle = ($ov['about_title'] ?? '') !== '' ? $ov['about_title'] : cms_text_in('cur.about_title', $lang, $vars);
@@ -186,7 +186,7 @@ require __DIR__ . '/includes/header.php';
                     <tr class="border-t border-slate-100 hover:bg-blue-50/40 <?= $r['partner'] ? 'bg-amber-50/40' : '' ?>">
                         <td class="px-4 py-3 font-semibold tabular-nums"><?= $i + 1 ?></td>
                         <td class="px-2 py-3">
-                            <a href="<?= e(lurl($r['url'])) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 text-slate-900 no-underline">
+                            <a href="<?= e(lurl($r['url'] . '/' . strtolower($cur))) ?>" title="<?= e(tv('bcur.row_title', bank_vars($r['name'], $lang) + ['gen' => cur_gen($cur, $lang)])) ?>" class="flex items-center gap-3 text-slate-900 no-underline hover:text-blue-600">
                                 <?= ui_bank_logo($r['code'], $r['name'], $r['logo'], 44, 'h-11 w-11 shrink-0 rounded-[10px] object-contain') ?>
                                 <span class="font-bold leading-tight text-slate-900"><?= e($r['name']) ?><?php if ($r['partner']): ?><span class="mt-1 block"><?= ui_partner_badge() ?></span><?php endif; ?></span>
                             </a>
@@ -194,7 +194,7 @@ require __DIR__ . '/includes/header.php';
                         <td class="px-4 py-3 text-right font-semibold tabular-nums"><span class="<?= $isBest ? 'inline-block rounded-lg bg-green-50 px-2.5 py-1 font-extrabold text-green-600' : '' ?>"><?= ui_rate($r['buy']) ?></span></td>
                         <td class="px-4 py-3 text-right font-semibold tabular-nums"><?= ui_rate($r['sell']) ?></td>
                         <td class="px-4 py-3 text-right tabular-nums"><?= e((string)$sp) ?>%</td>
-                        <td class="px-4 py-3 text-right"><?= ui_link(lurl($r['url']), t('cur.details'), $bt, 'inline-block rounded-lg bg-blue-50 px-3 py-1.5 text-[13px] font-bold no-underline') ?></td>
+                        <td class="px-4 py-3 text-right"><?= ui_link(lurl($r['url'] . '/' . strtolower($cur)), t('cur.details'), tv('bcur.row_title', bank_vars($r['name'], $lang) + ['gen' => cur_gen($cur, $lang)]), 'inline-block rounded-lg bg-blue-50 px-3 py-1.5 text-[13px] font-bold no-underline') ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -206,7 +206,7 @@ require __DIR__ . '/includes/header.php';
             $isBest = abs($r['buy'] - (float)$bestBuy) < 0.00001;
             $bt = tv('common.link_bank', ['bank' => $r['name']]);
         ?>
-        <a href="<?= e(lurl($r['url'])) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 rounded-2xl border p-3.5 text-slate-900 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] <?= $r['partner'] ? 'border-amber-200 bg-amber-50/40' : 'border-slate-100 bg-white' ?>">
+        <a href="<?= e(lurl($r['url'] . '/' . strtolower($cur))) ?>" title="<?= e(tv('bcur.row_title', bank_vars($r['name'], $lang) + ['gen' => cur_gen($cur, $lang)])) ?>" class="flex items-center gap-3 rounded-2xl border p-3.5 text-slate-900 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] <?= $r['partner'] ? 'border-amber-200 bg-amber-50/40' : 'border-slate-100 bg-white' ?>">
             <?= ui_bank_logo($r['code'], $r['name'], $r['logo'], 48, 'h-12 w-12 shrink-0 rounded-xl object-contain') ?>
             <span class="min-w-0 flex-1">
                 <span class="block truncate font-bold leading-tight text-slate-900"><?= e($r['name']) ?></span>
@@ -224,6 +224,16 @@ require __DIR__ . '/includes/header.php';
     <div class="rounded-3xl border border-slate-100 bg-white p-10 text-center shadow-sm"><?= e(t('no_data')) ?></div>
     <?php endif; ?>
 </section>
+<?php
+$exSum = api_v2('exchangers.php', ['lang' => 'hy'], 900)['summary'][$cur] ?? null;
+if ($exSum): ?>
+<section class="mt-10 rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-8" aria-labelledby="ex-h">
+    <h2 id="ex-h" class="text-xl font-black text-slate-900 sm:text-2xl"><?= e(cms_text_in('cur.ex_title', $lang, $vars)) ?></h2>
+    <p class="mt-2 max-w-3xl text-[15px] leading-relaxed"><?= e(cms_text_in('cur.ex_text', $lang, $vars + ['ex_count' => $exSum['count'], 'ex_best_buy' => fmt_rate((float)$exSum['best_buy']['value']), 'ex_best_sell' => fmt_rate((float)$exSum['best_sell']['value']), 'ex_avg_buy' => fmt_rate((float)$exSum['avg_buy'])])) ?></p>
+    <p class="mt-4"><?= ui_link(lurl('/poxanakman-keter'), t('cur.ex_link'), t('menu.exchange_title'), 'inline-flex min-h-[46px] items-center rounded-[14px] bg-blue-600 px-6 text-sm font-bold text-white no-underline hover:bg-blue-700') ?></p>
+</section>
+<?php endif; ?>
+
 <div class="mt-10 grid gap-6 lg:grid-cols-2">
     <?php if ($bestBuy): ?>
     <section aria-labelledby="conv-h">
@@ -281,7 +291,7 @@ require __DIR__ . '/includes/header.php';
 <?php
 $graph = [
     ['@type' => 'WebPage', '@id' => $pageCanonical . '#webpage', 'url' => $pageCanonical, 'name' => $pageTitle, 'description' => $pageDescription,
-     'inLanguage' => $lang, 'isPartOf' => ['@id' => rtrim(SITE_URL, '/') . '/#website'], 'breadcrumb' => ['@id' => $pageCanonical . '#breadcrumb']],
+     'inLanguage' => $lang, 'isPartOf' => ['@id' => rtrim(SITE_URL, '/') . '/#website'], 'breadcrumb' => ['@id' => $pageCanonical . '#breadcrumb'], 'dateModified' => $updatedAt ?: date('c')],
     array_merge(ld_breadcrumbs($crumbs), ['@id' => $pageCanonical . '#breadcrumb']),
     ['@type' => 'ItemList', 'name' => $name . ' ' . t('rates_of'), 'numberOfItems' => count($rows),
      'itemListElement' => array_map(fn($r, $i) => ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $r['name'], 'url' => rtrim(SITE_URL, '/') . $r['url']], $rows, array_keys($rows))],

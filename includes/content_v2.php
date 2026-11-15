@@ -16,6 +16,7 @@ $groups = [
     'exch' => ['title' => 'Обменные пункты', 'url' => '/poxanakman-keter'],
     'banks' => ['title' => 'Список банков', 'url' => '/banks'],
     'bcur' => ['title' => 'Банк + валюта (шаблон)', 'url' => ''],
+    'city' => ['title' => 'Города', 'url' => ''],
 ];
 
 $menu = [
@@ -39,6 +40,7 @@ $add('footer.col1', 'footer', 'Подвал', 'Заголовок колонки
 $add('footer.col2', 'footer', 'Подвал', 'Заголовок колонки 2', 'Բանկեր', 'Банки', 'Banks');
 $add('footer.col3', 'footer', 'Подвал', 'Заголовок колонки 3', 'Ծառայություններ', 'Сервисы', 'Services');
 $add('footer.col4', 'footer', 'Подвал', 'Заголовок колонки 4', 'Կայք', 'О сайте', 'The site');
+$add('footer.col5', 'footer', 'Подвал', 'Заголовок колонки 5', 'Քաղաքներ', 'Города', 'Cities');
 $add('footer.leads', 'footer', 'Подвал', 'Строка о Leads.am', 'Poxarjeq.am-ը Leads.am-ի պաշտոնական նախագիծն է։', 'Poxarjeq.am — официальный проект Leads.am.', 'Poxarjeq.am is an official Leads.am project.');
 $add('footer.leads_desc', 'footer', 'Подвал', 'Что входит в Leads.am', 'Leads.am-ը ՏՏ ընկերություն է։ Poxarjeq.com և Poxarjeq.am նախագծերը մշակվում և զարգացվում են Leads.am թիմի կողմից։', 'Leads.am — IT-компания. Проекты Poxarjeq.com и Poxarjeq.am разрабатывает и развивает команда Leads.am.', 'Leads.am is an IT company. The Poxarjeq.com and Poxarjeq.am projects are built and maintained by the Leads.am team.', true);
 $add('footer.sister', 'footer', 'Подвал', 'Подпись ссылки на poxarjeq.com', 'Poxarjeq.com՝ վարկեր, ավանդներ, քարտեր', 'Poxarjeq.com: кредиты, вклады, карты', 'Poxarjeq.com: loans, deposits, cards');
@@ -323,5 +325,20 @@ $add('disclaimer.s4_text', 'disclaimer', 'Разделы', 'Раздел 4: те
 $add('disclaimer.s5_title', 'disclaimer', 'Разделы', 'Раздел 5: заголовок', 'Ինչ անել գործարքից առաջ', 'Что сделать перед сделкой', 'Before you exchange');
 $add('disclaimer.s5_text', 'disclaimer', 'Разделы', 'Раздел 5: текст', 'Զանգահարեք բանկ կամ փոխանակման կետ և ճշտեք կուրսը, պահանջեք անդորրագիր և գումարը հաշվեք տեղում։', 'Позвоните в банк или обменный пункт и уточните курс, возьмите чек и пересчитайте деньги на месте.', 'Call the bank or exchange office to confirm the rate, ask for a receipt and count the money on the spot.', true);
 $add('disclaimer.contact_label', 'disclaimer', 'Тексты', 'Подпись перед почтой', 'Հարցերի դեպքում գրեք՝', 'По вопросам пишите:', 'Questions? Write to:');
+
+$add('seo.city.title', 'city', 'SEO', 'Заголовок страницы города', 'Փոխարժեքը {city_loc} այսօր՝ բանկեր և մասնաճյուղեր | Poxarjeq.am', 'Курс валют в {city_loc} сегодня: банки и отделения | Poxarjeq.am', 'Exchange rates in {city} today: banks and branches | Poxarjeq.am', false, 'Можно использовать: {city}, {city_loc}, {banks}, {branches}');
+$add('seo.city.description', 'city', 'SEO', 'Описание страницы города', '{city_loc} {banks} բանկի {branches} մասնաճյուղ։ Դոլարի լավագույն առքը՝ {best_buy} ֏ ({best_bank})։ Հասցեներ, հեռախոսներ և կուրսեր։', 'В городе {city}: {branches} отделений {banks} банков. Лучшая покупка доллара — {best_buy} AMD ({best_bank}). Адреса, телефоны и курсы.', '{city}: {branches} branches of {banks} banks. Best dollar buy rate {best_buy} AMD ({best_bank}). Addresses, phone numbers and rates.', true);
+$add('seo.city.description_plain', 'city', 'SEO', 'Описание страницы города (нет курсов)', '{city_loc} {banks} բանկի {branches} մասնաճյուղ։ Հասցեներ, հեռախոսներ և կուրսեր։', 'В городе {city}: {branches} отделений {banks} банков. Адреса, телефоны и курсы.', '{city}: {branches} branches of {banks} banks. Addresses, phone numbers and rates.', true);
+$add('city.h1', 'city', 'Тексты', 'H1', 'Փոխարժեքը {city_loc} այսօր', 'Курс валют в {city_loc} сегодня', 'Exchange rates in {city} today');
+$add('city.lead', 'city', 'Тексты', 'Вводный абзац', '{city_loc} գործում են {banks} բանկի {branches} մասնաճյուղեր։ Դոլարի առքի լավագույն կուրսը՝ {best_buy} ֏ ({best_bank})։ Ստորև՝ յուրաքանչյուր բանկի կուրսերը, հասցեները և հեռախոսները։', 'В городе {city} работают {branches} отделений {banks} банков. Лучший курс покупки доллара — {best_buy} AMD ({best_bank}). Ниже — курсы, адреса и телефоны каждого банка.', 'There are {branches} branches of {banks} banks in {city}. The best dollar buy rate is {best_buy} AMD ({best_bank}). Below are the rates, addresses and phone numbers of each bank.', true);
+$add('city.lead_plain', 'city', 'Тексты', 'Вводный абзац (нет курсов)', '{city_loc} գործում են {banks} բանկի {branches} մասնաճյուղեր։ Ստորև՝ հասցեները և հեռախոսները։', 'В городе {city} работают {branches} отделений {banks} банков. Ниже — адреса и телефоны.', 'There are {branches} branches of {banks} banks in {city}. Addresses and phone numbers are below.', true);
+$add('city.banks_title', 'city', 'Заголовки', 'Заголовок списка банков', 'Բանկերը և մասնաճյուղերը՝ {city}', 'Банки и отделения: {city}', 'Banks and branches: {city}');
+$add('city.note', 'city', 'Тексты', 'Примечание', 'Ցուցադրված կուրսերը բանկերի հրապարակած կանխիկ կուրսերն են (առք / վաճառք, ֏)։ Գործարքից առաջ ճշտեք կուրսը մասնաճյուղում։', 'Показаны наличные курсы, опубликованные банками (покупка / продажа, AMD). Перед сделкой уточните курс в отделении.', 'The rates shown are the cash rates banks publish (buy / sell, AMD). Confirm the rate at the branch before you exchange.', true);
+$add('city.other', 'city', 'Заголовки', 'Другие города', 'Այլ քաղաքներ', 'Другие города', 'Other cities');
+$add('city.link_title', 'city', 'Заголовки', 'Подсказка ссылки на город', 'Փոխարժեքը {city_loc}՝ բանկեր և մասնաճյուղեր', 'Курс валют в {city_loc}: банки и отделения', 'Exchange rates in {city}: banks and branches');
+
+$add('cur.ex_title', 'cur', 'Тексты', 'Блок «обменные пункты»: заголовок', '{gen_uc} փոխարժեքը փոխանակման կետերում', 'Курс {gen} в обменных пунктах', '{name} rates at exchange offices');
+$add('cur.ex_text', 'cur', 'Тексты', 'Блок «обменные пункты»: текст', 'Փոխանակման կետերում ({ex_count} կետ) առքի լավագույն կուրսը {ex_best_buy} ֏ է, վաճառքի լավագույնը՝ {ex_best_sell} ֏, միջին առքը՝ {ex_avg_buy} ֏։', 'В обменных пунктах ({ex_count} пунктов) лучшая покупка — {ex_best_buy} AMD, лучшая продажа — {ex_best_sell} AMD, средняя покупка — {ex_avg_buy} AMD.', 'At exchange offices ({ex_count} offices) the best buy rate is {ex_best_buy} AMD, the best sell rate is {ex_best_sell} AMD and the average buy rate is {ex_avg_buy} AMD.', true);
+$add('cur.ex_link', 'cur', 'Тексты', 'Блок «обменные пункты»: ссылка', 'Բոլոր փոխանակման կետերը', 'Все обменные пункты', 'All exchange offices');
 
 return ['groups' => $groups, 'keys' => $keys];

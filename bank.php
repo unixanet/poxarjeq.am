@@ -266,7 +266,7 @@ if ($address) $org['address'] = ['@type' => 'PostalAddress', 'streetAddress' => 
 if ($hours) $org['openingHours'] = $hours;
 $graph = [
     ['@type' => 'WebPage', '@id' => $pageCanonical . '#webpage', 'url' => $pageCanonical, 'name' => $pageTitle, 'description' => $pageDescription,
-     'inLanguage' => $lang, 'isPartOf' => ['@id' => rtrim(SITE_URL, '/') . '/#website'], 'about' => ['@id' => $pageCanonical . '#bank'], 'breadcrumb' => ['@id' => $pageCanonical . '#breadcrumb']],
+     'inLanguage' => $lang, 'isPartOf' => ['@id' => rtrim(SITE_URL, '/') . '/#website'], 'about' => ['@id' => $pageCanonical . '#bank'], 'breadcrumb' => ['@id' => $pageCanonical . '#breadcrumb'], 'dateModified' => $updatedAt ?: date('c')],
     $org,
     array_merge(ld_breadcrumbs($crumbs), ['@id' => $pageCanonical . '#breadcrumb']),
 ];

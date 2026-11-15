@@ -55,6 +55,8 @@ AddDefaultCharset UTF-8
 
     RewriteRule ^poxanakman-keter/?$ exchange.php [L,QSA]
     RewriteRule ^(banks|news|voski)/?$ $1.php [L,QSA]
+    RewriteRule ^cities/?$ /banks [R=301,L]
+    RewriteRule ^cities/([a-z0-9-]+)/?$ city.php?slug=$1 [L,QSA]
 
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
