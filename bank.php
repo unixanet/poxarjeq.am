@@ -30,7 +30,7 @@ $vars = bank_vars($displayName, $lang);
 $profile = $v2['profile'] ?? [];
 
 [$ovTitle, $ovDesc] = bank_seo_override($code, $lang);
-$pageTitle = $ovTitle !== '' ? $ovTitle : bank_title($displayName, $lang);
+$pageTitle = $ovTitle !== '' ? $ovTitle : bank_title($displayName, $lang, $meta ? bank_alt_name($meta, $lang) : '');
 $pageDescription = $ovDesc !== '' ? $ovDesc : bank_description($displayName, $lang, $rates, count($branches));
 $pagePath = bank_page_url($code);
 $active = '';
@@ -40,13 +40,28 @@ $phone = $meta['phone'] ?? ($profile['phone'] ?? '');
 $email = $meta['email'] ?? ($profile['email'] ?? '');
 $website = $meta['website'] ?? ($profile['website'] ?? '');
 $about = $meta['about'][$lang] ?? '';
+$aboutDefault = (require __DIR__ . '/includes/bank_data.php')[$code]['about'][$lang] ?? '';
+$aboutIsDefault = $about === '' || $about === $aboutDefault;
 $hours = trim((string)($profile['working_hours'] ?? ''));
 $faq = cms_faq('bank', $vars);
 $crumbs = [[t('home'), lurl('/')], [t('banks'), lurl('/banks')], [$displayName, null]];
+$factsText = $meta ? bank_facts_text($code, $lang, $meta, $rates, $displayName) : '';
 $summary = bank_summary($displayName, $lang, $rates['USD'] ?? ($rates ? reset($rates) : null));
-$namesLine = $meta ? bank_names_line($meta, $lang) : '';
+$namesLine = $meta ? bank_names_line($meta, $lang, $code) : '';
 $rating = $v2b['rating'] ?? null;
 
+$cityCount = [];
+foreach ($branches as $br) {
+    $cn0 = $br['city'][$lang] ?? '';
+    if ($cn0 !== '') $cityCount[$cn0] = ($cityCount[$cn0] ?? 0) + 1;
+}
+$citiesText = implode(', ', array_map(fn($n, $k) => $k > 1 ? $n . ' (' . $k . ')' : $n, array_keys($cityCount), $cityCount));
+$ctVars = $vars + ['phone' => $phone, 'phone2' => $meta['phone2'] ?? '', 'address' => $address, 'hours' => $hours, 'email' => $email, 'site' => preg_replace('#^https?://#', '', (string)$website), 'n' => count($branches), 'cities' => $citiesText];
+$ctParts = [];
+foreach ([['phone', 'bank.ct_phone'], ['phone2', 'bank.ct_phone2'], ['address', 'bank.ct_address'], ['hours', 'bank.ct_hours'], ['email', 'bank.ct_email'], ['site', 'bank.ct_site']] as [$field, $tk]) {
+    if (trim((string)$ctVars[$field]) !== '') $ctParts[] = cms_text_in($tk, $lang, $ctVars);
+}
+if ($branches && $citiesText !== '') $ctParts[] = cms_text_in('bank.ct_branches', $lang, $ctVars);
 $cities = [];
 foreach ($branches as $br) {
     $c = $br['city'][$lang] ?? '';
@@ -103,6 +118,13 @@ require __DIR__ . '/includes/header.php';
             <div class="rounded-3xl border border-slate-100 bg-white p-10 text-center shadow-sm"><?= e(t('no_data')) ?></div>
             <?php endif; ?>
         </section>
+
+        <?php if ($ctParts): ?>
+        <section class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-7" aria-labelledby="contact-h">
+            <h2 id="contact-h" class="mb-3 text-xl font-black tracking-tight text-slate-900 sm:text-2xl"><?= e(tv('bank.contact_h', $vars)) ?></h2>
+            <p class="text-[15px] leading-relaxed sm:text-base"><?= e(implode(' ', $ctParts)) ?></p>
+        </section>
+        <?php endif; ?>
 
         <?php if ($rates): ?>
         <section class="rounded-3xl border border-slate-100 bg-white p-4 shadow-[0_10px_40px_rgba(15,23,42,.07)] sm:p-6" aria-labelledby="chart-h">
@@ -179,10 +201,10 @@ require __DIR__ . '/includes/header.php';
                 <?php if ($website): ?><div><dt class="text-[11px] font-bold uppercase tracking-wider"><?= e(t('website')) ?></dt><dd class="mt-0.5 break-all font-semibold"><?= ui_link($website, preg_replace('#https?://#', '', $website), tv('bank.site_title', $vars), 'text-blue-600 no-underline hover:underline', ['target' => '_blank', 'rel' => 'noopener nofollow']) ?></dd></div><?php endif; ?>
             </dl>
         </section>
-        <?php if ($about): ?>
+        <?php $aboutShow = $aboutIsDefault ? $factsText : $about; if ($aboutShow !== ''): ?>
         <section class="rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-6" aria-labelledby="ab-h">
-            <h2 id="ab-h" class="mb-3 text-lg font-black text-slate-900"><?= e(t('about_bank')) ?></h2>
-            <p class="text-[15px] leading-relaxed"><?= e($about) ?></p>
+            <h2 id="ab-h" class="mb-3 text-lg font-black text-slate-900"><?= e(tv('bank.about_title_facts', $vars)) ?></h2>
+            <p class="text-[15px] leading-relaxed"><?= e($aboutShow) ?></p>
         </section>
         <?php endif; ?>
         <?php endif; ?>
@@ -257,7 +279,7 @@ require __DIR__ . '/includes/header.php';
 
 <?php
 $org = ['@type' => 'BankOrCreditUnion', '@id' => $pageCanonical . '#bank', 'name' => $displayName, 'url' => $website ?: $pageCanonical,
-        'description' => $about ?: $pageDescription, 'areaServed' => 'AM'];
+        'description' => ($aboutIsDefault ? $factsText : $about) ?: $pageDescription, 'areaServed' => 'AM'];
 if ($logoUrl) $org['logo'] = str_starts_with($logoUrl, 'http') ? $logoUrl : rtrim(SITE_URL, '/') . $logoUrl;
 if ($phone) $org['telephone'] = $phone;
 if ($email) $org['email'] = $email;

@@ -48,6 +48,18 @@ $vars = bank_vars($displayName, $lang) + [
     'best_buy' => fmt_rate($bestBuy), 'best_sell' => fmt_rate($bestSell), 'avg_buy' => number_format($avgBuy, 2, '.', ''), 'spread' => number_format($spread, 2, '.', ''),
     'diff_best' => number_format($bestBuy - $buy, 2, '.', ''),
 ];
+$bestRow = $rows ? $rows[0] : null;
+$amtN = in_array($cur, ['RUR', 'JPY'], true) ? 1000 : 100;
+$spreads = array_map(fn($x) => calc_spread($x['buy'], $x['sell']), $rows);
+$avgSpread = $spreads ? array_sum($spreads) / count($spreads) : $spread;
+$isBestBank = $bestRow && $bestRow['code'] === $code;
+$vars = array_merge($vars, [
+    'amt' => number_format($amtN, 0, '.', ' '), 'amt_here' => number_format($amtN * $buy, 0, '.', ' '),
+    'amt_best' => number_format($amtN * $bestBuy, 0, '.', ' '), 'amt_diff' => number_format($amtN * ($bestBuy - $buy), 0, '.', ' '),
+    'best_bank' => $bestRow['name'] ?? '', 'avg_spread' => number_format($avgSpread, 2, $lang === 'en' ? '.' : ',', ''),
+    'spread' => number_format($spread, 2, $lang === 'en' ? '.' : ',', ''), 'alias' => cur_vars($cur, $lang)['alias'], 'code' => $cur,
+]);
+$insightKey = $isBestBank ? 'bcur.insight_best' : ($bestBuy - $buy < 0.005 ? 'bcur.insight_same' : 'bcur.insight');
 $pageTitle = cms_text_in('seo.bcur.title', $lang, $vars);
 $pageDescription = cms_text_in($place > 0 && $of > 0 ? 'seo.bcur.description' : 'seo.bcur.description_plain', $lang, $vars);
 $pagePath = bank_page_url($code) . '/' . strtolower($cur);
@@ -157,6 +169,11 @@ require __DIR__ . '/includes/header.php';
     </div>
 </section>
 <?php endif; ?>
+
+<section class="mt-10 rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-8" aria-labelledby="insight-h">
+    <h2 id="insight-h" class="mb-3 text-xl font-black text-slate-900 sm:text-2xl"><?= e(cms_text_in('bcur.insight_h', $lang, $vars)) ?></h2>
+    <p class="text-[15px] leading-relaxed sm:text-base"><?= e(cms_text_in($insightKey, $lang, $vars)) ?></p>
+</section>
 
 <article class="mt-10 rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-8">
     <h2 class="mb-3 text-xl font-black text-slate-900 sm:text-2xl"><?= e(tv('bcur.article_title', $vars)) ?></h2>

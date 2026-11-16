@@ -6,6 +6,7 @@ require_once __DIR__ . '/bank_store.php';
 require_once __DIR__ . '/cms.php';
 require_once __DIR__ . '/ui.php';
 require_once __DIR__ . '/currency_seo.php';
+require_once __DIR__ . '/currency_content.php';
 require_once __DIR__ . '/bank_seo.php';
 require_once __DIR__ . '/news_ui.php';
 require_once __DIR__ . '/cities.php';

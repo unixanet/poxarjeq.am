@@ -102,8 +102,15 @@ $calcFrom = in_array('USD', $have, true) ? 'USD' : ($have[0] ?? 'USD');
 $calcBest = $best[$calcFrom]['buy'] ?? null;
 $calcInit = $calcBest ? number_format(1000 * $calcBest['rate'], 0, '.', ' ') : '0';
 $mobileCur = $cols[0] ?? $calcFrom;
-$heroCards = array_values(array_filter(['USD', 'EUR', 'RUR'], fn($c) => !empty($best[$c]['buy'])));
+$heroCards = array_values(array_filter(['USD', 'EUR', 'RUR', 'GEL'], fn($c) => !empty($best[$c]['buy'])));
 
+$hv = [];
+foreach (['USD', 'EUR', 'RUR', 'GEL'] as $hc) {
+    $hv[strtolower($hc) . '_buy'] = !empty($best[$hc]['buy']) ? fmt_rate((float)$best[$hc]['buy']['rate']) : '';
+    $hv[strtolower($hc) . '_bank'] = $best[$hc]['buy']['name'] ?? '';
+}
+$hv['banks'] = count($banks);
+$homeFaq = cms_faq('home', $hv);
 require __DIR__ . '/includes/header.php';
 ?>
 <section class="bg-white border-b border-slate-100">
@@ -122,7 +129,7 @@ require __DIR__ . '/includes/header.php';
                 <a href="#calc" title="<?= e(t('calc_title')) ?>" class="inline-flex items-center justify-center min-h-[48px] rounded-[14px] border border-slate-200 bg-white px-6 font-bold no-underline hover:border-blue-300"><?= e(t('calc_btn')) ?></a>
             </div>
             <?php if ($heroCards): ?>
-            <div class="mt-7 sm:mt-9 grid grid-cols-3 gap-2.5 sm:gap-3.5">
+            <div class="mt-7 sm:mt-9 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
                 <?php foreach ($heroCards as $c): $bb = $best[$c]['buy']; ?>
                 <a href="<?= e(lurl('/currency.php?cur=' . $c)) ?>" title="<?= e(tv('common.link_currency', ['name' => $names[$c], 'code' => $c])) ?>" class="block rounded-[18px] sm:rounded-[20px] border border-slate-100 bg-white p-3 sm:p-4 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(37,99,235,.14)]">
                     <span class="flex items-center gap-2 text-[13px] sm:text-sm font-extrabold text-slate-900"><img src="<?= e($flags[$c]) ?>" alt="<?= e($flagAlt[$c]) ?>" width="28" height="28" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover shadow"><?= e($c) ?></span>
@@ -383,6 +390,13 @@ require __DIR__ . '/includes/header.php';
         <div class="space-y-3 text-[15px] leading-relaxed text-black"><?= tp('home.art2.p1') . tp('home.art2.p2') ?></div>
     </article>
 </section>
+
+<?php if ($homeFaq): ?>
+<section class="mx-auto max-w-7xl px-4 sm:px-7 pt-10 sm:pt-14" aria-labelledby="home-faq-h">
+    <h2 id="home-faq-h" class="mb-5 text-2xl sm:text-3xl font-black tracking-tight text-slate-900"><?= e(t('home.faq_title')) ?></h2>
+    <?= ui_faq($homeFaq) ?>
+</section>
+<?php endif; ?>
 
 <div class="mx-auto max-w-7xl px-4 sm:px-7 pt-6">
     <div class="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-black"><?= e(t('disclaimer_full')) ?></div>

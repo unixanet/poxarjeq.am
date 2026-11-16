@@ -27,6 +27,12 @@ foreach ($banks as $b) {
 }
 $branchesN = count($city['items']);
 $vars = ['city' => $cityName, 'city_loc' => $cityLoc, 'banks' => count($banks), 'branches' => $branchesN, 'best_buy' => $best ? fmt_rate((float)$best['buy']) : '', 'best_bank' => $best['bank'] ?? ''];
+$vars['bank_list'] = implode(', ', array_column($banks, 'name'));
+$cityFaq = [];
+foreach ([1, 2] as $i) {
+    if ($i === 2 && !$best) continue;
+    $cityFaq[] = [cms_text_in("city.faq$i.q", $lang, $vars), cms_text_in("city.faq$i.a", $lang, $vars)];
+}
 $pageTitle = cms_text_in('seo.city.title', $lang, $vars);
 $pageDescription = cms_text_in($best ? 'seo.city.description' : 'seo.city.description_plain', $lang, $vars);
 $pagePath = city_page_url($slug);
@@ -77,6 +83,13 @@ require __DIR__ . '/includes/header.php';
     </div>
     <p class="mt-3 text-sm"><?= e(t('city.note')) ?></p>
 </section>
+
+<?php if ($cityFaq): ?>
+<section class="mt-10" aria-labelledby="faq-h">
+    <h2 id="faq-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(t('city.faq_title')) ?></h2>
+    <?= ui_faq($cityFaq) ?>
+</section>
+<?php endif; ?>
 
 <nav class="mt-10" aria-label="<?= e(t('city.other')) ?>">
     <h2 class="mb-3 text-lg font-black text-slate-900"><?= e(t('city.other')) ?></h2>

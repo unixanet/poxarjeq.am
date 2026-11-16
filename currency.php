@@ -48,10 +48,17 @@ $fullWidth = false;
 
 $h1 = ($ov['h1'] ?? '') !== '' ? $ov['h1'] : cur_h1($cur, $lang);
 $vars += ['best_buy' => $bestBuy !== null ? fmt_rate($bestBuy) : '', 'best_buy_bank' => $bestBuyBank, 'best_sell' => $bestSell !== null ? fmt_rate($bestSell) : '', 'best_sell_bank' => $bestSellBank, 'avg_buy' => $avgBuy !== null ? number_format($avgBuy, 2, '.', '') : '', 'banks' => count($rows)];
+$content = cur_content($cur, $lang);
+$stats = $rows ? cur_stats($rows, count(array_filter(sm_bank_codes_safe(), fn($c) => bank_is_visible($c))), (float)$bestBuy, (float)$avgBuy, $lang) : [];
+$amt = in_array($cur, ['RUR', 'JPY'], true) ? 1000 : 100;
+$vars += $stats + ['alias' => cur_vars($cur, $lang)['alias'], 'alias_acc' => cur_vars($cur, $lang)['alias_acc'], 'unit' => $content['unit'] ?? cur_name($cur, $lang), 'amt' => number_format($amt, 0, '.', ' '),
+    'amt_best' => $bestBuy ? number_format($amt * $bestBuy, 0, '.', ' ') : '', 'amt_avg' => $avgBuy ? number_format($amt * $avgBuy, 0, '.', ' ') : '',
+    'amt_gap' => ($bestBuy && $avgBuy) ? number_format($amt * ($bestBuy - $avgBuy), 0, '.', ' ') : '0'];
 $leadKey = ($bestBuy !== null && $bestSell !== null) ? 'cur.lead' : 'cur.lead_plain';
 $leadHtml = ($ov['lead'] ?? '') !== '' ? md_paragraphs(cms_fill($ov['lead'], $vars)) : md_paragraphs(cms_text_in($leadKey, $lang, $vars));
-$aboutTitle = ($ov['about_title'] ?? '') !== '' ? $ov['about_title'] : cms_text_in('cur.about_title', $lang, $vars);
-$aboutHtml = ($ov['about_body'] ?? '') !== '' ? md_paragraphs(cms_fill($ov['about_body'], $vars)) : tp('cur.about_p1', $vars) . tp('cur.about_p2', $vars);
+$aboutTitle = ($ov['about_title'] ?? '') !== '' ? $ov['about_title'] : ($content['h2'] ?? cms_text_in('cur.about_title', $lang, $vars));
+$aboutHtml = ($ov['about_body'] ?? '') !== '' ? md_paragraphs(cms_fill($ov['about_body'], $vars)) : ($content ? md_paragraphs(cms_fill($content['about'] . "\n\n" . $content['use'], $vars)) : tp('cur.about_p1', $vars) . tp('cur.about_p2', $vars));
+$tipHtml = $content ? md_paragraphs(cms_fill($content['tip'], $vars)) : '';
 $faq = cms_faq('cur', $vars);
 $crumbs = [[t('home'), '/'], [$name, null]];
 
@@ -62,7 +69,8 @@ usort($chipCodes, function ($a, $b) {
     return ($ia === false ? 99 : $ia) <=> ($ib === false ? 99 : $ib) ?: strcmp($a, $b);
 });
 
-$amounts = [1, 5, 10, 50, 100, 500, 1000, 5000];
+$amounts = [1, 10, 100, 1000, 10000];
+$backAmounts = [5000, 10000, 50000, 100000, 500000];
 $jsCfg = [
     'cur' => $cur, 'bestBuy' => $bestBuy, 'bestSell' => $bestSell, 'bestBuyBank' => $bestBuyBank, 'bestSellBank' => $bestSellBank,
     'points' => $points, 'days' => 30,
@@ -166,7 +174,7 @@ require __DIR__ . '/includes/header.php';
     <div class="hidden overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_24px_60px_-12px_rgba(15,23,42,.14)] md:block">
         <div class="relative overflow-x-auto">
             <table class="w-full text-sm">
-                <caption class="sr-only"><?= e(cms_text_in('cur.table_title', $lang, $vars)) ?></caption>
+                <caption class="sr-only"><?= e(cms_text_in('cur.table_caption', $lang, $vars)) ?></caption>
                 <thead>
                     <tr class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100">
                         <th scope="col" class="w-12 px-4 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider">#</th>
@@ -236,23 +244,53 @@ if ($exSum): ?>
 
 <div class="mt-10 grid gap-6 lg:grid-cols-2">
     <?php if ($bestBuy): ?>
-    <section aria-labelledby="conv-h">
-        <h2 id="conv-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(t('cur.conv_title')) ?></h2>
-        <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-            <?php foreach ($amounts as $a): ?>
-            <div class="rounded-2xl border border-slate-100 bg-white p-3.5 text-center shadow-[0_6px_24px_rgba(15,23,42,.05)]">
-                <div class="text-sm font-bold"><?= e(number_format($a, 0, '.', ' ')) ?> <?= e($cur) ?></div>
-                <div class="mt-1 text-[17px] font-black tabular-nums text-slate-900"><?= e(number_format(round($a * $bestBuy), 0, '.', ' ')) ?> <span class="text-xs font-bold"><?= e(t('cur.conv_unit')) ?></span></div>
+    <section class="space-y-6" aria-labelledby="conv-h">
+        <div>
+            <h2 id="conv-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:text-2xl"><?= e(cms_text_in('cur.conv_title', $lang, $vars)) ?></h2>
+            <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                <?php foreach ($amounts as $a): ?>
+                <div class="rounded-2xl border border-slate-100 bg-white p-3.5 text-center shadow-[0_6px_24px_rgba(15,23,42,.05)]">
+                    <div class="text-sm font-bold"><?= e(number_format($a, 0, '.', ' ')) ?> <?= e($cur) ?></div>
+                    <div class="mt-1 text-[17px] font-black tabular-nums text-slate-900"><?= e(number_format(round($a * $bestBuy), 0, '.', ' ')) ?> <span class="text-xs font-bold"><?= e(t('cur.conv_unit')) ?></span></div>
+                </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
         </div>
+        <?php if ($bestSell): ?>
+        <div>
+            <h3 class="mb-3 text-lg font-black text-slate-900"><?= e(cms_text_in('cur.conv_back', $lang, $vars)) ?></h3>
+            <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                <?php foreach ($backAmounts as $a): $u = $a / $bestSell; ?>
+                <div class="rounded-2xl border border-slate-100 bg-white p-3.5 text-center shadow-[0_6px_24px_rgba(15,23,42,.05)]">
+                    <div class="text-sm font-bold"><?= e(number_format($a, 0, '.', ' ')) ?> <?= e(t('cur.conv_unit')) ?></div>
+                    <div class="mt-1 text-[17px] font-black tabular-nums text-slate-900"><?= e(number_format($u, $u < 100 ? 2 : 0, '.', ' ')) ?> <span class="text-xs font-bold"><?= e($cur) ?></span></div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
     </section>
     <?php endif; ?>
     <article class="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-8 <?= $bestBuy ? '' : 'lg:col-span-2' ?>">
         <h2 class="mb-4 text-xl font-black text-slate-900 sm:text-2xl"><?= e($aboutTitle) ?></h2>
         <div class="space-y-3 text-[15px] leading-relaxed"><?= $aboutHtml ?></div>
+        <?php if ($tipHtml): ?>
+        <h3 class="mb-2 mt-5 text-lg font-black text-slate-900"><?= e(cms_text_in('cur.tip_title', $lang, $vars)) ?></h3>
+        <div class="space-y-3 text-[15px] leading-relaxed"><?= $tipHtml ?></div>
+        <?php endif; ?>
     </article>
 </div>
+
+<?php if ($rows): ?>
+<nav class="mt-10" aria-labelledby="cb-h">
+    <h2 id="cb-h" class="mb-3 text-xl font-black tracking-tight text-slate-900 sm:text-2xl"><?= e(cms_text_in('cur.banks_links_title', $lang, $vars)) ?></h2>
+    <ul class="flex flex-wrap gap-2">
+        <?php foreach ($rows as $r): $anchor = cms_text_in('cur.bank_anchor', $lang, bank_vars($r['name'], $lang) + $vars); ?>
+        <li><?= ui_link(lurl($r['url'] . '/' . strtolower($cur)), $anchor, tv('bcur.row_title', bank_vars($r['name'], $lang) + ['gen' => cur_gen($cur, $lang)]), 'flex min-h-[44px] items-center rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-bold text-slate-900 no-underline hover:border-blue-300 hover:text-blue-600') ?></li>
+        <?php endforeach; ?>
+    </ul>
+</nav>
+<?php endif; ?>
 
 <?php if ($faq): ?>
 <section class="mt-10" aria-labelledby="faq-h">

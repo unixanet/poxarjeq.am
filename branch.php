@@ -40,16 +40,20 @@ if (!$branch) pxq_not_found();
 
 $cityName = $branch['city'][$lang] ?? $city;
 $branchName = $branch['name'][$lang] ?? $cityName;
-$addr = $branch['address'][$lang] ?? '';
+$addrRaw = $branch['address'][$lang] ?? '';
 $phone = $branch['phone'] ?? '';
+$addr = addr_clean($addrRaw, $cityName);
 $website = $meta['website'] ?? '';
 $apiBranch = match_api_branch($v2['branches'] ?? [], $branch);
 $hours = trim((string)($apiBranch['working_hours'] ?? ($v2['profile']['working_hours'] ?? '')));
 if ($phone === '' && !empty($apiBranch['phone'])) $phone = (string)$apiBranch['phone'];
-$vars = bank_vars($displayName, $lang) + ['branch' => $branchName, 'city' => $cityName, 'address' => $addr, 'phone' => $phone];
+$vars = bank_vars($displayName, $lang) + ['branch' => $branchName, 'city' => $cityName, 'city_loc' => city_loc($cityName, $lang), 'address' => $addr, 'phone' => $phone];
 $label = branch_label($displayName, $branchName, $cityName);
 
-$pageTitle = branch_title($displayName, $branchName, $cityName, $lang);
+$altBankName = bank_alt_name($meta, $lang);
+$altPick = $lang === 'en' ? 'ru' : 'en';
+$altLabel = branch_label($altBankName !== '' ? $altBankName : $displayName, (string)($branch['name'][$altPick] ?? ''), (string)($branch['city'][$altPick] ?? $cityName));
+$pageTitle = branch_title($displayName, $branchName, $cityName, $lang, $altLabel);
 $pageDescription = branch_description($displayName, $branchName, $cityName, $addr, $phone, $hours, $lang);
 $pagePath = branch_page_url($code, $city);
 $active = '';
@@ -59,6 +63,17 @@ $otherCities = [];
 foreach ($branches as $b) {
     $cn = $b['city'][$lang] ?? '';
     if ($cn !== '' && $cn !== $cityName && !isset($otherCities[$cn])) $otherCities[$cn] = $b['slug'];
+}
+$bankPhone = (string)($meta['phone'] ?? '');
+$hoursSentence = $hours !== '' ? cms_text_in('branch.hours_known', $lang, ['hours' => $hours]) : cms_text_in('branch.hours_unknown', $lang);
+$faqVars = $vars + ['label' => $label, 'bank_phone' => $bankPhone, 'hours_sentence' => $hoursSentence];
+$faq = [];
+for ($i = 1; $i <= 3; $i++) {
+    $ak = "branch.faq$i.a";
+    if ($i === 1 && $addr === '') $ak .= '_noaddr';
+    if ($i === 2 && $phone !== '' && $phone === $bankPhone) $ak .= '_same';
+    if ($i === 2 && $phone === '') continue;
+    $faq[] = [cms_text_in("branch.faq$i.q", $lang, $faqVars), cms_text_in($ak, $lang, $faqVars)];
 }
 $summary = bank_summary($displayName, $lang, $rates['USD'] ?? null);
 $mapUrl = $addr !== '' ? 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($displayName . ' ' . $addr . ' ' . $cityName) : '';
@@ -76,6 +91,7 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
     <div class="min-w-0 flex-1">
         <h1 class="text-[26px] font-black leading-tight tracking-tight text-slate-900 sm:text-4xl"><?= e($label) ?></h1>
+        <?php if ($altLabel !== '' && mb_strtolower($altLabel) !== mb_strtolower($label)): ?><p class="mt-1 text-sm font-semibold"><?= e(cms_text_in('branch.alt_line', $lang, ['alt' => $altLabel])) ?></p><?php endif; ?>
         <p class="mt-1 text-sm font-semibold"><?= e($cityName) ?><?php if ($addr): ?> · <?= e($addr) ?><?php endif; ?></p>
         <div class="mt-2"><?= ui_live($updatedAt) ?></div>
     </div>
@@ -114,10 +130,17 @@ require __DIR__ . '/includes/header.php';
 <article class="mt-10 rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_10px_40px_rgba(15,23,42,.06)] sm:p-8">
     <h2 class="mb-3 text-xl font-black text-slate-900 sm:text-2xl"><?= e(tv('branch.article_title', $vars)) ?></h2>
     <div class="space-y-2 text-[15px] leading-relaxed">
-        <p><?= e(tv('branch.article_p1', $vars)) ?><?= $phone ? ' ' . e(tv('branch.phone_sentence', $vars)) : '' ?></p>
+        <p><?= e(cms_text_in($addr !== '' ? 'branch.article_p1' : 'branch.article_p1_noaddr', $lang, $vars)) ?><?= $phone ? ' ' . e(tv('branch.phone_sentence', $vars)) : '' ?> <?= e($hoursSentence) ?></p>
         <?= tp('branch.article_p2', $vars) ?>
     </div>
 </article>
+
+<?php if ($faq): ?>
+<section class="mt-10" aria-labelledby="faq-h">
+    <h2 id="faq-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(t('bank.faq_title')) ?></h2>
+    <?= ui_faq($faq) ?>
+</section>
+<?php endif; ?>
 
 <?php if ($sameCity || $otherCities): ?>
 <nav class="mt-10 grid gap-6 sm:grid-cols-2" aria-label="<?= e(t('bank.branches_title')) ?>">
@@ -151,10 +174,11 @@ $org = ['@type' => 'BankOrCreditUnion', '@id' => $pageCanonical . '#branch', 'na
         'address' => ['@type' => 'PostalAddress', 'streetAddress' => $addr, 'addressLocality' => $cityName, 'addressCountry' => 'AM'], 'areaServed' => 'AM'];
 if ($phone) $org['telephone'] = $phone;
 if ($hours) $org['openingHours'] = $hours;
-echo ld_script([
+$graph = [
     ['@type' => 'WebPage', '@id' => $pageCanonical . '#webpage', 'url' => $pageCanonical, 'name' => $pageTitle, 'description' => $pageDescription, 'inLanguage' => $lang,
      'isPartOf' => ['@id' => rtrim(SITE_URL, '/') . '/#website'], 'about' => ['@id' => $pageCanonical . '#branch'], 'breadcrumb' => ['@id' => $pageCanonical . '#breadcrumb']],
     $org,
     array_merge(ld_breadcrumbs($crumbs), ['@id' => $pageCanonical . '#breadcrumb']),
-]);
+];
+echo ld_script($graph);
 require __DIR__ . '/includes/footer.php';

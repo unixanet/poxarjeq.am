@@ -18,6 +18,21 @@ $vars = [
     'best_sell' => $usd ? fmt_rate((float)$usd['best_sell']['value']) : '',
     'avg_buy' => $usd ? fmt_rate((float)$usd['avg_buy']) : '',
 ];
+$bk = get_banks_for_currency('USD');
+$bkBuys = [];
+foreach (($bk['banks'] ?? []) as $b0) if (!empty($b0['buy']) && bank_is_visible((string)($b0['code'] ?? ''))) $bkBuys[] = (float)$b0['buy'];
+$vars += [
+    'ex_avg' => $usd ? number_format((float)$usd['avg_buy'], 2, '.', '') : '', 'ex_best' => $usd ? number_format((float)$usd['best_buy']['value'], 2, '.', '') : '',
+    'bk_avg' => $bkBuys ? number_format(array_sum($bkBuys) / count($bkBuys), 2, '.', '') : '', 'bk_best' => $bkBuys ? number_format(max($bkBuys), 2, '.', '') : '',
+];
+$insight = '';
+if ($usd && $bkBuys) {
+    $d0 = (float)$usd['best_buy']['value'] - max($bkBuys);
+    $winKey = abs($d0) < 0.005 ? 'exch.win_eq' : ($d0 > 0 ? 'exch.win_ex' : 'exch.win_bk');
+    $winnerText = cms_text_in($winKey, $lang, ['diff' => number_format(abs($d0), 2, '.', '')]);
+    $insight = cms_text_in('exch.insight', $lang, $vars + ['winner_hy' => $winnerText, 'winner_ru' => $winnerText, 'winner_en' => $winnerText]);
+}
+$faq = cms_faq('exch', $vars);
 $pageTitle = tv('seo.exch.title');
 $pageDescription = tv($usd ? 'seo.exch.description' : 'seo.exch.description_plain', $vars);
 $pagePath = '/poxanakman-keter';
@@ -99,10 +114,17 @@ require __DIR__ . '/includes/header.php';
 </section>
 
 <section class="mt-10 rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-8">
-    <h2 class="mb-2 text-xl font-black text-slate-900"><?= e(t('exch.vs_title')) ?></h2>
-    <p class="text-[15px] leading-relaxed"><?= e(t('exch.vs_text')) ?></p>
+    <h2 class="mb-2 text-xl font-black text-slate-900"><?= e($insight !== '' ? t('exch.insight_h') : t('exch.vs_title')) ?></h2>
+    <p class="text-[15px] leading-relaxed"><?= e($insight !== '' ? $insight : t('exch.vs_text')) ?></p>
     <p class="mt-4"><?= ui_link(lurl('/'), t('exch.vs_link'), t('today_rates'), 'inline-flex min-h-[46px] items-center rounded-[14px] bg-blue-600 px-6 text-sm font-bold text-white no-underline hover:bg-blue-700') ?></p>
 </section>
+
+<?php if ($faq): ?>
+<section class="mt-10" aria-labelledby="faq-h">
+    <h2 id="faq-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(t('exch.faq_title')) ?></h2>
+    <?= ui_faq($faq) ?>
+</section>
+<?php endif; ?>
 
 <div class="mt-8 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-black"><?= e(t('disclaimer_short')) ?></div>
 <?php

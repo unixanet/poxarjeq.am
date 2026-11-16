@@ -12,7 +12,8 @@ foreach ($codes as $code) {
     $name = bank_display_name($code, $lang);
     $rates = $matrix['banks'][$code]['rates'] ?? [];
     $branches = $meta['branches'] ?? [];
-    $rows[] = ['code' => $code, 'name' => $name, 'logo' => bank_logo_url($code, $matrix['banks'][$code]['logo'] ?? ''), 'usd' => $rates['USD'] ?? null, 'eur' => $rates['EUR'] ?? null, 'n' => count($branches), 'partner' => bank_is_partner($code)];
+    $altNames = array_values(array_filter(explode(' · ', bank_names_line($meta, $lang, $code)), fn($x) => mb_strtolower($x) !== mb_strtolower($name)));
+    $rows[] = ['alts' => implode(' · ', $altNames), 'code' => $code, 'name' => $name, 'logo' => bank_logo_url($code, $matrix['banks'][$code]['logo'] ?? ''), 'usd' => $rates['USD'] ?? null, 'eur' => $rates['EUR'] ?? null, 'n' => count($branches), 'partner' => bank_is_partner($code)];
     foreach ($branches as $br) {
         $cn = $br['city'][$lang] ?? '';
         if ($cn === '') continue;
@@ -60,7 +61,7 @@ require __DIR__ . '/includes/header.php';
                 <tbody>
                     <?php foreach ($rows as $r): $bt = tv('common.link_bank', ['bank' => $r['name']]); ?>
                     <tr class="border-t border-slate-100 hover:bg-blue-50/40">
-                        <td class="px-5 py-3"><a href="<?= e(lurl(bank_page_url($r['code']))) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 font-bold text-slate-900 no-underline hover:text-blue-600"><?= ui_bank_logo($r['code'], $r['name'], $r['logo'], 40, 'h-10 w-10 shrink-0 rounded-[10px] object-contain') ?><span><?= e($r['name']) ?><?php if ($r['partner']): ?><span class="mt-1 block"><?= ui_partner_badge() ?></span><?php endif; ?></span></a></td>
+                        <td class="px-5 py-3"><a href="<?= e(lurl(bank_page_url($r['code']))) ?>" title="<?= e($bt) ?>" class="flex items-center gap-3 font-bold text-slate-900 no-underline hover:text-blue-600"><?= ui_bank_logo($r['code'], $r['name'], $r['logo'], 40, 'h-10 w-10 shrink-0 rounded-[10px] object-contain') ?><span><?= e($r['name']) ?><?php if ($r['alts'] !== ''): ?><span class="block text-xs font-medium"><?= e($r['alts']) ?></span><?php endif; ?><?php if ($r['partner']): ?><span class="mt-1 block"><?= ui_partner_badge() ?></span><?php endif; ?></span></a></td>
                         <td class="px-4 py-3 text-right font-semibold tabular-nums"><?= ui_rate($r['usd']['buy'] ?? null) ?></td>
                         <td class="px-4 py-3 text-right font-semibold tabular-nums"><?= ui_rate($r['usd']['sell'] ?? null) ?></td>
                         <td class="px-4 py-3 text-right font-semibold tabular-nums"><?= ui_rate($r['eur']['buy'] ?? null) ?></td>
@@ -78,6 +79,7 @@ require __DIR__ . '/includes/header.php';
             <?= ui_bank_logo($r['code'], $r['name'], $r['logo'], 48, 'h-12 w-12 shrink-0 rounded-xl object-contain') ?>
             <span class="min-w-0 flex-1">
                 <span class="block truncate font-bold leading-tight text-slate-900"><?= e($r['name']) ?></span>
+                <?php if ($r['alts'] !== ''): ?><span class="block truncate text-xs font-medium"><?= e($r['alts']) ?></span><?php endif; ?>
                 <span class="mt-0.5 block text-xs"><?= $r['n'] ? e(tv('bank.branches_count', ['n' => $r['n']])) : '' ?></span>
             </span>
             <span class="grid shrink-0 grid-cols-2 gap-3 text-right">

@@ -112,6 +112,8 @@ function ui_change(?float $pct): string
 
 function ui_bank_rates(array $rates, string $bankName, string $lang, string $bankCode = ''): string
 {
+    $hasChange = false;
+    foreach ($rates as $r0) if (isset($r0['change_buy_pct']) && abs((float)$r0['change_buy_pct']) >= 0.005) $hasChange = true;
     $rowUrl = fn(string $c) => $bankCode !== '' ? lurl(bank_page_url($bankCode) . '/' . strtolower($c)) : lurl('/currency.php?cur=' . $c);
     ob_start(); ?>
             <div class="hidden overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_24px_60px_-12px_rgba(15,23,42,.14)] md:block">
@@ -123,7 +125,7 @@ function ui_bank_rates(array $rates, string $bankName, string $lang, string $ban
                                 <th scope="col" class="px-5 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('currency')) ?></th>
                                 <th scope="col" class="px-4 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('buy')) ?></th>
                                 <th scope="col" class="px-4 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('sell')) ?></th>
-                                <th scope="col" class="px-4 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('bank.col_change')) ?></th>
+                                <?php if ($hasChange): ?><th scope="col" class="px-4 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('bank.col_change')) ?></th><?php endif; ?>
                                 <th scope="col" class="px-4 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('bank.col_place')) ?></th>
                                 <th scope="col" class="px-4 py-3"><span class="sr-only"><?= e(t('common.details')) ?></span></th>
                             </tr>
@@ -140,7 +142,7 @@ function ui_bank_rates(array $rates, string $bankName, string $lang, string $ban
                                 </th>
                                 <td class="px-4 py-3 text-right font-semibold tabular-nums"><?= ui_rate($buy) ?></td>
                                 <td class="px-4 py-3 text-right font-semibold tabular-nums"><?= ui_rate($sell) ?></td>
-                                <td class="px-4 py-3 text-right tabular-nums"><?= ui_change(isset($r['change_buy_pct']) ? (float)$r['change_buy_pct'] : null) ?></td>
+                                <?php if ($hasChange): ?><td class="px-4 py-3 text-right tabular-nums"><?= ui_change(isset($r['change_buy_pct']) ? (float)$r['change_buy_pct'] : null) ?></td><?php endif; ?>
                                 <td class="px-4 py-3 text-right tabular-nums"><?= !empty($r['place_buy']) ? e($r['place_buy'] . ' / ' . $r['of']) : '—' ?></td>
                                 <td class="px-4 py-3 text-right"><?= ui_link($rowUrl($c), t('common.details'), $rowTitle, 'inline-block rounded-lg bg-blue-50 px-3 py-1.5 text-[13px] font-bold text-blue-600 no-underline hover:bg-blue-600 hover:text-white') ?></td>
                             </tr>
@@ -156,7 +158,7 @@ function ui_bank_rates(array $rates, string $bankName, string $lang, string $ban
                 ?>
                 <a href="<?= e($rowUrl($c)) ?>" title="<?= e($rowTitle) ?>" class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3.5 text-slate-900 no-underline shadow-[0_6px_24px_rgba(15,23,42,.06)]">
                     <?= ui_flag($c, 40, 'h-10 w-10 shrink-0 rounded-full object-cover shadow') ?>
-                    <span class="min-w-0 flex-1"><span class="block truncate font-black text-slate-900"><?= e($cn) ?></span><span class="block text-xs"><?= isset($r['change_buy_pct']) ? ui_change((float)$r['change_buy_pct']) : '' ?></span></span>
+                    <span class="min-w-0 flex-1"><span class="block truncate font-black text-slate-900"><?= e($cn) ?></span><span class="block text-xs"><?= ($hasChange && isset($r['change_buy_pct'])) ? ui_change((float)$r['change_buy_pct']) : '' ?></span></span>
                     <span class="grid shrink-0 grid-cols-2 gap-3 text-right">
                         <span><span class="block text-[10px] font-bold uppercase tracking-wider"><?= e(t('buy')) ?></span><span class="block text-[17px] font-extrabold tabular-nums text-slate-900"><?= ui_rate(isset($r['buy']) ? (float)$r['buy'] : null) ?></span></span>
                         <span><span class="block text-[10px] font-bold uppercase tracking-wider"><?= e(t('sell')) ?></span><span class="block text-[17px] font-extrabold tabular-nums text-slate-900"><?= ui_rate(isset($r['sell']) ? (float)$r['sell'] : null) ?></span></span>
