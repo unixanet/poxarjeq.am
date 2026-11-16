@@ -106,8 +106,9 @@ function ui_rate(?float $n): string
 function ui_change(?float $pct): string
 {
     if ($pct === null) return '<span class="text-slate-900">—</span>';
-    if (abs($pct) < 0.005) return '<span class="text-slate-900">0.00%</span>';
-    return '<span class="font-bold ' . ($pct > 0 ? 'text-green-600' : 'text-red-600') . '">' . ($pct > 0 ? '▲ +' : '▼ ') . e(number_format($pct, 2, '.', '')) . '%</span>';
+    if (abs($pct) < 0.005) return '<span class="text-slate-900">0%</span>';
+    $dp = (($GLOBALS['lang'] ?? 'hy') === 'en') ? '.' : ',';
+    return '<span class="font-bold ' . ($pct > 0 ? 'text-green-600' : 'text-red-600') . '">' . ($pct > 0 ? '▲ +' : '▼ ') . e(number_format($pct, 2, $dp, '')) . '%</span>';
 }
 
 function ui_bank_rates(array $rates, string $bankName, string $lang, string $bankCode = ''): string

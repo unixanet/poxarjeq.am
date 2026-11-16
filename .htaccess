@@ -17,6 +17,7 @@ AddDefaultCharset UTF-8
     ExpiresByType image/x-icon "access plus 30 days"
     ExpiresByType font/woff2 "access plus 1 year"
     ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType text/css "access plus 30 days"
 </IfModule>
 
 <IfModule mod_headers.c>
@@ -41,7 +42,8 @@ AddDefaultCharset UTF-8
     RewriteCond %{HTTP_HOST} ^poxarjeq\.am$ [NC]
     RewriteRule ^ https://poxarjeq.am%{REQUEST_URI} [R=301,L]
 
-    RewriteRule ^(cache|includes|lang|docs)(/|$) - [F,L]
+    RewriteRule ^(cache|includes|lang|docs|tools|node_modules)(/|$) - [F,L]
+    RewriteRule ^(tailwind\.config\.js|package(-lock)?\.json)$ - [F,L]
     RewriteCond %{THE_REQUEST} \s/index\.php[\s?]
     RewriteRule ^index\.php$ /? [R=301,L]
     RewriteRule ^sitemap\.xml$ sitemap.php [L]

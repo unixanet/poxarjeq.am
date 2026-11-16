@@ -476,3 +476,36 @@ function sm_bank_codes_safe(): array
     foreach (bank_overrides() as $c => $o) if (!in_array($c, $codes, true) && (int)$o['is_active'] === 1) $codes[] = $c;
     return $codes;
 }
+
+function hist_table(string $cur, string $bank = '', array $periods = [7, 30, 90, 365]): array
+{
+    $reqs = [];
+    foreach ($periods as $d) {
+        $reqs[$d] = $bank !== '' ? ['v2/history.php', ['cur' => $cur, 'days' => $d, 'bank' => $bank]] : ['history.php', ['cur' => $cur, 'days' => $d]];
+    }
+    $res = api_get_many($reqs, 600);
+    $out = [];
+    foreach ($periods as $d) {
+        $buys = [];
+        foreach (($res[$d]['points'] ?? []) as $p) {
+            $v = (float)($p['buy'] ?? 0);
+            if ($v > 0) $buys[] = $v;
+        }
+        if (count($buys) < 2) continue;
+        $first = $buys[0];
+        $last = $buys[count($buys) - 1];
+        $out[$d] = [
+            'days' => $d, 'first' => $first, 'last' => $last, 'min' => min($buys), 'max' => max($buys),
+            'avg' => array_sum($buys) / count($buys), 'chg' => $first > 0 ? ($last - $first) / $first * 100 : 0.0,
+        ];
+    }
+    return $out;
+}
+
+function hist_fmt(array $row, string $lang): array
+{
+    $dp = $lang === 'en' ? '.' : ',';
+    $n = fn(float $x) => number_format($x, $x < 100 ? 2 : 2, '.', '');
+    $chg = ($row['chg'] > 0 ? '+' : '') . number_format($row['chg'], 2, $dp, '') . '%';
+    return ['from' => $n($row['first']), 'to' => $n($row['last']), 'min' => $n($row['min']), 'max' => $n($row['max']), 'avg' => $n($row['avg']), 'chg' => $chg, 'days' => $row['days']];
+}

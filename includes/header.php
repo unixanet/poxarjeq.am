@@ -67,30 +67,31 @@ $_dropCodes = array_values(array_unique(array_merge(['USD', 'EUR', 'RUR', 'GEL',
             <span class="truncate text-[15px] font-black leading-tight tracking-tight sm:text-[18px]">Poxarjeq<span class="text-blue-600">.am</span></span>
         </a>
 
-        <nav class="hidden h-full flex-1 items-center lg:flex" aria-label="<?= e(t('nav_menu')) ?>">
+        <nav id="site-nav" class="absolute inset-x-0 top-full hidden max-h-[calc(100vh-60px)] flex-col gap-1 overflow-y-auto border-t border-[#eaedf2] bg-white px-4 py-3 shadow-[0_16px_32px_rgba(15,23,42,.08)] lg:static lg:inset-auto lg:flex lg:h-full lg:max-h-none lg:flex-1 lg:flex-row lg:items-center lg:gap-0 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none" aria-label="<?= e(t('nav_menu')) ?>">
             <?php foreach ($_hNav as $_hn):
                 $_hu = $_hn['url'];
                 $_hOn = nav_is_active($_hu);
                 $_hLabel = nav_label($_hn, $lang);
-                $_hBar = 'after:absolute after:bottom-0 after:left-3 after:right-3 after:h-[2.5px] after:rounded-t after:bg-blue-600 after:transition-transform ';
+                $_hBar = 'lg:after:absolute lg:after:bottom-0 lg:after:left-3 lg:after:right-3 lg:after:h-[2.5px] lg:after:rounded-t lg:after:bg-blue-600 lg:after:transition-transform ';
                 if ($_hu === '#currencies' || $_hu === '#banks'): ?>
-            <div class="group relative flex h-full items-center">
-                <button type="button" class="relative flex h-full items-center gap-1 px-3 text-[14px] font-semibold text-slate-900 transition-colors hover:text-blue-600 group-hover:text-blue-600 group-focus-within:text-blue-600 <?= $_hBar ?>after:scale-x-0 group-hover:after:scale-x-100" aria-haspopup="true" title="<?= e(nav_title($_hn, $lang)) ?>"><?= e($_hLabel) ?><?= $_chev ?></button>
-                <div class="invisible absolute left-0 top-full z-50 w-72 translate-y-1 rounded-2xl border border-[#eaedf2] bg-white p-2 opacity-0 shadow-[0_16px_40px_rgba(15,23,42,.12)] transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+            <div class="group relative lg:flex lg:h-full lg:items-center">
+                <button type="button" data-drop class="relative flex min-h-[48px] w-full items-center justify-between gap-1 rounded-xl px-4 text-[15px] font-semibold text-slate-900 hover:bg-slate-50 hover:text-blue-600 lg:h-full lg:min-h-0 lg:w-auto lg:justify-start lg:rounded-none lg:px-3 lg:text-[14px] lg:hover:bg-transparent lg:group-hover:text-blue-600 lg:group-focus-within:text-blue-600 <?= $_hBar ?>lg:after:scale-x-0 lg:group-hover:after:scale-x-100" aria-haspopup="true" aria-expanded="false" title="<?= e(nav_title($_hn, $lang)) ?>"><?= e($_hLabel) ?><?= $_chev ?></button>
+                <div data-drop-panel class="hidden grid-cols-2 gap-1 px-1 pb-2 pt-1 lg:invisible lg:absolute lg:left-0 lg:top-full lg:z-50 lg:grid lg:w-72 lg:translate-y-1 lg:grid-cols-1 lg:rounded-2xl lg:border lg:border-[#eaedf2] lg:bg-white lg:p-2 lg:opacity-0 lg:shadow-[0_16px_40px_rgba(15,23,42,.12)] lg:transition lg:group-hover:visible lg:group-hover:translate-y-0 lg:group-hover:opacity-100 lg:group-focus-within:visible lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100">
                     <?php if ($_hu === '#currencies'): foreach ($_dropCodes as $_dc): ?>
-                    <?= ui_link(lurl('/currency.php?cur=' . $_dc), ui_flag($_dc, 22, 'h-[22px] w-[22px] rounded-full object-cover') . '<span>' . e(cur_menu_label($_dc, $lang)) . '</span>', tv('common.link_currency', ['name' => currency_name($_dc, $lang), 'code' => $_dc]), 'flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] font-semibold text-slate-900 no-underline hover:bg-blue-600 hover:text-white', [], true) ?>
+                    <?= ui_link(lurl('/currency.php?cur=' . $_dc), ui_flag($_dc, 22, 'h-[22px] w-[22px] rounded-full object-cover') . '<span class="truncate">' . e(cur_menu_label($_dc, $lang)) . '</span>', tv('common.link_currency', ['name' => currency_name($_dc, $lang), 'code' => $_dc]), 'flex min-h-[44px] items-center gap-2 rounded-xl bg-slate-50 px-3 text-[13px] font-semibold text-slate-900 no-underline hover:bg-blue-600 hover:text-white lg:gap-3 lg:bg-transparent lg:py-2 lg:text-[14px]', [], true) ?>
                     <?php endforeach; else: foreach (top_bank_codes(10) as $_bc): $_bn = bank_display_name($_bc, $lang); ?>
-                    <?= ui_link(lurl(bank_page_url($_bc)), e($_bn), tv('common.link_bank', ['bank' => $_bn]), 'flex items-center rounded-xl px-3 py-2 text-[14px] font-semibold text-slate-900 no-underline hover:bg-blue-600 hover:text-white', [], true) ?>
+                    <?= ui_link(lurl(bank_page_url($_bc)), e($_bn), tv('common.link_bank', ['bank' => $_bn]), 'flex min-h-[44px] items-center truncate rounded-xl bg-slate-50 px-3 text-[13px] font-semibold text-slate-900 no-underline hover:bg-blue-600 hover:text-white lg:bg-transparent lg:py-2 lg:text-[14px]', [], true) ?>
                     <?php endforeach; ?>
-                    <?= ui_link(lurl('/banks'), t('nav.banks_all') . ' →', t('menu.all_banks_title'), 'mt-1 flex items-center rounded-xl border-t border-slate-100 px-3 py-2.5 text-[14px] font-bold text-blue-600 no-underline hover:bg-blue-600 hover:text-white') ?>
+                    <?= ui_link(lurl('/banks'), t('nav.banks_all') . ' →', t('menu.all_banks_title'), 'col-span-2 flex min-h-[44px] items-center justify-center rounded-xl bg-blue-600 px-3 text-[14px] font-bold text-white no-underline hover:bg-blue-700 lg:col-span-1 lg:mt-1 lg:justify-start lg:bg-transparent lg:text-blue-600 lg:hover:bg-blue-600 lg:hover:text-white') ?>
                     <?php endif; ?>
                 </div>
             </div>
             <?php else: ?>
             <?= ui_link(lurl($_hu), $_hLabel, nav_title($_hn, $lang),
-                'relative flex h-full items-center px-3 text-[14px] font-semibold no-underline transition-colors ' . ($_hOn ? 'text-blue-600 ' : 'text-slate-900 hover:text-blue-600 ') . $_hBar . ($_hOn ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100'),
+                'relative flex min-h-[48px] items-center rounded-xl px-4 text-[15px] font-semibold no-underline lg:h-full lg:min-h-0 lg:rounded-none lg:px-3 lg:text-[14px] ' . ($_hOn ? 'bg-blue-600 text-white lg:bg-transparent lg:text-blue-600 ' : 'text-slate-900 hover:bg-slate-50 hover:text-blue-600 lg:hover:bg-transparent ') . $_hBar . ($_hOn ? 'lg:after:scale-x-100' : 'lg:after:scale-x-0 lg:hover:after:scale-x-100'),
                 array_filter(['aria-current' => $_hOn ? 'page' : null, 'target' => $_hn['new_tab'] ? '_blank' : null, 'rel' => trim(($_hn['new_tab'] ? 'noopener ' : '') . ($_hn['nofollow'] ? 'nofollow' : '')) ?: null])) ?>
             <?php endif; endforeach; ?>
+            <?= ui_link($_tgUrl, $_tgIcon . '<span>' . e(t('tg.btn')) . ' · Telegram</span>', t('tg.title_attr'), 'mt-2 flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-[15px] font-bold text-white no-underline hover:bg-blue-700 lg:hidden', ['target' => '_blank', 'rel' => 'noopener'], true) ?>
         </nav>
 
         <div class="ml-auto flex shrink-0 items-center gap-2">
@@ -105,47 +106,34 @@ $_dropCodes = array_values(array_unique(array_merge(['USD', 'EUR', 'RUR', 'GEL',
                     <?php endforeach; ?>
                 </div>
             </details>
-            <button type="button" id="burger" class="grid h-10 w-10 place-items-center rounded-xl border border-[#eaedf2] bg-white text-slate-900 lg:hidden" aria-label="<?= e(t('menu')) ?>" title="<?= e(t('menu')) ?>" aria-expanded="false" aria-controls="mobile-menu">
+            <button type="button" id="burger" class="grid h-10 w-10 place-items-center rounded-xl border border-[#eaedf2] bg-white text-slate-900 lg:hidden" aria-label="<?= e(t('menu')) ?>" title="<?= e(t('menu')) ?>" aria-expanded="false" aria-controls="site-nav">
                 <svg id="icon-open" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 7h16M4 12h16M4 17h16"/></svg>
                 <svg id="icon-close" class="hidden h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
     </div>
-    <div id="mobile-menu" class="hidden max-h-[calc(100vh-60px)] overflow-y-auto border-t border-[#eaedf2] bg-white shadow-[0_16px_32px_rgba(15,23,42,.08)] lg:hidden">
-        <div class="grid gap-1 px-4 py-3">
-            <?php foreach ($_hNav as $_hn):
-                $_hu = $_hn['url']; $_hOn = nav_is_active($_hu); $_hLabel = nav_label($_hn, $lang);
-                if ($_hu === '#currencies' || $_hu === '#banks'): ?>
-            <details class="group rounded-xl">
-                <summary class="flex min-h-[48px] cursor-pointer list-none items-center justify-between rounded-xl px-4 text-[15px] font-semibold text-slate-900 hover:bg-slate-50 [&::-webkit-details-marker]:hidden"><?= e($_hLabel) ?><span class="transition group-open:rotate-180"><?= $_chev ?></span></summary>
-                <div class="grid grid-cols-2 gap-1 px-1 pb-2 pt-1">
-                    <?php if ($_hu === '#currencies'): foreach ($_dropCodes as $_dc): ?>
-                    <?= ui_link(lurl('/currency.php?cur=' . $_dc), ui_flag($_dc, 20, 'h-5 w-5 rounded-full object-cover') . '<span class="truncate">' . e(cur_menu_label($_dc, $lang)) . '</span>', tv('common.link_currency', ['name' => currency_name($_dc, $lang), 'code' => $_dc]), 'flex min-h-[44px] items-center gap-2 rounded-xl bg-slate-50 px-3 text-[13px] font-semibold text-slate-900 no-underline hover:bg-blue-600 hover:text-white', [], true) ?>
-                    <?php endforeach; else: foreach (top_bank_codes(10) as $_bc): $_bn = bank_display_name($_bc, $lang); ?>
-                    <?= ui_link(lurl(bank_page_url($_bc)), e($_bn), tv('common.link_bank', ['bank' => $_bn]), 'flex min-h-[44px] items-center truncate rounded-xl bg-slate-50 px-3 text-[13px] font-semibold text-slate-900 no-underline hover:bg-blue-600 hover:text-white', [], true) ?>
-                    <?php endforeach; ?>
-                    <?= ui_link(lurl('/banks'), t('nav.banks_all') . ' →', t('menu.all_banks_title'), 'col-span-2 flex min-h-[44px] items-center justify-center rounded-xl bg-blue-600 px-3 text-[14px] font-bold text-white no-underline hover:bg-blue-700') ?>
-                    <?php endif; ?>
-                </div>
-            </details>
-            <?php else: ?>
-            <?= ui_link(lurl($_hu), $_hLabel, nav_title($_hn, $lang), 'flex min-h-[48px] items-center rounded-xl px-4 text-[15px] font-semibold no-underline ' . ($_hOn ? 'bg-blue-600 text-white' : 'text-slate-900 hover:bg-slate-50'),
-                array_filter(['aria-current' => $_hOn ? 'page' : null, 'target' => $_hn['new_tab'] ? '_blank' : null, 'rel' => trim(($_hn['new_tab'] ? 'noopener ' : '') . ($_hn['nofollow'] ? 'nofollow' : '')) ?: null])) ?>
-            <?php endif; endforeach; ?>
-            <?= ui_link($_tgUrl, $_tgIcon . '<span>' . e(t('tg.btn')) . ' · Telegram</span>', t('tg.title_attr'), 'mt-2 flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-[15px] font-bold text-white no-underline hover:bg-blue-700', ['target' => '_blank', 'rel' => 'noopener'], true) ?>
-        </div>
-    </div>
 </header>
 <script>
 (function () {
-    var b = document.getElementById('burger'), m = document.getElementById('mobile-menu'), o = document.getElementById('icon-open'), c = document.getElementById('icon-close'), l = document.getElementById('lang-menu');
-    if (b) b.addEventListener('click', function () {
-        var h = m.classList.toggle('hidden');
-        o.classList.toggle('hidden', !h); c.classList.toggle('hidden', h);
-        b.setAttribute('aria-expanded', h ? 'false' : 'true');
+    var b = document.getElementById('burger'), nav = document.getElementById('site-nav'), o = document.getElementById('icon-open'), c = document.getElementById('icon-close'), l = document.getElementById('lang-menu');
+    function setNav(open) {
+        nav.classList.toggle('hidden', !open);
+        nav.classList.toggle('flex', open);
+        o.classList.toggle('hidden', open);
+        c.classList.toggle('hidden', !open);
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    if (b) b.addEventListener('click', function () { setNav(nav.classList.contains('hidden')); });
+    nav.querySelectorAll('[data-drop]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var panel = btn.parentNode.querySelector('[data-drop-panel]');
+            var open = panel.classList.toggle('hidden') === false;
+            panel.classList.toggle('grid', open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
     });
     document.addEventListener('click', function (e) { if (l && l.open && !l.contains(e.target)) l.open = false; });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && l) l.open = false; });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (l) l.open = false; if (b && !nav.classList.contains('hidden') && window.innerWidth < 1024) setNav(false); } });
 })();
 </script>
 <main id="main" class="flex-1">

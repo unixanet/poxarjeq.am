@@ -150,7 +150,7 @@ function currency_override(string $code, string $lang): array
     return is_array($all) ? ($all[strtoupper($code)][$lang] ?? []) : [];
 }
 
-const NAV_VERSION = 3;
+const NAV_VERSION = 4;
 
 function nav_defaults(): array
 {
@@ -194,6 +194,7 @@ function nav_defaults(): array
     $mk('footer', 3, '/news', $tr('menu.news'), $tr('menu.news_title'));
     $mk('footer', 3, '/#calc', $tr('menu.calc'), $tr('menu.calc_title'));
     $mk('footer', 4, '/about.php', $tr('menu.about'), $tr('menu.about_title'));
+    $mk('footer', 4, '/methodology.php', $tr('menu.method'), $tr('menu.method_title'));
     $mk('footer', 4, '/contact.php', $tr('menu.contact'), $tr('menu.contact_title'));
     $mk('footer', 4, '/privacy.php', $tr('menu.privacy'), $tr('menu.privacy_title'));
     $mk('footer', 4, '/disclaimer.php', $tr('menu.disclaimer'), $tr('menu.disclaimer_title'));

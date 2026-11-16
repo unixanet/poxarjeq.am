@@ -1,5 +1,10 @@
+<?php $twFile = __DIR__ . '/../assets/tailwind.css'; $twVer = is_file($twFile) ? (int)filemtime($twFile) : 0; ?>
     <link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/noto-armenian-700.woff2" as="font" type="font/woff2" crossorigin>
+<?php if ($twVer): ?>
+    <link rel="preload" href="/assets/tailwind.css?v=<?= $twVer ?>" as="style">
+    <link rel="stylesheet" href="/assets/tailwind.css?v=<?= $twVer ?>">
+<?php else: ?>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script>
         tailwind.config = {
@@ -26,3 +31,4 @@
             ]
         };
     </script>
+<?php endif; ?>

@@ -46,7 +46,7 @@ function sm_entries(string $part): array
         $addPage('/poxanakman-keter', $today, 'hourly', '0.8');
         $addPage('/voski', $today, 'daily', '0.7');
         $addPage('/news', $today, 'daily', '0.6');
-        foreach (['about.php' => '0.5', 'contact.php' => '0.4', 'privacy.php' => '0.2', 'disclaimer.php' => '0.2'] as $f => $p) $addPage('/' . $f, sm_date(null, $mt($f)), 'monthly', $p);
+        foreach (['methodology.php' => '0.5', 'about.php' => '0.5', 'contact.php' => '0.4', 'privacy.php' => '0.2', 'disclaimer.php' => '0.2'] as $f => $p) $addPage('/' . $f, sm_date(null, $mt($f)), 'monthly', $p);
     } elseif ($part === 'currencies') {
         foreach (sm_currency_codes() as $c) $addPage('/currency.php?cur=' . $c, $today, 'hourly', in_array($c, ['USD', 'EUR', 'RUR', 'GEL'], true) ? '0.9' : '0.7');
     } elseif ($part === 'banks') {

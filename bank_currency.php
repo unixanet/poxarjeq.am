@@ -59,6 +59,9 @@ $vars = array_merge($vars, [
     'best_bank' => $bestRow['name'] ?? '', 'avg_spread' => number_format($avgSpread, 2, $lang === 'en' ? '.' : ',', ''),
     'spread' => number_format($spread, 2, $lang === 'en' ? '.' : ',', ''), 'alias' => cur_vars($cur, $lang)['alias'], 'code' => $cur,
 ]);
+$histRows = hist_table($cur, $code);
+$histText = '';
+if (isset($histRows[30])) $histText = cms_text_in('bcur.hist_text', $lang, $vars + hist_fmt($histRows[30], $lang));
 $insightKey = $isBestBank ? 'bcur.insight_best' : ($bestBuy - $buy < 0.005 ? 'bcur.insight_same' : 'bcur.insight');
 $pageTitle = cms_text_in('seo.bcur.title', $lang, $vars);
 $pageDescription = cms_text_in($place > 0 && $of > 0 ? 'seo.bcur.description' : 'seo.bcur.description_plain', $lang, $vars);
@@ -120,6 +123,35 @@ require __DIR__ . '/includes/header.php';
     </dl>
 </section>
 
+<?php if ($histRows): ?>
+<section class="mt-10" aria-labelledby="hist-h">
+    <h2 id="hist-h" class="mb-3 text-xl font-black tracking-tight text-slate-900 sm:text-2xl"><?= e(cms_text_in('bcur.hist_h', $lang, $vars)) ?></h2>
+    <?php if ($histText): ?><p class="mb-4 max-w-3xl text-[15px] leading-relaxed sm:text-base"><?= e($histText) ?></p><?php endif; ?>
+    <div class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_10px_40px_rgba(15,23,42,.06)]">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <caption class="sr-only"><?= e(cms_text_in('bcur.hist_h', $lang, $vars)) ?></caption>
+                <thead><tr class="border-b border-slate-200 bg-slate-50">
+                    <?php foreach (['period', 'first', 'last', 'chg', 'min', 'max'] as $hc): ?><th scope="col" class="px-3 py-3 <?= $hc === 'period' ? 'text-left' : 'text-right' ?> text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('hist.col_' . $hc)) ?></th><?php endforeach; ?>
+                </tr></thead>
+                <tbody>
+                    <?php foreach ($histRows as $d => $hr): $f = hist_fmt($hr, $lang); ?>
+                    <tr class="border-t border-slate-100">
+                        <th scope="row" class="px-3 py-3 text-left font-bold text-slate-900"><?= e(t('cur.period' . $d)) ?></th>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= e($f['from']) ?></td>
+                        <td class="px-3 py-3 text-right font-semibold tabular-nums"><?= e($f['to']) ?></td>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= ui_change($hr['chg']) ?></td>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= e($f['min']) ?></td>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= e($f['max']) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<?php endif; ?>
 <?php if ($rows): ?>
 <section class="mt-10" aria-labelledby="cmp-h">
     <h2 id="cmp-h" class="mb-4 text-xl font-black tracking-tight text-slate-900 sm:mb-5 sm:text-2xl"><?= e(tv('bcur.table_title', $vars)) ?></h2>

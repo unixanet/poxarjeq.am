@@ -88,7 +88,7 @@ require __DIR__ . '/includes/header.php';
         </div>
         <?php endforeach; ?>
     </div>
-    <p class="mt-5 text-[15px]"><?= ui_link(lurl('/disclaimer.php'), t('menu.disclaimer'), t('menu.disclaimer_title'), 'font-bold text-blue-600 no-underline hover:underline') ?> · <?= ui_link(lurl('/privacy.php'), t('menu.privacy'), t('menu.privacy_title'), 'font-bold text-blue-600 no-underline hover:underline') ?></p>
+    <p class="mt-5 text-[15px]"><?= ui_link(lurl('/methodology.php'), t('menu.method'), t('menu.method_title'), 'font-bold text-blue-600 no-underline hover:underline') ?> · <?= ui_link(lurl('/disclaimer.php'), t('menu.disclaimer'), t('menu.disclaimer_title'), 'font-bold text-blue-600 no-underline hover:underline') ?> · <?= ui_link(lurl('/privacy.php'), t('menu.privacy'), t('menu.privacy_title'), 'font-bold text-blue-600 no-underline hover:underline') ?></p>
 </section>
 
 <section class="mt-12" aria-labelledby="team-h">

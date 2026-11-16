@@ -68,6 +68,8 @@ foreach ($branches as $br) {
     if ($c !== '' && !in_array($c, $cities, true)) $cities[] = $c;
 }
 $chartCur = isset($rates['USD']) ? 'USD' : (array_key_first($rates) ?? 'USD');
+$bankHist = $rates ? (hist_table($chartCur, $code, [30])[30] ?? null) : null;
+$bankHistText = $bankHist ? cms_text_in('bank.hist_text', $lang, $vars + hist_fmt($bankHist, $lang) + ['cur' => $chartCur]) : '';
 $others = array_values(array_filter(top_bank_codes(12), fn($c) => $c !== $code));
 $others = array_slice($others, 0, 8);
 
@@ -149,6 +151,7 @@ require __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>
+            <?php if ($bankHistText): ?><p id="bank-hist" class="mb-3 text-[15px] leading-relaxed"><?= e($bankHistText) ?></p><?php endif; ?>
             <div id="rate-chart" class="relative h-[240px] w-full sm:h-[320px]" role="img" aria-label="<?= e(tv('bank.chart_title', $vars)) ?>"></div>
             <p id="chart-empty" class="hidden py-16 text-center"><?= e(t('cur.no_history')) ?></p>
             <dl id="chart-stats" class="mt-3 grid grid-cols-3 gap-2 border-t border-slate-100 pt-3 text-sm">
@@ -184,6 +187,16 @@ require __DIR__ . '/includes/header.php';
                 </a>
                 <?php endforeach; ?>
             </div>
+            <?php $cityIdx = cities_index(); $bankCityLinks = []; foreach ($branches as $br0) { $cs0 = city_slug_from((string)($br0['city']['en'] ?? '')); if ($cs0 !== '' && isset($cityIdx[$cs0])) $bankCityLinks[$cs0] = $br0['city'][$lang] ?? ''; } if ($bankCityLinks): ?>
+            <div class="mt-6">
+                <h3 class="mb-2 text-base font-black text-slate-900"><?= e(t('bank.city_links_h')) ?></h3>
+                <ul class="flex flex-wrap gap-2">
+                    <?php foreach ($bankCityLinks as $cs0 => $cn0): ?>
+                    <li><?= ui_link(lurl(city_page_url($cs0)), $cn0, cms_text_in('city.link_title', $lang, ['city' => $cn0, 'city_loc' => city_loc($cn0, $lang)]), 'flex min-h-[40px] items-center rounded-xl border border-slate-200 bg-white px-3 text-[13px] font-bold text-slate-900 no-underline hover:border-blue-300 hover:text-blue-600') ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php endif; ?>
         </section>
         <?php endif; ?>
     </div>

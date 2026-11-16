@@ -142,6 +142,10 @@ require __DIR__ . '/includes/header.php';
 </section>
 <?php endif; ?>
 
+<?php $cityLinkSlug = city_slug_from((string)($branch['city']['en'] ?? '')); if ($cityLinkSlug !== '' && isset(cities_index()[$cityLinkSlug])): ?>
+<p class="mt-10"><?= ui_link(lurl(city_page_url($cityLinkSlug)), cms_text_in('city.all_banks_link', $lang, ['city' => $cityName]) . ' →', cms_text_in('city.link_title', $lang, ['city' => $cityName, 'city_loc' => city_loc($cityName, $lang)]), 'inline-flex min-h-[46px] items-center rounded-[14px] bg-blue-600 px-6 text-sm font-bold text-white no-underline hover:bg-blue-700') ?></p>
+<?php endif; ?>
+
 <?php if ($sameCity || $otherCities): ?>
 <nav class="mt-10 grid gap-6 sm:grid-cols-2" aria-label="<?= e(t('bank.branches_title')) ?>">
     <?php if ($sameCity): ?>

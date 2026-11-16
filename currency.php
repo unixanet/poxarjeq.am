@@ -48,6 +48,9 @@ $fullWidth = false;
 
 $h1 = ($ov['h1'] ?? '') !== '' ? $ov['h1'] : cur_h1($cur, $lang);
 $vars += ['best_buy' => $bestBuy !== null ? fmt_rate($bestBuy) : '', 'best_buy_bank' => $bestBuyBank, 'best_sell' => $bestSell !== null ? fmt_rate($bestSell) : '', 'best_sell_bank' => $bestSellBank, 'avg_buy' => $avgBuy !== null ? number_format($avgBuy, 2, '.', '') : '', 'banks' => count($rows)];
+$histRows = hist_table($cur);
+$histText = '';
+if (isset($histRows[30])) $histText = cms_text_in('cur.hist_text', $lang, $vars + hist_fmt($histRows[30], $lang));
 $content = cur_content($cur, $lang);
 $stats = $rows ? cur_stats($rows, count(array_filter(sm_bank_codes_safe(), fn($c) => bank_is_visible($c))), (float)$bestBuy, (float)$avgBuy, $lang) : [];
 $amt = in_array($cur, ['RUR', 'JPY'], true) ? 1000 : 100;
@@ -242,6 +245,37 @@ if ($exSum): ?>
 </section>
 <?php endif; ?>
 
+<?php if ($histRows): ?>
+<section class="mt-10" aria-labelledby="hist-h">
+    <h2 id="hist-h" class="mb-3 text-xl font-black tracking-tight text-slate-900 sm:text-2xl"><?= e(cms_text_in('cur.hist_h', $lang, $vars)) ?></h2>
+    <?php if ($histText): ?><p class="mb-4 max-w-3xl text-[15px] leading-relaxed sm:text-base"><?= e($histText) ?></p><?php endif; ?>
+    <div class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-[0_10px_40px_rgba(15,23,42,.06)]">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <caption class="sr-only"><?= e(cms_text_in('cur.hist_h', $lang, $vars)) ?></caption>
+                <thead><tr class="border-b border-slate-200 bg-slate-50">
+                    <?php foreach (['period', 'first', 'last', 'chg', 'min', 'max', 'avg'] as $hc): ?><th scope="col" class="px-3 py-3 <?= $hc === 'period' ? 'text-left' : 'text-right' ?> text-[11px] font-extrabold uppercase tracking-wider"><?= e(t('hist.col_' . $hc)) ?></th><?php endforeach; ?>
+                </tr></thead>
+                <tbody>
+                    <?php foreach ($histRows as $d => $hr): $f = hist_fmt($hr, $lang); ?>
+                    <tr class="border-t border-slate-100">
+                        <th scope="row" class="px-3 py-3 text-left font-bold text-slate-900"><?= e(t('cur.period' . $d)) ?></th>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= e($f['from']) ?></td>
+                        <td class="px-3 py-3 text-right font-semibold tabular-nums"><?= e($f['to']) ?></td>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= ui_change($hr['chg']) ?></td>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= e($f['min']) ?></td>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= e($f['max']) ?></td>
+                        <td class="px-3 py-3 text-right tabular-nums"><?= e($f['avg']) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="mt-3 text-sm"><?= e(t('cur.hist_note')) ?></p>
+</section>
+
+<?php endif; ?>
 <div class="mt-10 grid gap-6 lg:grid-cols-2">
     <?php if ($bestBuy): ?>
     <section class="space-y-6" aria-labelledby="conv-h">
@@ -291,6 +325,15 @@ if ($exSum): ?>
     </ul>
 </nav>
 <?php endif; ?>
+
+<nav class="mt-10" aria-labelledby="cities-h">
+    <h2 id="cities-h" class="mb-3 text-xl font-black tracking-tight text-slate-900 sm:text-2xl"><?= e(t('city.links_h')) ?></h2>
+    <ul class="flex flex-wrap gap-2">
+        <?php foreach (array_slice(cities_index(), 0, 8, true) as $cs1 => $ci1): $cn1 = $ci1['name'][$lang]; ?>
+        <li><?= ui_link(lurl(city_page_url($cs1)), $cn1, cms_text_in('city.link_title', $lang, ['city' => $cn1, 'city_loc' => city_loc($cn1, $lang)]), 'flex min-h-[44px] items-center rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-bold text-slate-900 no-underline hover:border-blue-300 hover:text-blue-600') ?></li>
+        <?php endforeach; ?>
+    </ul>
+</nav>
 
 <?php if ($faq): ?>
 <section class="mt-10" aria-labelledby="faq-h">
